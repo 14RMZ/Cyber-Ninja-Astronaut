@@ -14,7 +14,7 @@ highScore = parseInt(highScore);
 
 // Load the background image
 const backgroundImage = new Image();
-backgroundImage.src = "GameBackground.jpg";
+backgroundImage.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/sprite_sheet.png";
 
 // Load the player sprite sheet
 const playerSpriteSheet = new Image();
