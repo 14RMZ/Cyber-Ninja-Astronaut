@@ -16,17 +16,33 @@ highScore = parseInt(highScore);
 const backgroundImage = new Image();
 backgroundImage.src = "GameBackground.jpg";
 
+// Load the player sprite sheet
+const playerSpriteSheet = new Image();
+playerSpriteSheet.src = "player_sprite_sheet.png"; // Replace with your sprite sheet path
+
+// Player animation frames
+const playerAnimations = {
+    idle: { frames: [{ x: 0, y: 0, width: 32, height: 48 }], frameRate: 1 }, // Idle animation
+    walk: { frames: [{ x: 32, y: 0, width: 32, height: 48 }, { x: 64, y: 0, width: 32, height: 48 }], frameRate: 10 }, // Walking animation
+    jump: { frames: [{ x: 96, y: 0, width: 32, height: 48 }], frameRate: 1 }, // Jumping animation
+    die: { frames: [{ x: 128, y: 0, width: 32, height: 48 }], frameRate: 1 } // Dying animation
+};
+
+let currentAnimation = playerAnimations.idle; // Current animation
+let currentFrameIndex = 0; // Current frame index
+let frameTimer = 0; // Timer for frame switching
+
 const player = {
     x: 100,
     y: canvas.height - 150,
-    width: 30,
-    height: 50,
+    width: 32, // Width of the player sprite
+    height: 48, // Height of the player sprite
     velocityX: 0,
     velocityY: 0,
     speed: 6,
     jumpHeight: 14,
     isJumping: false,
-    direction: 1,
+    direction: 1, // 1 for right, -1 for left
     score: 0,
     lastPlatform: null,
     isShieldActive: false, // Track if the shield is active
@@ -430,9 +446,47 @@ function drawScore() {
 }
 
 function drawPlayer() {
-    ctx.fillStyle = "blue";
-    ctx.fillRect(player.x - camera.x, player.y, player.width, player.height);
+    // Update animation based on player state
+    if (gameOver) {
+        currentAnimation = playerAnimations.die; // Dying animation
+    } else if (player.isJumping) {
+        currentAnimation = playerAnimations.jump; // Jumping animation
+    } else if (keys['ArrowLeft'] || keys['ArrowRight'] || keys['KeyA'] || keys['KeyD']) {
+        currentAnimation = playerAnimations.walk; // Walking animation
+    } else {
+        currentAnimation = playerAnimations.idle; // Idle animation
+    }
 
+    // Update frame index
+    frameTimer++;
+    if (frameTimer >= currentAnimation.frameRate) {
+        frameTimer = 0;
+        currentFrameIndex = (currentFrameIndex + 1) % currentAnimation.frames.length;
+    }
+
+    // Get the current frame
+    const frame = currentAnimation.frames[currentFrameIndex];
+
+    // Draw the player sprite
+    ctx.save();
+    if (player.direction === -1) {
+        // Flip the sprite if facing left
+        ctx.scale(-1, 1);
+        ctx.drawImage(
+            playerSpriteSheet,
+            frame.x, frame.y, frame.width, frame.height,
+            -player.x + camera.x - player.width, player.y, player.width, player.height
+        );
+    } else {
+        ctx.drawImage(
+            playerSpriteSheet,
+            frame.x, frame.y, frame.width, frame.height,
+            player.x - camera.x, player.y, player.width, player.height
+        );
+    }
+    ctx.restore();
+
+    // Draw shield if active
     if (player.isShieldActive) {
         ctx.strokeStyle = "cyan";
         ctx.lineWidth = 3;
