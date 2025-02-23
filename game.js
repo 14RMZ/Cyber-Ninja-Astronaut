@@ -14,7 +14,7 @@ highScore = parseInt(highScore);
 
 // Load the background image
 const backgroundImage = new Image();
-backgroundImage.src = "D:\Cyber-Ninja-Astronaut\GameBackground.jpg"; // Replace with your image path
+backgroundImage.src = "GameBackground.jpg";
 
 const player = {
     x: 100,
