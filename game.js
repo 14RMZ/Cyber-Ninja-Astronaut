@@ -466,14 +466,28 @@ function render() {
     // Clear the canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Draw the background image
-    ctx.drawImage(
-        backgroundImage,
-        -camera.x * 0.5, // Scroll the background slower for a parallax effect
-        0,
-        canvas.width,
-        canvas.height
-    );
+    // Draw the tiled background image
+    const imageWidth = backgroundImage.width; // Width of the background image
+    const imageHeight = backgroundImage.height; // Height of the background image
+    const scale = canvas.height / imageHeight; // Scale the image to fit the canvas height
+    const scaledWidth = imageWidth * scale; // Scaled width of the image
+
+    // Calculate how many times to draw the image
+    const numTiles = Math.ceil(canvas.width / scaledWidth) + 1; // +1 to ensure full coverage
+
+    // Calculate the offset based on the camera's x position
+    const offset = (camera.x * 0.5) % scaledWidth;
+
+    // Draw the tiled background
+    for (let i = -1; i < numTiles; i++) {
+        ctx.drawImage(
+            backgroundImage,
+            i * scaledWidth - offset, // X position
+            0, // Y position
+            scaledWidth, // Scaled width
+            canvas.height // Scaled height
+        );
+    }
 
     // Draw platforms, enemies, bullets, etc.
     platforms.forEach(platform => platform.draw());
