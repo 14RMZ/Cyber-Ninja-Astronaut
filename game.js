@@ -18,7 +18,7 @@ backgroundImage.src = "GameBackground.jpg";
 
 // Load the player sprite sheet
 const playerSpriteSheet = new Image();
-playerSpriteSheet.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/player_sprite_sheet.png"; // Replace with your sprite sheet path
+playerSpriteSheet.src = "https://i.imgur.com/3QZQZ.png"; // Replace with your sprite sheet path
 
 
 // Player animation frames
