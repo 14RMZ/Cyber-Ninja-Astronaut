@@ -20,18 +20,37 @@ backgroundImage.src = "GameBackground.jpg";
 const playerSpriteSheet = new Image();
 playerSpriteSheet.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/Playermovement.png"; // Replace with your sprite sheet path
 
+// Animation class to handle player animations
+class Animation {
+    constructor(frames, frameRate) {
+        this.frames = frames;
+        this.frameRate = frameRate;
+        this.currentFrameIndex = 0;
+        this.frameTimer = 0;
+    }
+
+    update() {
+        this.frameTimer++;
+        if (this.frameTimer >= this.frameRate) {
+            this.frameTimer = 0;
+            this.currentFrameIndex = (this.currentFrameIndex + 1) % this.frames.length;
+        }
+    }
+
+    getCurrentFrame() {
+        return this.frames[this.currentFrameIndex];
+    }
+}
 
 // Player animation frames
 const playerAnimations = {
-    idle: { frames: [{ x: 0, y: 0, width: 32, height: 48 }], frameRate: 1 }, // Idle animation
-    walk: { frames: [{ x: 32, y: 0, width: 32, height: 48 }, { x: 64, y: 0, width: 32, height: 48 }], frameRate: 10 }, // Walking animation
-    jump: { frames: [{ x: 96, y: 0, width: 32, height: 48 }], frameRate: 1 }, // Jumping animation
-    die: { frames: [{ x: 128, y: 0, width: 32, height: 48 }], frameRate: 1 } // Dying animation
+    idle: new Animation([{ x: 0, y: 0, width: 32, height: 48 }], 1), // Idle animation
+    walk: new Animation([{ x: 32, y: 0, width: 32, height: 48 }, { x: 64, y: 0, width: 32, height: 48 }], 10), // Walking animation
+    jump: new Animation([{ x: 96, y: 0, width: 32, height: 48 }], 1), // Jumping animation
+    die: new Animation([{ x: 128, y: 0, width: 32, height: 48 }], 1) // Dying animation
 };
 
 let currentAnimation = playerAnimations.idle; // Current animation
-let currentFrameIndex = 0; // Current frame index
-let frameTimer = 0; // Timer for frame switching
 
 const player = {
     x: 100,
@@ -458,15 +477,11 @@ function drawPlayer() {
         currentAnimation = playerAnimations.idle; // Idle animation
     }
 
-    // Update frame index
-    frameTimer++;
-    if (frameTimer >= currentAnimation.frameRate) {
-        frameTimer = 0;
-        currentFrameIndex = (currentFrameIndex + 1) % currentAnimation.frames.length;
-    }
+    // Update the animation
+    currentAnimation.update();
 
     // Get the current frame
-    const frame = currentAnimation.frames[currentFrameIndex];
+    const frame = currentAnimation.getCurrentFrame();
 
     // Draw the player sprite
     ctx.save();
