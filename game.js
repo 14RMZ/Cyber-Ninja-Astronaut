@@ -44,14 +44,20 @@ class Animation {
 
 // Player animation frames
 const playerAnimations = {
-    idle: new Animation([{ x: 0, y: 0, width: 32, height: 48 }], 1), // Idle animation
-    walk: new Animation([{ x: 32, y: 0, width: 32, height: 48 }, { x: 64, y: 0, width: 32, height: 48 }], 10), // Walking animation
-    jump: new Animation([{ x: 96, y: 0, width: 32, height: 48 }], 1), // Jumping animation
-    die: new Animation([{ x: 128, y: 0, width: 32, height: 48 }, { x: 160, y: 0, width: 32, height: 48 }], 5) // Dying animation (kneeling, then lying down)
+    idle: new Animation([{ x: 0, y: 0, width: 32, height: 48 }], 1), // Standing straight (frame 1)
+    walk: new Animation([{ x: 32, y: 0, width: 32, height: 48 }, { x: 64, y: 0, width: 32, height: 48 }], 10), // Walking (frames 2 and 3)
+    jumpStart: new Animation([{ x: 96, y: 0, width: 32, height: 48 }], 1), // Starting to jump (frame 4)
+    jump: new Animation([{ x: 128, y: 0, width: 32, height: 48 }], 1), // Jumping (frame 5)
+    jumpLand: new Animation([{ x: 160, y: 0, width: 32, height: 48 }], 1), // Landing after jumping (frame 6)
+    dieKneel: new Animation([{ x: 192, y: 0, width: 32, height: 48 }], 5), // Kneeling when dying (frame 7)
+    dieLie: new Animation([{ x: 224, y: 0, width: 32, height: 48 }], 1) // Lying down when dead (frame 8)
 };
 
 let currentAnimation = playerAnimations.idle; // Current animation
 let isDying = false; // Track if the player is in the dying state
+let isJumping = false; // Track if the player is jumping
+let isJumpStarting = false; // Track if the player is starting to jump
+let isJumpLanding = false; // Track if the player is landing after jumping
 
 const player = {
     x: 100,
@@ -348,10 +354,21 @@ function handleMovement() {
     if (!onPlatform) {
         player.isJumping = true;
     } else {
+        if (player.isJumping) {
+            isJumpLanding = true; // Player is landing after jumping
+            setTimeout(() => {
+                isJumpLanding = false; // Reset landing state after a short delay
+            }, 200); // Adjust the delay as needed
+        }
         player.isJumping = false;
     }
 
     if ((keys['Space'] || keys['ArrowUp'] || keys['KeyW']) && !player.isJumping) {
+        isJumpStarting = true; // Player is starting to jump
+        setTimeout(() => {
+            isJumpStarting = false; // Reset starting state after a short delay
+            isJumping = true; // Player is now jumping
+        }, 100); // Adjust the delay as needed
         player.velocityY = -player.jumpHeight;
         player.isJumping = true;
     }
@@ -382,6 +399,9 @@ function updateShield() {
 function resetGame() {
     gameOver = false;
     isDying = false; // Reset the dying state
+    isJumping = false; // Reset jumping state
+    isJumpStarting = false; // Reset jump starting state
+    isJumpLanding = false; // Reset jump landing state
     player.x = 100;
     player.y = canvas.height - 150;
     player.score = 0;
@@ -472,20 +492,27 @@ function drawPlayer() {
     if (gameOver) {
         if (!isDying) {
             // Start the dying animation
-            currentAnimation = playerAnimations.die;
+            currentAnimation = playerAnimations.dieKneel;
             currentAnimation.currentFrameIndex = 0; // Reset to the first frame
             isDying = true;
+        } else if (currentAnimation === playerAnimations.dieKneel && currentAnimation.currentFrameIndex === currentAnimation.frames.length - 1) {
+            // Switch to lying down after kneeling
+            currentAnimation = playerAnimations.dieLie;
         }
-    } else if (player.isJumping) {
-        currentAnimation = playerAnimations.jump; // Jumping animation
+    } else if (isJumpStarting) {
+        currentAnimation = playerAnimations.jumpStart; // Starting to jump
+    } else if (isJumping) {
+        currentAnimation = playerAnimations.jump; // Jumping
+    } else if (isJumpLanding) {
+        currentAnimation = playerAnimations.jumpLand; // Landing after jumping
     } else if (keys['ArrowLeft'] || keys['ArrowRight'] || keys['KeyA'] || keys['KeyD']) {
-        currentAnimation = playerAnimations.walk; // Walking animation
+        currentAnimation = playerAnimations.walk; // Walking
     } else {
-        currentAnimation = playerAnimations.idle; // Idle animation
+        currentAnimation = playerAnimations.idle; // Idle
     }
 
     // Update the animation
-    if (!gameOver || (gameOver && currentAnimation.currentFrameIndex < currentAnimation.frames.length - 1)) {
+    if (!gameOver || (gameOver && currentAnimation !== playerAnimations.dieLie)) {
         currentAnimation.update();
     }
 
