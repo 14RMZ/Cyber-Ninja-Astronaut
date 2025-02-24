@@ -337,24 +337,23 @@ function handleMovement() {
         }
     });
 
-if (!onPlatform) {
-    player.isJumping = true;
-} else {
-    if (player.isJumping) {
-        isJumpLanding = false; // Reset immediately
+    if (!onPlatform) {
+        player.isJumping = true;
+    } else {
+        if (player.isJumping) {
+            isJumpLanding = false; // Reset immediately
+        }
+        player.isJumping = false;
     }
-    player.isJumping = false;
-}
 
-if ((keys['Space'] || keys['ArrowUp'] || keys['KeyW']) && !player.isJumping) {
-    isJumpStarting = true;
-    setTimeout(() => {
-        isJumpStarting = false;
-        isJumping = true;
-    }, 100);
-    player.velocityY = -player.jumpHeight;
-    player.isJumping = true;
-}
+    if ((keys['Space'] || keys['ArrowUp'] || keys['KeyW']) && !player.isJumping) {
+        isJumpStarting = true;
+        setTimeout(() => {
+            isJumpStarting = false;
+            isJumping = true;
+        }, 100);
+        player.velocityY = -player.jumpHeight;
+        player.isJumping = true;
     }
 
     if (player.y > canvas.height) {
