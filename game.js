@@ -18,62 +18,36 @@ backgroundImage.src = "GameBackground.jpg";
 
 // Load the player sprite sheet
 const playerSpriteSheet = new Image();
-playerSpriteSheet.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/Playermovement.png";
+playerSpriteSheet.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/Playermovement.png"; // Replace with your sprite sheet path
 
-// Animation class to handle player animations
-class Animation {
-    constructor(frames, frameRate) {
-        this.frames = frames;
-        this.frameRate = frameRate;
-        this.currentFrameIndex = 0;
-        this.frameTimer = 0;
-    }
-
-    update() {
-        this.frameTimer++;
-        if (this.frameTimer >= this.frameRate) {
-            this.frameTimer = 0;
-            this.currentFrameIndex = (this.currentFrameIndex + 1) % this.frames.length;
-        }
-    }
-
-    getCurrentFrame() {
-        return this.frames[this.currentFrameIndex];
-    }
-}
 
 // Player animation frames
 const playerAnimations = {
-    idle: new Animation([{ x: 0, y: 0, width: 32, height: 48 }], 1), // Standing straight (frame 1)
-    walk: new Animation([{ x: 32, y: 0, width: 32, height: 48 }, { x: 64, y: 0, width: 32, height: 48 }], 10), // Walking (frames 2 and 3)
-    jumpStart: new Animation([{ x: 96, y: 0, width: 32, height: 48 }], 1), // Starting to jump (frame 4)
-    jump: new Animation([{ x: 128, y: 0, width: 32, height: 48 }], 1), // Jumping (frame 5)
-    jumpLand: new Animation([{ x: 160, y: 0, width: 32, height: 48 }], 1), // Landing after jumping (frame 6)
-    dieKneel: new Animation([{ x: 192, y: 0, width: 32, height: 48 }], 5), // Kneeling when dying (frame 7)
-    dieLie: new Animation([{ x: 224, y: 0, width: 32, height: 48 }], 1) // Lying down when dead (frame 8)
+    idle: { frames: [{ x: 0, y: 0, width: 32, height: 48 }], frameRate: 1 }, // Idle animation
+    walk: { frames: [{ x: 32, y: 0, width: 32, height: 48 }, { x: 64, y: 0, width: 32, height: 48 }], frameRate: 10 }, // Walking animation
+    jump: { frames: [{ x: 96, y: 0, width: 32, height: 48 }], frameRate: 1 }, // Jumping animation
+    die: { frames: [{ x: 128, y: 0, width: 32, height: 48 }], frameRate: 1 } // Dying animation
 };
 
 let currentAnimation = playerAnimations.idle; // Current animation
-let isDying = false; // Track if the player is in the dying state
-let isJumping = false; // Track if the player is jumping
-let isJumpStarting = false; // Track if the player is starting to jump
-let isJumpLanding = false; // Track if the player is landing after jumping
+let currentFrameIndex = 0; // Current frame index
+let frameTimer = 0; // Timer for frame switching
 
 const player = {
     x: 100,
     y: canvas.height - 150,
-    width: 32,
-    height: 48,
+    width: 32, // Width of the player sprite
+    height: 48, // Height of the player sprite
     velocityX: 0,
     velocityY: 0,
     speed: 6,
     jumpHeight: 14,
     isJumping: false,
-    direction: 1,
+    direction: 1, // 1 for right, -1 for left
     score: 0,
     lastPlatform: null,
-    isShieldActive: false,
-    shieldTimer: 0
+    isShieldActive: false, // Track if the shield is active
+    shieldTimer: 0 // Track the remaining shield duration
 };
 
 const camera = {
@@ -150,7 +124,7 @@ class Enemy {
         this.direction = 1;
         this.minX = platform.x + 10;
         this.maxX = platform.x + platform.width - this.width - 10;
-        this.color = color;
+        this.color = color; // Set the color of the enemy
     }
 
     update() {
@@ -161,20 +135,22 @@ class Enemy {
     }
 
     draw() {
-        ctx.fillStyle = this.color;
+        ctx.fillStyle = this.color; // Use the enemy's color
         ctx.fillRect(this.x - camera.x, this.y, this.width, this.height);
     }
 }
 
 class ShootingEnemy extends Enemy {
     constructor(platform) {
-        super(platform, "red");
-        this.shootCooldown = 100;
-        this.shootTimer = 0;
+        super(platform, "red"); // Set color to red
+        this.shootCooldown = 100; // Cooldown between shots (in frames)
+        this.shootTimer = 0; // Timer to track cooldown
     }
 
     update() {
-        super.update();
+        super.update(); // Call the parent class's update method
+
+        // Shoot bullets at the player
         if (this.shootTimer <= 0) {
             this.shoot();
             this.shootTimer = this.shootCooldown;
@@ -184,9 +160,12 @@ class ShootingEnemy extends Enemy {
     }
 
     shoot() {
+        // Calculate direction to shoot at the player
         const direction = player.x > this.x ? 1 : -1;
         const bulletX = this.x + this.width / 2;
         const bulletY = this.y + this.height / 2;
+
+        // Add a new bullet to the enemyBullets array
         enemyBullets.push(new Bullet(bulletX, bulletY, direction));
     }
 }
@@ -226,7 +205,7 @@ class ShieldPowerUp {
         this.y = y;
         this.width = 20;
         this.height = 20;
-        this.duration = 5;
+        this.duration = 5; // Shield lasts for 5 seconds
         this.isActive = false;
     }
 
@@ -250,8 +229,8 @@ class ShieldPowerUp {
 const platforms = [new Platform(50, canvas.height - 100, 200, 20)];
 const enemies = [];
 const bullets = [];
-const enemyBullets = [];
-const shieldPowerUps = [];
+const enemyBullets = []; // Array to store bullets fired by enemies
+const shieldPowerUps = []; // Array to store shield power-ups
 
 function generatePlatforms() {
     let lastPlatform = platforms[platforms.length - 1];
@@ -259,20 +238,28 @@ function generatePlatforms() {
         let x = lastPlatform.x + lastPlatform.width + Math.random() * 120 + 80;
         let y = Math.min(lastPlatform.y + (Math.random() * 60 - 30), canvas.height - 120);
         let isMoving = Math.random() > 0.6;
+
+        // Introduce spikes after 50 points
         let hasSpikes = player.score >= 50 && Math.random() > 0.7;
+
+        // Introduce green enemies after 100 points
         let hasGreenEnemy = player.score >= 100 && !isMoving && !hasSpikes && Math.random() > 0.5;
+
+        // Introduce red enemies after 250 points
         let hasRedEnemy = player.score >= 250 && !isMoving && !hasSpikes && Math.random() > 0.5;
+
+        // Introduce shield power-up after 150 points
         let hasShieldPowerUp = player.score >= 150 && Math.random() > 0.8;
 
         let platform = new Platform(x, y, 180, 20, isMoving, hasSpikes);
         platforms.push(platform);
 
         if (hasGreenEnemy) {
-            enemies.push(new Enemy(platform));
+            enemies.push(new Enemy(platform)); // Green enemy
         }
 
         if (hasRedEnemy) {
-            enemies.push(new ShootingEnemy(platform));
+            enemies.push(new ShootingEnemy(platform)); // Red enemy
         }
 
         if (hasShieldPowerUp) {
@@ -318,8 +305,9 @@ function handleMovement() {
         ) {
             if (platform.hasSpikes && player.x + player.width > platform.spikeX && player.x < platform.spikeX + platform.spikeWidth) {
                 if (!player.isShieldActive) {
-                    gameOver = true;
+                    gameOver = true; // Player dies if not shielded
                 } else {
+                    // If shielded, treat the platform as a normal platform (no spikes)
                     player.y = platform.y - player.height;
                     player.velocityY = 0;
                     onPlatform = true;
@@ -340,18 +328,10 @@ function handleMovement() {
     if (!onPlatform) {
         player.isJumping = true;
     } else {
-        if (player.isJumping) {
-            isJumpLanding = false; // Reset immediately
-        }
         player.isJumping = false;
     }
 
     if ((keys['Space'] || keys['ArrowUp'] || keys['KeyW']) && !player.isJumping) {
-        isJumpStarting = true;
-        setTimeout(() => {
-            isJumpStarting = false;
-            isJumping = true;
-        }, 100);
         player.velocityY = -player.jumpHeight;
         player.isJumping = true;
     }
@@ -367,24 +347,20 @@ function handleMovement() {
 
 function activateShield(duration) {
     player.isShieldActive = true;
-    player.shieldTimer = duration * 60;
+    player.shieldTimer = duration * 60; // Convert seconds to frames (assuming 60 FPS)
 }
 
 function updateShield() {
     if (player.isShieldActive) {
         player.shieldTimer--;
         if (player.shieldTimer <= 0) {
-            player.isShieldActive = false;
+            player.isShieldActive = false; // Deactivate shield
         }
     }
 }
 
 function resetGame() {
     gameOver = false;
-    isDying = false;
-    isJumping = false;
-    isJumpStarting = false;
-    isJumpLanding = false;
     player.x = 100;
     player.y = canvas.height - 150;
     player.score = 0;
@@ -401,11 +377,12 @@ function resetGame() {
 
 function update() {
     if (!gameOver) {
-        updateShield();
+        updateShield(); // Update shield timer
         handleMovement();
         generatePlatforms();
         camera.update();
 
+        // Update player bullets
         bullets.forEach(bullet => bullet.update());
         bullets.forEach((bullet, bulletIndex) => {
             enemies.forEach((enemy, enemyIndex) => {
@@ -417,6 +394,7 @@ function update() {
             });
         });
 
+        // Update enemies
         enemies.forEach(enemy => {
             enemy.update();
             if (
@@ -426,13 +404,15 @@ function update() {
                 player.y < enemy.y + enemy.height
             ) {
                 if (!player.isShieldActive) {
-                    gameOver = true;
+                    gameOver = true; // Player dies if not shielded
                 }
             }
         });
 
+        // Update enemy bullets
         enemyBullets.forEach(bullet => bullet.update());
         enemyBullets.forEach((bullet, bulletIndex) => {
+            // Check for collision with the player
             if (
                 bullet.x + bullet.width > player.x &&
                 bullet.x < player.x + player.width &&
@@ -440,19 +420,21 @@ function update() {
                 bullet.y < player.y + player.height
             ) {
                 if (!player.isShieldActive) {
-                    gameOver = true;
+                    gameOver = true; // Player dies if not shielded
                 }
             }
 
+            // Remove bullets that go off-screen
             if (bullet.x < camera.x || bullet.x > camera.x + canvas.width) {
                 enemyBullets.splice(bulletIndex, 1);
             }
         });
 
+        // Check for shield power-up collection
         shieldPowerUps.forEach((powerUp, index) => {
             if (powerUp.isCollected()) {
                 activateShield(powerUp.duration);
-                shieldPowerUps.splice(index, 1);
+                shieldPowerUps.splice(index, 1); // Remove the collected power-up
             }
         });
     }
@@ -465,34 +447,31 @@ function drawScore() {
 }
 
 function drawPlayer() {
+    // Update animation based on player state
     if (gameOver) {
-        if (!isDying) {
-            currentAnimation = playerAnimations.dieKneel;
-            currentAnimation.currentFrameIndex = 0;
-            isDying = true;
-        } else if (currentAnimation === playerAnimations.dieKneel && currentAnimation.currentFrameIndex === currentAnimation.frames.length - 1) {
-            currentAnimation = playerAnimations.dieLie;
-        }
-    } else if (isJumpStarting) {
-        currentAnimation = playerAnimations.jumpStart;
-    } else if (isJumping) {
-        currentAnimation = playerAnimations.jump;
-    } else if (isJumpLanding) {
-        currentAnimation = playerAnimations.jumpLand;
+        currentAnimation = playerAnimations.die; // Dying animation
+    } else if (player.isJumping) {
+        currentAnimation = playerAnimations.jump; // Jumping animation
     } else if (keys['ArrowLeft'] || keys['ArrowRight'] || keys['KeyA'] || keys['KeyD']) {
-        currentAnimation = playerAnimations.walk;
+        currentAnimation = playerAnimations.walk; // Walking animation
     } else {
-        currentAnimation = playerAnimations.idle;
+        currentAnimation = playerAnimations.idle; // Idle animation
     }
 
-    if (!gameOver || (gameOver && currentAnimation !== playerAnimations.dieLie)) {
-        currentAnimation.update();
+    // Update frame index
+    frameTimer++;
+    if (frameTimer >= currentAnimation.frameRate) {
+        frameTimer = 0;
+        currentFrameIndex = (currentFrameIndex + 1) % currentAnimation.frames.length;
     }
 
-    const frame = currentAnimation.getCurrentFrame();
+    // Get the current frame
+    const frame = currentAnimation.frames[currentFrameIndex];
 
+    // Draw the player sprite
     ctx.save();
     if (player.direction === -1) {
+        // Flip the sprite if facing left
         ctx.scale(-1, 1);
         ctx.drawImage(
             playerSpriteSheet,
@@ -508,6 +487,7 @@ function drawPlayer() {
     }
     ctx.restore();
 
+    // Draw shield if active
     if (player.isShieldActive) {
         ctx.strokeStyle = "cyan";
         ctx.lineWidth = 3;
@@ -538,25 +518,33 @@ function drawGameOverScreen() {
 }
 
 function render() {
+    // Clear the canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    const imageWidth = backgroundImage.width;
-    const imageHeight = backgroundImage.height;
-    const scale = canvas.height / imageHeight;
-    const scaledWidth = imageWidth * scale;
-    const numTiles = Math.ceil(canvas.width / scaledWidth) + 1;
+    // Draw the tiled background image
+    const imageWidth = backgroundImage.width; // Width of the background image
+    const imageHeight = backgroundImage.height; // Height of the background image
+    const scale = canvas.height / imageHeight; // Scale the image to fit the canvas height
+    const scaledWidth = imageWidth * scale; // Scaled width of the image
+
+    // Calculate how many times to draw the image
+    const numTiles = Math.ceil(canvas.width / scaledWidth) + 1; // +1 to ensure full coverage
+
+    // Calculate the offset based on the camera's x position
     const offset = (camera.x * 0.5) % scaledWidth;
 
+    // Draw the tiled background
     for (let i = -1; i < numTiles; i++) {
         ctx.drawImage(
             backgroundImage,
-            i * scaledWidth - offset,
-            0,
-            scaledWidth,
-            canvas.height
+            i * scaledWidth - offset, // X position
+            0, // Y position
+            scaledWidth, // Scaled width
+            canvas.height // Scaled height
         );
     }
 
+    // Draw platforms, enemies, bullets, etc.
     platforms.forEach(platform => platform.draw());
     enemies.forEach(enemy => enemy.draw());
     bullets.forEach(bullet => bullet.draw());
@@ -576,6 +564,7 @@ function gameLoop() {
     requestAnimationFrame(gameLoop);
 }
 
+// Start the game loop once the background image is loaded
 backgroundImage.onload = () => {
     gameLoop();
 };
