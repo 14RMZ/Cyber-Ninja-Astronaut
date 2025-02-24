@@ -47,10 +47,11 @@ const playerAnimations = {
     idle: new Animation([{ x: 0, y: 0, width: 32, height: 48 }], 1), // Idle animation
     walk: new Animation([{ x: 32, y: 0, width: 32, height: 48 }, { x: 64, y: 0, width: 32, height: 48 }], 10), // Walking animation
     jump: new Animation([{ x: 96, y: 0, width: 32, height: 48 }], 1), // Jumping animation
-    die: new Animation([{ x: 128, y: 0, width: 32, height: 48 }], 1) // Dying animation
+    die: new Animation([{ x: 128, y: 0, width: 32, height: 48 }, { x: 160, y: 0, width: 32, height: 48 }], 5) // Dying animation (kneeling, then lying down)
 };
 
 let currentAnimation = playerAnimations.idle; // Current animation
+let isDying = false; // Track if the player is in the dying state
 
 const player = {
     x: 100,
@@ -380,6 +381,7 @@ function updateShield() {
 
 function resetGame() {
     gameOver = false;
+    isDying = false; // Reset the dying state
     player.x = 100;
     player.y = canvas.height - 150;
     player.score = 0;
@@ -468,7 +470,12 @@ function drawScore() {
 function drawPlayer() {
     // Update animation based on player state
     if (gameOver) {
-        currentAnimation = playerAnimations.die; // Dying animation
+        if (!isDying) {
+            // Start the dying animation
+            currentAnimation = playerAnimations.die;
+            currentAnimation.currentFrameIndex = 0; // Reset to the first frame
+            isDying = true;
+        }
     } else if (player.isJumping) {
         currentAnimation = playerAnimations.jump; // Jumping animation
     } else if (keys['ArrowLeft'] || keys['ArrowRight'] || keys['KeyA'] || keys['KeyD']) {
@@ -478,7 +485,9 @@ function drawPlayer() {
     }
 
     // Update the animation
-    currentAnimation.update();
+    if (!gameOver || (gameOver && currentAnimation.currentFrameIndex < currentAnimation.frames.length - 1)) {
+        currentAnimation.update();
+    }
 
     // Get the current frame
     const frame = currentAnimation.getCurrentFrame();
