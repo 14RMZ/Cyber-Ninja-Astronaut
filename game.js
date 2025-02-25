@@ -58,12 +58,11 @@ let isJumping = false; // Track if the player is jumping
 let isJumpStarting = false; // Track if the player is starting to jump
 let isJumpLanding = false; // Track if the player is landing after jumping
 
-// Player properties
 const player = {
     x: 100,
     y: canvas.height - 150,
-    width: 64, // Increased width (original: 32)
-    height: 96, // Increased height (original: 48)
+    width: 64,
+    height: 96,
     velocityX: 0,
     velocityY: 0,
     speed: 6,
