@@ -44,12 +44,12 @@ class Animation {
 
 // Player animation frames
 const playerAnimations = {
-    idle: new Animation([{ x: 0, y: 0, width: 64, height: 96 }], 1), // Standing straight (frame 1)
-    walk: new Animation([{ x: 64, y: 0, width: 64, height: 96 }, { x: 64, y: 0, width: 64, height: 96 }], 10), // Walking (frames 2 and 3)
-    jumpStart: new Animation([{ x: 96, y: 0, width: 64, height: 96 }], 1), // Starting to jump (frame 4)
-    jump: new Animation([{ x: 128, y: 0, width: 64, height: 96 }], 1), // Jumping (frame 5)
-    jumpLand: new Animation([{ x: 160, y: 0, width: 64, height: 96 }], 1), // Landing after jumping (frame 6)
-    dieLie: new Animation([{ x: 224, y: 0, width: 64, height: 96 }], 1) // Lying down when dead (frame 8)
+    idle: new Animation([{ x: 0, y: 0, width: 32, height: 48 }], 1), // Standing straight (frame 1)
+    walk: new Animation([{ x: 32, y: 0, width: 32, height: 48 }, { x: 32, y: 0, width: 32, height: 48 }], 10), // Walking (frames 2 and 3)
+    jumpStart: new Animation([{ x: 48, y: 0, width: 32, height: 48 }], 1), // Starting to jump (frame 4)
+    jump: new Animation([{ x: 128, y: 0, width: 32, height: 48 }], 1), // Jumping (frame 5)
+    jumpLand: new Animation([{ x: 160, y: 0, width: 32, height: 48 }], 1), // Landing after jumping (frame 6)
+    dieLie: new Animation([{ x: 224, y: 0, width: 32, height: 48 }], 1) // Lying down when dead (frame 8)
 };
 
 let currentAnimation = playerAnimations.idle; // Current animation
@@ -61,8 +61,8 @@ let isJumpLanding = false; // Track if the player is landing after jumping
 const player = {
     x: 100,
     y: canvas.height - 150,
-    width: 64,
-    height: 96,
+    width: 32,
+    height: 48,
     velocityX: 0,
     velocityY: 0,
     speed: 6,
@@ -122,7 +122,7 @@ class Platform {
     }
 
     draw() {
-        ctx.fillStyle = this.isMoving ? "purple" : "#654641";
+        ctx.fillStyle = this.isMoving ? "purple" : "#654321";
         ctx.fillRect(this.x - camera.x, this.y, this.width, this.height);
 
         if (this.hasSpikes) {
