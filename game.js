@@ -49,7 +49,6 @@ const playerAnimations = {
     jumpStart: new Animation([{ x: 96, y: 0, width: 32, height: 48 }], 1), // Starting to jump (frame 4)
     jump: new Animation([{ x: 128, y: 0, width: 32, height: 48 }], 1), // Jumping (frame 5)
     jumpLand: new Animation([{ x: 160, y: 0, width: 32, height: 48 }], 1), // Landing after jumping (frame 6)
-    dieKneel: new Animation([{ x: 192, y: 0, width: 32, height: 48 }], 5), // Kneeling when dying (frame 7)
     dieLie: new Animation([{ x: 224, y: 0, width: 32, height: 48 }], 1) // Lying down when dead (frame 8)
 };
 
@@ -341,7 +340,11 @@ function handleMovement() {
         player.isJumping = true;
     } else {
         if (player.isJumping) {
-            isJumpLanding = false; // Reset immediately
+            isJumpLanding = true; // Player is landing
+            setTimeout(() => {
+                isJumpLanding = false; // Reset landing state after a short delay
+                isJumping = false; // Reset jumping state
+            }, 100); // Adjust the delay as needed
         }
         player.isJumping = false;
     }
@@ -466,13 +469,7 @@ function drawScore() {
 
 function drawPlayer() {
     if (gameOver) {
-        if (!isDying) {
-            currentAnimation = playerAnimations.dieKneel;
-            currentAnimation.currentFrameIndex = 0;
-            isDying = true;
-        } else if (currentAnimation === playerAnimations.dieKneel && currentAnimation.currentFrameIndex === currentAnimation.frames.length - 1) {
-            currentAnimation = playerAnimations.dieLie;
-        }
+        currentAnimation = playerAnimations.dieLie; // Directly use the lying down animation
     } else if (isJumpStarting) {
         currentAnimation = playerAnimations.jumpStart;
     } else if (isJumping) {
