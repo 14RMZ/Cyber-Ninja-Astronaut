@@ -302,7 +302,7 @@ function handleMovement() {
         player.direction = 1;
     }
 
-    player.velocityY += 0.5;
+    player.velocityY += 0.5; // Apply gravity
     player.y += player.velocityY;
 
     let onPlatform = false;
@@ -337,7 +337,7 @@ function handleMovement() {
     });
 
     if (!onPlatform) {
-        player.isJumping = true;
+        player.isJumping = true; // Player is in the air
     } else {
         if (player.isJumping) {
             isJumpLanding = true; // Player is landing
@@ -347,12 +347,17 @@ function handleMovement() {
         }
     }
 
-    if ((keys['Space'] || keys['ArrowUp'] || keys['KeyW']) && !player.isJumping) {
+    // Handle jumping
+    if ((keys['Space'] || keys['ArrowUp'] || keys['KeyW']) && !player.isJumping && !isJumpStarting) {
         isJumpStarting = true;
-        player.velocityY = -player.jumpHeight;
+        player.velocityY = -player.jumpHeight; // Apply jump force
         player.isJumping = true;
+        setTimeout(() => {
+            isJumpStarting = false; // Reset jump start state after a short delay
+        }, 100); // Adjust delay as needed
     }
 
+    // Check if player falls off the screen
     if (player.y > canvas.height) {
         gameOver = true;
         if (player.score > highScore) {
