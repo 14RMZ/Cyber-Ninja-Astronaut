@@ -341,20 +341,14 @@ function handleMovement() {
     } else {
         if (player.isJumping) {
             isJumpLanding = true; // Player is landing
-            setTimeout(() => {
-                isJumpLanding = false; // Reset landing state after a short delay
-                isJumping = false; // Reset jumping state
-            }, 100); // Adjust the delay as needed
+            isJumping = false; // Reset jumping state
+        } else {
+            isJumpLanding = false; // Reset landing state if not jumping
         }
-        player.isJumping = false;
     }
 
     if ((keys['Space'] || keys['ArrowUp'] || keys['KeyW']) && !player.isJumping) {
         isJumpStarting = true;
-        setTimeout(() => {
-            isJumpStarting = false;
-            isJumping = true;
-        }, 100);
         player.velocityY = -player.jumpHeight;
         player.isJumping = true;
     }
@@ -476,6 +470,7 @@ function drawPlayer() {
         currentAnimation = playerAnimations.jump;
     } else if (isJumpLanding) {
         currentAnimation = playerAnimations.jumpLand;
+        isJumpLanding = false; // Reset landing state after drawing
     } else if (keys['ArrowLeft'] || keys['ArrowRight'] || keys['KeyA'] || keys['KeyD']) {
         currentAnimation = playerAnimations.walk;
     } else {
