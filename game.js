@@ -15,19 +15,48 @@ highScore = parseInt(highScore);
 // Load the background image
 const backgroundImage = new Image();
 backgroundImage.src = "GameBackground.jpg";
+backgroundImage.onerror = () => {
+    console.error("Failed to load background image.");
+    backgroundImage.onload = () => {};
+    backgroundImage.src = "";
+};
 
 // Load the player sprite sheet
 const playerSpriteSheet = new Image();
 playerSpriteSheet.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/NewPlayermovement.png";
+playerSpriteSheet.onerror = () => {
+    console.error("Failed to load player sprite sheet.");
+    playerSpriteSheet.onload = () => {};
+    playerSpriteSheet.src = "";
+};
+
+// Load the enemy sprite sheet
+const enemySpriteSheet = new Image();
+enemySpriteSheet.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/AlienRoboticEnemyMovement.png"; // Your enemy sprite sheet
+enemySpriteSheet.onerror = () => {
+    console.error("Failed to load enemy sprite sheet.");
+    enemySpriteSheet.onload = () => {};
+    enemySpriteSheet.src = "";
+};
 
 // Load platform images
 const platformImage = new Image();
-platformImage.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/platform.jpg"; // Image for non-moving platforms
+platformImage.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/platform.jpg"; // Non-moving platform image
+platformImage.onerror = () => {
+    console.error("Failed to load platform image.");
+    platformImage.onload = () => {};
+    platformImage.src = "";
+};
 
 const movingPlatformImage = new Image();
-movingPlatformImage.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/moving-platform.jpg"; // Image for moving platforms
+movingPlatformImage.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/moving-platform.jpg"; // Moving platform image
+movingPlatformImage.onerror = () => {
+    console.error("Failed to load moving platform image.");
+    movingPlatformImage.onload = () => {};
+    movingPlatformImage.src = "";
+};
 
-// Animation class to handle player animations
+// Animation class to handle animations
 class Animation {
     constructor(frames, frameRate) {
         this.frames = frames;
@@ -51,19 +80,37 @@ class Animation {
 
 // Player animation frames
 const playerAnimations = {
-    idle: new Animation([{ x: 0, y: 0, width: 32, height: 48 }], 1), // Standing straight (frame 1)
-    walk: new Animation([{ x: 32, y: 0, width: 32, height: 48 }, { x: 64, y: 0, width: 32, height: 48 }], 10), // Walking (frames 2 and 3)
-    jumpStart: new Animation([{ x: 96, y: 0, width: 32, height: 48 }], 1), // Starting to jump (frame 4)
-    jump: new Animation([{ x: 128, y: 0, width: 32, height: 48 }], 1), // Jumping (frame 5)
-    jumpLand: new Animation([{ x: 160, y: 0, width: 32, height: 48 }], 1), // Landing after jumping (frame 6)
-    dieLie: new Animation([{ x: 224, y: 0, width: 32, height: 48 }], 1) // Lying down when dead (frame 8)
+    idle: new Animation([{ x: 0, y: 0, width: 32, height: 48 }], 1),
+    walk: new Animation([{ x: 32, y: 0, width: 32, height: 48 }, { x: 64, y: 0, width: 32, height: 48 }], 10),
+    jumpStart: new Animation([{ x: 96, y: 0, width: 32, height: 48 }], 1),
+    jump: new Animation([{ x: 128, y: 0, width: 32, height: 48 }], 1),
+    jumpLand: new Animation([{ x: 160, y: 0, width: 32, height: 48 }], 1),
+    dieLie: new Animation([{ x: 224, y: 0, width: 32, height: 48 }], 1)
 };
 
-let currentAnimation = playerAnimations.idle; // Current animation
-let isDying = false; // Track if the player is in the dying state
-let isJumping = false; // Track if the player is jumping
-let isJumpStarting = false; // Track if the player is starting to jump
-let isJumpLanding = false; // Track if the player is landing after jumping
+// Enemy animation frames
+const enemyAnimations = {
+    walk: new Animation(
+        [
+            { x: 0, y: 0, width: 48, height: 64 },  // Frame 1 (walking)
+            { x: 48, y: 0, width: 48, height: 64 }, // Frame 2 (walking)
+            { x: 96, y: 0, width: 53, height: 64 }  // Frame 3 (walking)
+        ],
+        10 // Frame rate for walking
+    ),
+    explode: new Animation(
+        [
+            { x: 149, y: 0, width: 48, height: 64 } // Frame 4 (explosion)
+        ],
+        1 // Frame rate for explosion (single frame)
+    )
+};
+
+let currentAnimation = playerAnimations.idle;
+let isDying = false;
+let isJumping = false;
+let isJumpStarting = false;
+let isJumpLanding = false;
 
 const player = {
     x: 100,
@@ -129,12 +176,17 @@ class Platform {
     }
 
     draw() {
-        // Draw the platform image
+        // Draw the platform image or a fallback rectangle
         const platformImg = this.isMoving ? movingPlatformImage : platformImage;
-        ctx.drawImage(
-            platformImg,
-            this.x - camera.x, this.y, this.width, this.height
-        );
+        if (platformImg.complete && platformImg.naturalWidth !== 0) {
+            ctx.drawImage(
+                platformImg,
+                this.x - camera.x, this.y, this.width, this.height
+            );
+        } else {
+            ctx.fillStyle = this.isMoving ? "purple" : "#654321";
+            ctx.fillRect(this.x - camera.x, this.y, this.width, this.height);
+        }
 
         // Draw spikes if the platform has them
         if (this.hasSpikes) {
@@ -151,110 +203,66 @@ class Platform {
 }
 
 class Enemy {
-    constructor(platform, color = "green") {
+    constructor(platform) {
         this.platform = platform;
         this.x = platform.x + platform.width / 4;
-        this.y = platform.y - 30;
-        this.width = 30;
-        this.height = 30;
+        this.y = platform.y - 64; // Adjust for enemy height
+        this.width = 48; // Default width
+        this.height = 64; // Default height
         this.speed = 2;
         this.direction = 1;
         this.minX = platform.x + 10;
         this.maxX = platform.x + platform.width - this.width - 10;
-        this.color = color;
+        this.currentAnimation = enemyAnimations.walk;
+        this.isExploding = false; // Track if the enemy is exploding
+        this.explodeTimer = 0; // Timer for explosion animation
     }
 
     update() {
-        this.x += this.direction * this.speed;
-        if (this.x <= this.minX || this.x >= this.maxX) {
-            this.direction *= -1;
-        }
-    }
-
-    draw() {
-        ctx.fillStyle = this.color;
-        ctx.fillRect(this.x - camera.x, this.y, this.width, this.height);
-    }
-}
-
-class ShootingEnemy extends Enemy {
-    constructor(platform) {
-        super(platform, "red");
-        this.shootCooldown = 100;
-        this.shootTimer = 0;
-    }
-
-    update() {
-        super.update();
-        if (this.shootTimer <= 0) {
-            this.shoot();
-            this.shootTimer = this.shootCooldown;
+        if (this.isExploding) {
+            // Handle explosion
+            this.explodeTimer++;
+            if (this.explodeTimer >= 60) { // Explosion lasts for 1 second (60 frames)
+                this.isExploding = false;
+                // Remove the enemy after explosion
+                const index = enemies.indexOf(this);
+                if (index !== -1) {
+                    enemies.splice(index, 1);
+                }
+            }
         } else {
-            this.shootTimer--;
+            // Handle walking
+            this.x += this.direction * this.speed;
+            if (this.x <= this.minX || this.x >= this.maxX) {
+                this.direction *= -1;
+            }
+            this.currentAnimation.update();
         }
     }
 
-    shoot() {
-        const direction = player.x > this.x ? 1 : -1;
-        const bulletX = this.x + this.width / 2;
-        const bulletY = this.y + this.height / 2;
-        enemyBullets.push(new Bullet(bulletX, bulletY, direction));
-    }
-}
-
-class Bullet {
-    constructor(x, y, direction) {
-        this.x = x;
-        this.y = y;
-        this.width = 10;
-        this.height = 5;
-        this.speed = 8;
-        this.direction = direction;
-    }
-
-    update() {
-        this.x += this.speed * this.direction;
-    }
-
     draw() {
-        ctx.fillStyle = "yellow";
-        ctx.fillRect(this.x - camera.x, this.y, this.width, this.height);
+        const frame = this.currentAnimation.getCurrentFrame();
+        ctx.save();
+        if (this.direction === -1 && !this.isExploding) {
+            ctx.scale(-1, 1);
+            ctx.drawImage(
+                enemySpriteSheet,
+                frame.x, frame.y, frame.width, frame.height,
+                -this.x + camera.x - frame.width, this.y, frame.width, frame.height
+            );
+        } else {
+            ctx.drawImage(
+                enemySpriteSheet,
+                frame.x, frame.y, frame.width, frame.height,
+                this.x - camera.x, this.y, frame.width, frame.height
+            );
+        }
+        ctx.restore();
     }
 
-    hitEnemy(enemy) {
-        return (
-            this.x + this.width > enemy.x &&
-            this.x < enemy.x + enemy.width &&
-            this.y + this.height > enemy.y &&
-            this.y < enemy.y + enemy.height
-        );
-    }
-}
-
-class ShieldPowerUp {
-    constructor(x, y) {
-        this.x = x;
-        this.y = y;
-        this.width = 20;
-        this.height = 20;
-        this.duration = 5;
-        this.isActive = false;
-    }
-
-    draw() {
-        ctx.fillStyle = "cyan";
-        ctx.beginPath();
-        ctx.arc(this.x - camera.x, this.y, this.width / 2, 0, Math.PI * 2);
-        ctx.fill();
-    }
-
-    isCollected() {
-        return (
-            player.x + player.width > this.x &&
-            player.x < this.x + this.width &&
-            player.y + player.height > this.y &&
-            player.y < this.y + this.height
-        );
+    explode() {
+        this.isExploding = true;
+        this.currentAnimation = enemyAnimations.explode; // Switch to explosion animation
     }
 }
 
@@ -426,7 +434,7 @@ function update() {
             enemies.forEach((enemy, enemyIndex) => {
                 if (bullet.hitEnemy(enemy)) {
                     bullets.splice(bulletIndex, 1);
-                    enemies.splice(enemyIndex, 1);
+                    enemy.explode(); // Trigger enemy explosion
                     player.score += 20;
                 }
             });
@@ -589,6 +597,7 @@ function gameLoop() {
 Promise.all([
     new Promise((resolve) => { backgroundImage.onload = resolve; }),
     new Promise((resolve) => { playerSpriteSheet.onload = resolve; }),
+    new Promise((resolve) => { enemySpriteSheet.onload = resolve; }),
     new Promise((resolve) => { platformImage.onload = resolve; }),
     new Promise((resolve) => { movingPlatformImage.onload = resolve; })
 ]).then(() => {
