@@ -22,10 +22,10 @@ playerSpriteSheet.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/Playermov
 
 // Load platform images
 const platformImage = new Image();
-platformImage.src = "platform.png"; // Image for non-moving platforms
+platformImage.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/platform.jpg"; // Image for non-moving platforms
 
 const movingPlatformImage = new Image();
-movingPlatformImage.src = "moving_platform.png"; // Image for moving platforms
+movingPlatformImage.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/moving-platform.jpg"; // Image for moving platforms
 
 // Animation class to handle player animations
 class Animation {
