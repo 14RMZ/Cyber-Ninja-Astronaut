@@ -266,6 +266,35 @@ class Enemy {
     }
 }
 
+class Bullet {
+    constructor(x, y, direction) {
+        this.x = x;
+        this.y = y;
+        this.width = 10;
+        this.height = 5;
+        this.speed = 8;
+        this.direction = direction;
+    }
+
+    update() {
+        this.x += this.speed * this.direction;
+    }
+
+    draw() {
+        ctx.fillStyle = "yellow";
+        ctx.fillRect(this.x - camera.x, this.y, this.width, this.height);
+    }
+
+    hitEnemy(enemy) {
+        return (
+            this.x + this.width > enemy.x &&
+            this.x < enemy.x + enemy.width &&
+            this.y + this.height > enemy.y &&
+            this.y < enemy.y + enemy.height
+        );
+    }
+}
+
 const platforms = [new Platform(50, canvas.height - 100, 200, 20)];
 const enemies = [];
 const bullets = [];
@@ -307,6 +336,7 @@ window.addEventListener('keydown', (event) => {
         resetGame();
     }
     if (event.code === "KeyF") {
+        // Player shoots a bullet
         bullets.push(new Bullet(player.x + player.width / 2, player.y + player.height / 2, player.direction));
     }
 });
@@ -429,6 +459,7 @@ function update() {
         generatePlatforms();
         camera.update();
 
+        // Update bullets
         bullets.forEach(bullet => bullet.update());
         bullets.forEach((bullet, bulletIndex) => {
             enemies.forEach((enemy, enemyIndex) => {
@@ -438,6 +469,11 @@ function update() {
                     player.score += 20;
                 }
             });
+
+            // Remove bullets that go off-screen
+            if (bullet.x < camera.x || bullet.x > camera.x + canvas.width) {
+                bullets.splice(bulletIndex, 1);
+            }
         });
 
         enemies.forEach(enemy => {
