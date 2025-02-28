@@ -18,7 +18,14 @@ backgroundImage.src = "GameBackground.jpg";
 
 // Load the player sprite sheet
 const playerSpriteSheet = new Image();
-playerSpriteSheet.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/NewPlayermovement.png";
+playerSpriteSheet.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/Playermovement.png";
+
+// Load platform images
+const platformImage = new Image();
+platformImage.src = "platform.png"; // Image for non-moving platforms
+
+const movingPlatformImage = new Image();
+movingPlatformImage.src = "moving_platform.png"; // Image for moving platforms
 
 // Animation class to handle player animations
 class Animation {
@@ -122,9 +129,14 @@ class Platform {
     }
 
     draw() {
-        ctx.fillStyle = this.isMoving ? "purple" : "#654321";
-        ctx.fillRect(this.x - camera.x, this.y, this.width, this.height);
+        // Draw the platform image
+        const platformImg = this.isMoving ? movingPlatformImage : platformImage;
+        ctx.drawImage(
+            platformImg,
+            this.x - camera.x, this.y, this.width, this.height
+        );
 
+        // Draw spikes if the platform has them
         if (this.hasSpikes) {
             ctx.fillStyle = "red";
             for (let i = 0; i < this.spikeWidth; i += 20) {
@@ -573,6 +585,12 @@ function gameLoop() {
     requestAnimationFrame(gameLoop);
 }
 
-backgroundImage.onload = () => {
+// Ensure all images are loaded before starting the game
+Promise.all([
+    new Promise((resolve) => { backgroundImage.onload = resolve; }),
+    new Promise((resolve) => { playerSpriteSheet.onload = resolve; }),
+    new Promise((resolve) => { platformImage.onload = resolve; }),
+    new Promise((resolve) => { movingPlatformImage.onload = resolve; })
+]).then(() => {
     gameLoop();
-};
+});
