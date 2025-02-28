@@ -302,7 +302,7 @@ function handleMovement() {
         player.direction = 1;
     }
 
-    player.velocityY += 0.5; // Apply gravity
+    player.velocityY += 0.5;
     player.y += player.velocityY;
 
     let onPlatform = false;
@@ -337,27 +337,28 @@ function handleMovement() {
     });
 
     if (!onPlatform) {
-        player.isJumping = true; // Player is in the air
+        player.isJumping = true;
     } else {
         if (player.isJumping) {
             isJumpLanding = true; // Player is landing
-            isJumping = false; // Reset jumping state
-        } else {
-            isJumpLanding = false; // Reset landing state if not jumping
+            setTimeout(() => {
+                isJumpLanding = false; // Reset landing state after a short delay
+                isJumping = false; // Reset jumping state
+            }, 100); // Adjust the delay as needed
         }
+        player.isJumping = false;
     }
 
-    // Handle jumping
-    if ((keys['Space'] || keys['ArrowUp'] || keys['KeyW']) && !player.isJumping && !isJumpStarting) {
+    if ((keys['Space'] || keys['ArrowUp'] || keys['KeyW']) && !player.isJumping) {
         isJumpStarting = true;
-        player.velocityY = -player.jumpHeight; // Apply jump force
-        player.isJumping = true;
         setTimeout(() => {
-            isJumpStarting = false; // Reset jump start state after a short delay
-        }, 100); // Adjust delay as needed
+            isJumpStarting = false;
+            isJumping = true;
+        }, 100);
+        player.velocityY = -player.jumpHeight;
+        player.isJumping = true;
     }
 
-    // Check if player falls off the screen
     if (player.y > canvas.height) {
         gameOver = true;
         if (player.score > highScore) {
@@ -475,7 +476,6 @@ function drawPlayer() {
         currentAnimation = playerAnimations.jump;
     } else if (isJumpLanding) {
         currentAnimation = playerAnimations.jumpLand;
-        isJumpLanding = false; // Reset landing state after drawing
     } else if (keys['ArrowLeft'] || keys['ArrowRight'] || keys['KeyA'] || keys['KeyD']) {
         currentAnimation = playerAnimations.walk;
     } else {
