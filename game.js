@@ -222,7 +222,7 @@ class Enemy {
         if (this.isExploding) {
             // Handle explosion
             this.explodeTimer++;
-            if (this.explodeTimer >= 15) { // Explosion lasts for 1 second (60 frames)
+            if (this.explodeTimer >= 5) { // Explosion lasts for 1 second (60 frames)
                 this.isExploding = false;
                 // Remove the enemy after explosion
                 const index = enemies.indexOf(this);
