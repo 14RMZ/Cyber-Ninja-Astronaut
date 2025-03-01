@@ -30,13 +30,22 @@ playerSpriteSheet.onerror = () => {
     playerSpriteSheet.src = "";
 };
 
-// Load the enemy sprite sheet
-const enemySpriteSheet = new Image();
-enemySpriteSheet.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/AlienRoboticEnemyMovement.png"; // Your enemy sprite sheet
-enemySpriteSheet.onerror = () => {
-    console.error("Failed to load enemy sprite sheet.");
-    enemySpriteSheet.onload = () => {};
-    enemySpriteSheet.src = "";
+// Load the non-shooting enemy sprite sheet
+const nonShootingEnemySpriteSheet = new Image();
+nonShootingEnemySpriteSheet.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/AlienRoboticEnemyMovement.png"; // Non-shooting enemy
+nonShootingEnemySpriteSheet.onerror = () => {
+    console.error("Failed to load non-shooting enemy sprite sheet.");
+    nonShootingEnemySpriteSheet.onload = () => {};
+    nonShootingEnemySpriteSheet.src = "";
+};
+
+// Load the shooting enemy (drone) sprite sheet
+const shootingEnemySpriteSheet = new Image();
+shootingEnemySpriteSheet.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/AIDroneEnemyMovement.png"; // Replace with your actual path
+shootingEnemySpriteSheet.onerror = () => {
+    console.error("Failed to load shooting enemy sprite sheet.");
+    shootingEnemySpriteSheet.onload = () => {};
+    shootingEnemySpriteSheet.src = "";
 };
 
 // Load platform images
@@ -88,8 +97,8 @@ const playerAnimations = {
     dieLie: new Animation([{ x: 224, y: 0, width: 32, height: 48 }], 1)
 };
 
-// Enemy animation frames
-const enemyAnimations = {
+// Non-shooting enemy animation frames
+const nonShootingEnemyAnimations = {
     walk: new Animation(
         [
             { x: 0, y: 0, width: 48, height: 64 },  // Frame 1 (walking)
@@ -101,6 +110,24 @@ const enemyAnimations = {
     explode: new Animation(
         [
             { x: 149, y: 0, width: 48, height: 64 } // Frame 4 (explosion)
+        ],
+        1 // Frame rate for explosion (single frame)
+    )
+};
+
+// Shooting enemy (drone) animation frames
+const shootingEnemyAnimations = {
+    fly: new Animation(
+        [
+            { x: 0, y: 0, width: 30, height: 40 },  // Frame 1 (flying)
+            { x: 30, y: 0, width: 28, height: 40 }, // Frame 2 (flying)
+            { x: 60, y: 0, width: 30, height: 40 }  // Frame 3 (explosion)
+        ],
+        10 // Frame rate for flying
+    ),
+    explode: new Animation(
+        [
+            { x: 60, y: 0, width: 30, height: 40 } // Frame 3 (explosion)
         ],
         1 // Frame rate for explosion (single frame)
     )
@@ -176,7 +203,6 @@ class Platform {
     }
 
     draw() {
-        // Draw the platform image or a fallback rectangle
         const platformImg = this.isMoving ? movingPlatformImage : platformImage;
         if (platformImg.complete && platformImg.naturalWidth !== 0) {
             ctx.drawImage(
@@ -188,7 +214,6 @@ class Platform {
             ctx.fillRect(this.x - camera.x, this.y, this.width, this.height);
         }
 
-        // Draw spikes if the platform has them
         if (this.hasSpikes) {
             ctx.fillStyle = "red";
             for (let i = 0; i < this.spikeWidth; i += 20) {
@@ -202,7 +227,7 @@ class Platform {
     }
 }
 
-class Enemy {
+class NonShootingEnemy {
     constructor(platform) {
         this.platform = platform;
         this.x = platform.x + platform.width / 4;
@@ -213,7 +238,7 @@ class Enemy {
         this.direction = 1;
         this.minX = platform.x + 10;
         this.maxX = platform.x + platform.width - this.width - 10;
-        this.currentAnimation = enemyAnimations.walk;
+        this.currentAnimation = nonShootingEnemyAnimations.walk;
         this.isExploding = false; // Track if the enemy is exploding
         this.explodeTimer = 0; // Timer for explosion animation
     }
@@ -222,7 +247,7 @@ class Enemy {
         if (this.isExploding) {
             // Handle explosion
             this.explodeTimer++;
-            if (this.explodeTimer >= 5) { // Explosion lasts for 1 second (60 frames)
+            if (this.explodeTimer >= 30) { // Explosion lasts for 0.5 seconds (30 frames)
                 this.isExploding = false;
                 // Remove the enemy after explosion
                 const index = enemies.indexOf(this);
@@ -246,13 +271,13 @@ class Enemy {
         if (this.direction === -1 && !this.isExploding) {
             ctx.scale(-1, 1);
             ctx.drawImage(
-                enemySpriteSheet,
+                nonShootingEnemySpriteSheet,
                 frame.x, frame.y, frame.width, frame.height,
                 -this.x + camera.x - frame.width, this.y, frame.width, frame.height
             );
         } else {
             ctx.drawImage(
-                enemySpriteSheet,
+                nonShootingEnemySpriteSheet,
                 frame.x, frame.y, frame.width, frame.height,
                 this.x - camera.x, this.y, frame.width, frame.height
             );
@@ -262,7 +287,93 @@ class Enemy {
 
     explode() {
         this.isExploding = true;
-        this.currentAnimation = enemyAnimations.explode; // Switch to explosion animation
+        this.currentAnimation = nonShootingEnemyAnimations.explode; // Switch to explosion animation
+    }
+}
+
+class ShootingEnemy {
+    constructor(platform) {
+        this.platform = platform;
+        this.x = platform.x + platform.width / 4;
+        this.y = platform.y - 40; // Adjust for drone height
+        this.width = 30; // Default width
+        this.height = 40; // Default height
+        this.speed = 2;
+        this.direction = 1;
+        this.minX = platform.x + 10;
+        this.maxX = platform.x + platform.width - this.width - 10;
+        this.currentAnimation = shootingEnemyAnimations.fly;
+        this.isExploding = false; // Track if the drone is exploding
+        this.explodeTimer = 0; // Timer for explosion animation
+        this.shootCooldown = 100; // Cooldown for shooting
+        this.shootTimer = 0; // Timer for shooting
+    }
+
+    update() {
+        if (this.isExploding) {
+            // Handle explosion
+            this.explodeTimer++;
+            if (this.explodeTimer >= 30) { // Explosion lasts for 0.5 seconds (30 frames)
+                this.isExploding = false;
+                // Remove the drone after explosion
+                const index = enemies.indexOf(this);
+                if (index !== -1) {
+                    enemies.splice(index, 1);
+                }
+            }
+        } else {
+            // Handle flying
+            this.x += this.direction * this.speed;
+            if (this.x <= this.minX || this.x >= this.maxX) {
+                this.direction *= -1;
+            }
+            this.currentAnimation.update();
+
+            // Handle shooting
+            if (this.shootTimer <= 0) {
+                this.shoot();
+                this.shootTimer = this.shootCooldown;
+            } else {
+                this.shootTimer--;
+            }
+        }
+    }
+
+    draw() {
+        const frame = this.currentAnimation.getCurrentFrame();
+        ctx.save();
+
+        // Center the frame if it's smaller than the default size
+        const offsetX = (this.width - frame.width) / 2; // Center horizontally
+        const offsetY = (this.height - frame.height) / 2; // Center vertically
+
+        if (this.direction === -1 && !this.isExploding) {
+            ctx.scale(-1, 1); // Flip horizontally if moving left
+            ctx.drawImage(
+                shootingEnemySpriteSheet,
+                frame.x, frame.y, frame.width, frame.height,
+                -this.x + camera.x - this.width + offsetX, this.y + offsetY, frame.width, frame.height
+            );
+        } else {
+            ctx.drawImage(
+                shootingEnemySpriteSheet,
+                frame.x, frame.y, frame.width, frame.height,
+                this.x - camera.x + offsetX, this.y + offsetY, frame.width, frame.height
+            );
+        }
+        ctx.restore();
+    }
+
+    shoot() {
+        const direction = player.x > this.x ? 1 : -1;
+        const bulletX = this.x + this.width / 2;
+        const bulletY = this.y + this.height / 2;
+        enemyBullets.push(new Bullet(bulletX, bulletY, direction));
+    }
+
+    explode() {
+        this.isExploding = true;
+        this.currentAnimation = shootingEnemyAnimations.explode; // Switch to explosion animation
     }
 }
 
@@ -295,6 +406,33 @@ class Bullet {
     }
 }
 
+class ShieldPowerUp {
+    constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.width = 20;
+        this.height = 20;
+        this.duration = 5;
+        this.isActive = false;
+    }
+
+    draw() {
+        ctx.fillStyle = "cyan";
+        ctx.beginPath();
+        ctx.arc(this.x - camera.x, this.y, this.width / 2, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    isCollected() {
+        return (
+            player.x + player.width > this.x &&
+            player.x < this.x + this.width &&
+            player.y + player.height > this.y &&
+            player.y < this.y + this.height
+        );
+    }
+}
+
 const platforms = [new Platform(50, canvas.height - 100, 200, 20)];
 const enemies = [];
 const bullets = [];
@@ -308,18 +446,18 @@ function generatePlatforms() {
         let y = Math.min(lastPlatform.y + (Math.random() * 60 - 30), canvas.height - 120);
         let isMoving = Math.random() > 0.6;
         let hasSpikes = player.score >= 50 && Math.random() > 0.7;
-        let hasGreenEnemy = player.score >= 100 && !isMoving && !hasSpikes && Math.random() > 0.5;
-        let hasRedEnemy = player.score >= 250 && !isMoving && !hasSpikes && Math.random() > 0.5;
+        let hasNonShootingEnemy = player.score >= 100 && !isMoving && !hasSpikes && Math.random() > 0.5;
+        let hasShootingEnemy = player.score >= 250 && !isMoving && !hasSpikes && Math.random() > 0.5;
         let hasShieldPowerUp = player.score >= 150 && Math.random() > 0.8;
 
         let platform = new Platform(x, y, 180, 20, isMoving, hasSpikes);
         platforms.push(platform);
 
-        if (hasGreenEnemy) {
-            enemies.push(new Enemy(platform));
+        if (hasNonShootingEnemy) {
+            enemies.push(new NonShootingEnemy(platform));
         }
 
-        if (hasRedEnemy) {
+        if (hasShootingEnemy) {
             enemies.push(new ShootingEnemy(platform));
         }
 
@@ -336,7 +474,6 @@ window.addEventListener('keydown', (event) => {
         resetGame();
     }
     if (event.code === "KeyF") {
-        // Player shoots a bullet
         bullets.push(new Bullet(player.x + player.width / 2, player.y + player.height / 2, player.direction));
     }
 });
@@ -459,7 +596,6 @@ function update() {
         generatePlatforms();
         camera.update();
 
-        // Update bullets
         bullets.forEach(bullet => bullet.update());
         bullets.forEach((bullet, bulletIndex) => {
             enemies.forEach((enemy, enemyIndex) => {
@@ -633,7 +769,8 @@ function gameLoop() {
 Promise.all([
     new Promise((resolve) => { backgroundImage.onload = resolve; }),
     new Promise((resolve) => { playerSpriteSheet.onload = resolve; }),
-    new Promise((resolve) => { enemySpriteSheet.onload = resolve; }),
+    new Promise((resolve) => { nonShootingEnemySpriteSheet.onload = resolve; }),
+    new Promise((resolve) => { shootingEnemySpriteSheet.onload = resolve; }),
     new Promise((resolve) => { platformImage.onload = resolve; }),
     new Promise((resolve) => { movingPlatformImage.onload = resolve; })
 ]).then(() => {
