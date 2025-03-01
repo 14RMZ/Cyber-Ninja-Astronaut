@@ -520,6 +520,11 @@ function handleMovement() {
                 player.velocityY = 0;
                 onPlatform = true;
 
+                // Track the moving platform
+                if (platform.isMoving) {
+                    player.x += platform.direction * platform.speed; // Move the player with the platform
+                }
+
                 if (player.lastPlatform !== platform) {
                     player.score += 10;
                     player.lastPlatform = platform;
