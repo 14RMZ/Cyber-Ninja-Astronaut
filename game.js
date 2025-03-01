@@ -1,6 +1,7 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
+// Resize canvas to fit the window
 function resizeCanvas() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
@@ -32,7 +33,7 @@ playerSpriteSheet.onerror = () => {
 
 // Load the non-shooting enemy sprite sheet
 const nonShootingEnemySpriteSheet = new Image();
-nonShootingEnemySpriteSheet.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/AlienRoboticEnemyMovement.png"; // Non-shooting enemy
+nonShootingEnemySpriteSheet.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/AlienRoboticEnemyMovement.png";
 nonShootingEnemySpriteSheet.onerror = () => {
     console.error("Failed to load non-shooting enemy sprite sheet.");
     nonShootingEnemySpriteSheet.onload = () => {};
@@ -41,7 +42,7 @@ nonShootingEnemySpriteSheet.onerror = () => {
 
 // Load the shooting enemy (drone) sprite sheet
 const shootingEnemySpriteSheet = new Image();
-shootingEnemySpriteSheet.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/AIDroneEnemyMovement.png"; // Replace with your actual path
+shootingEnemySpriteSheet.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/AIDroneEnemyMovement.png";
 shootingEnemySpriteSheet.onerror = () => {
     console.error("Failed to load shooting enemy sprite sheet.");
     shootingEnemySpriteSheet.onload = () => {};
@@ -50,7 +51,7 @@ shootingEnemySpriteSheet.onerror = () => {
 
 // Load platform images
 const platformImage = new Image();
-platformImage.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/platform.jpg"; // Non-moving platform image
+platformImage.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/platform.jpg";
 platformImage.onerror = () => {
     console.error("Failed to load platform image.");
     platformImage.onload = () => {};
@@ -58,7 +59,7 @@ platformImage.onerror = () => {
 };
 
 const movingPlatformImage = new Image();
-movingPlatformImage.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/moving-platform.jpg"; // Moving platform image
+movingPlatformImage.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/moving-platform.jpg";
 movingPlatformImage.onerror = () => {
     console.error("Failed to load moving platform image.");
     movingPlatformImage.onload = () => {};
@@ -267,6 +268,8 @@ class NonShootingEnemy {
 
     draw() {
         const frame = this.currentAnimation.getCurrentFrame();
+        console.log("NonShootingEnemy Frame:", frame); // Debugging log
+
         ctx.save();
         if (this.direction === -1 && !this.isExploding) {
             ctx.scale(-1, 1);
@@ -341,6 +344,8 @@ class ShootingEnemy {
 
     draw() {
         const frame = this.currentAnimation.getCurrentFrame();
+        console.log("ShootingEnemy Frame:", frame); // Debugging log
+
         ctx.save();
 
         // Center the frame if it's smaller than the default size
