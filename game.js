@@ -66,6 +66,16 @@ movingPlatformImage.onerror = () => {
     movingPlatformImage.src = "";
 };
 
+// Sound effects
+const jumpSound = new Audio("jump.mp3");
+const shootSound = new Audio("shoot.mp3");
+const explosionSound = new Audio("explosion.mp3");
+const gameOverSound = new Audio("game-over.mp3");
+
+// Background music
+const backgroundMusic = new Audio("background-music.mp3");
+backgroundMusic.loop = true; // Loop the background music
+
 // Animation class to handle animations
 class Animation {
     constructor(frames, frameRate) {
@@ -480,6 +490,7 @@ window.addEventListener('keydown', (event) => {
     }
     if (event.code === "KeyF") {
         bullets.push(new Bullet(player.x + player.width / 2, player.y + player.height / 2, player.direction));
+        shootSound.play(); // Play shoot sound
     }
 });
 window.addEventListener('keyup', (event) => keys[event.code] = false);
@@ -554,6 +565,7 @@ function handleMovement() {
         }, 100);
         player.velocityY = -player.jumpHeight;
         player.isJumping = true;
+        jumpSound.play(); // Play jump sound
     }
 
     if (player.y > canvas.height) {
@@ -562,6 +574,7 @@ function handleMovement() {
             highScore = player.score;
             localStorage.setItem("highScore", highScore);
         }
+        gameOverSound.play(); // Play game over sound
     }
 }
 
@@ -613,6 +626,7 @@ function update() {
                     bullets.splice(bulletIndex, 1);
                     enemy.explode(); // Trigger enemy explosion
                     player.score += 20;
+                    explosionSound.play(); // Play explosion sound
                 }
             });
 
@@ -784,5 +798,6 @@ Promise.all([
     new Promise((resolve) => { platformImage.onload = resolve; }),
     new Promise((resolve) => { movingPlatformImage.onload = resolve; })
 ]).then(() => {
+    backgroundMusic.play(); // Start background music
     gameLoop();
 });
