@@ -446,8 +446,8 @@ function generatePlatforms() {
         let y = Math.min(lastPlatform.y + (Math.random() * 60 - 30), canvas.height - 120);
         let isMoving = Math.random() > 0.6;
         let hasSpikes = player.score >= 50 && Math.random() > 0.7;
-        let hasNonShootingEnemy = player.score >= 100 && !isMoving && !hasSpikes && Math.random() > 0.5;
-        let hasShootingEnemy = player.score >= 250 && !isMoving && !hasSpikes && Math.random() > 0.5;
+        let hasNonShootingEnemy = player.score >= 50 && !isMoving && !hasSpikes && Math.random() > 0.5;
+        let hasShootingEnemy = player.score >= 50 && !isMoving && !hasSpikes && Math.random() > 0.5;
         let hasShieldPowerUp = player.score >= 150 && Math.random() > 0.8;
 
         let platform = new Platform(x, y, 180, 20, isMoving, hasSpikes);
