@@ -68,7 +68,7 @@ movingPlatformImage.onerror = () => {
 
 // Load the spike image
 const spikeImage = new Image();
-spikeImage.src = "spike.png"; // Replace with the path to your spike image
+spikeImage.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/testingspike.png"; // Replace with the path to your spike image
 spikeImage.onerror = () => {
     console.error("Failed to load spike image.");
     spikeImage.onload = () => {};
