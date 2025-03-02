@@ -78,7 +78,7 @@ spikeImage.onerror = () => {
 // Load the background sound
 const backgroundSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/Playingthegamesound.wav"); // Replace with the path to your background music file
 backgroundSound.loop = true; // Ensure the sound loops
-backgroundSound.volume = 0.5; // Set volume (0.5 means 50% volume)
+backgroundSound.volume = 5; // Set volume (0.5 means 50% volume)
 
 // Animation class to handle animations
 class Animation {
