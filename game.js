@@ -94,7 +94,20 @@ spikeDeathSound.onerror = () => {
     console.error("Failed to load spike death sound.");
 };
 
-const enemyDeathSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/Playergetsshootbyenemy.mp3");
+const playerDeathSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/Playergetsshootbyenemy.mp3");
+playerDeathSound.volume = 0.5;
+playerDeathSound.onerror = () => {
+    console.error("Failed to load player death sound.");
+};
+
+// Load enemy sound effects
+const enemyShootSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/Droneshooting.mp3");
+enemyShootSound.volume = 0.5;
+enemyShootSound.onerror = () => {
+    console.error("Failed to load enemy shoot sound.");
+};
+
+const enemyDeathSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/Enemydying.wav");
 enemyDeathSound.volume = 0.5;
 enemyDeathSound.onerror = () => {
     console.error("Failed to load enemy death sound.");
@@ -323,6 +336,7 @@ class NonShootingEnemy {
     explode() {
         this.isExploding = true;
         this.currentAnimation = nonShootingEnemyAnimations.explode; // Switch to explosion animation
+        enemyDeathSound.play(); // Play enemy death sound
     }
 }
 
@@ -406,11 +420,13 @@ class ShootingEnemy {
         const bulletX = this.x + this.width / 2;
         const bulletY = this.y + this.height / 2;
         enemyBullets.push(new Bullet(bulletX, bulletY, direction));
+        enemyShootSound.play(); // Play enemy shoot sound
     }
 
     explode() {
         this.isExploding = true;
         this.currentAnimation = shootingEnemyAnimations.explode; // Switch to explosion animation
+        enemyDeathSound.play(); // Play enemy death sound
     }
 }
 
@@ -670,7 +686,7 @@ function update() {
             ) {
                 if (!player.isShieldActive) {
                     gameOver = true;
-                    enemyDeathSound.play(); // Play enemy death sound
+                    playerDeathSound.play(); // Play player death sound
                 }
             }
         });
@@ -685,7 +701,7 @@ function update() {
             ) {
                 if (!player.isShieldActive) {
                     gameOver = true;
-                    enemyDeathSound.play(); // Play enemy death sound
+                    playerDeathSound.play(); // Play player death sound
                 }
             }
 
