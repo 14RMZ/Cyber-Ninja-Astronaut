@@ -18,8 +18,6 @@ const backgroundImage = new Image();
 backgroundImage.src = "GameBackground.jpg";
 backgroundImage.onerror = () => {
     console.error("Failed to load background image.");
-    backgroundImage.onload = () => {};
-    backgroundImage.src = "";
 };
 
 // Load the player sprite sheet
@@ -27,8 +25,6 @@ const playerSpriteSheet = new Image();
 playerSpriteSheet.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/NewPlayermovement.png";
 playerSpriteSheet.onerror = () => {
     console.error("Failed to load player sprite sheet.");
-    playerSpriteSheet.onload = () => {};
-    playerSpriteSheet.src = "";
 };
 
 // Load the non-shooting enemy sprite sheet
@@ -36,8 +32,6 @@ const nonShootingEnemySpriteSheet = new Image();
 nonShootingEnemySpriteSheet.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/AlienRoboticEnemyMovement.png";
 nonShootingEnemySpriteSheet.onerror = () => {
     console.error("Failed to load non-shooting enemy sprite sheet.");
-    nonShootingEnemySpriteSheet.onload = () => {};
-    nonShootingEnemySpriteSheet.src = "";
 };
 
 // Load the shooting enemy (drone) sprite sheet
@@ -45,8 +39,6 @@ const shootingEnemySpriteSheet = new Image();
 shootingEnemySpriteSheet.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/AIDroneEnemyMovement.png";
 shootingEnemySpriteSheet.onerror = () => {
     console.error("Failed to load shooting enemy sprite sheet.");
-    shootingEnemySpriteSheet.onload = () => {};
-    shootingEnemySpriteSheet.src = "";
 };
 
 // Load platform images
@@ -54,31 +46,59 @@ const platformImage = new Image();
 platformImage.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/platform.jpg";
 platformImage.onerror = () => {
     console.error("Failed to load platform image.");
-    platformImage.onload = () => {};
-    platformImage.src = "";
 };
 
 const movingPlatformImage = new Image();
 movingPlatformImage.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/moving-platform.jpg";
 movingPlatformImage.onerror = () => {
     console.error("Failed to load moving platform image.");
-    movingPlatformImage.onload = () => {};
-    movingPlatformImage.src = "";
 };
 
 // Load the spike image
 const spikeImage = new Image();
-spikeImage.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/testingspike.png"; // Replace with the path to your spike image
+spikeImage.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/testingspike.png";
 spikeImage.onerror = () => {
     console.error("Failed to load spike image.");
-    spikeImage.onload = () => {};
-    spikeImage.src = "";
 };
 
 // Load the background sound
-const backgroundSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/Playingthegamesound.wav"); // Replace with the path to your background music file
-backgroundSound.loop = true; // Ensure the sound loops
-backgroundSound.volume = 5; // Set volume (0.5 means 50% volume)
+const backgroundSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/Playingthegamesound.wav");
+backgroundSound.loop = true;
+backgroundSound.volume = 0.5;
+backgroundSound.onerror = () => {
+    console.error("Failed to load background sound.");
+};
+
+// Load player sound effects
+const jumpSound = new Audio("jump.wav");
+jumpSound.volume = 0.5;
+jumpSound.onerror = () => {
+    console.error("Failed to load jump sound.");
+};
+
+const shootSound = new Audio("shoot.wav");
+shootSound.volume = 0.5;
+shootSound.onerror = () => {
+    console.error("Failed to load shoot sound.");
+};
+
+const fallSound = new Audio("fall.wav");
+fallSound.volume = 0.5;
+fallSound.onerror = () => {
+    console.error("Failed to load fall sound.");
+};
+
+const spikeDeathSound = new Audio("spike-death.wav");
+spikeDeathSound.volume = 0.5;
+spikeDeathSound.onerror = () => {
+    console.error("Failed to load spike death sound.");
+};
+
+const enemyDeathSound = new Audio("enemy-death.wav");
+enemyDeathSound.volume = 0.5;
+enemyDeathSound.onerror = () => {
+    console.error("Failed to load enemy death sound.");
+};
 
 // Animation class to handle animations
 class Animation {
@@ -492,6 +512,7 @@ window.addEventListener('keydown', (event) => {
     }
     if (event.code === "KeyF") {
         bullets.push(new Bullet(player.x + player.width / 2, player.y + player.height / 2, player.direction));
+        shootSound.play(); // Play shoot sound
     }
 });
 window.addEventListener('keyup', (event) => keys[event.code] = false);
@@ -522,6 +543,7 @@ function handleMovement() {
             if (platform.hasSpikes && player.x + player.width > platform.spikeX && player.x < platform.spikeX + platform.spikeWidth) {
                 if (!player.isShieldActive) {
                     gameOver = true;
+                    spikeDeathSound.play(); // Play spike death sound
                 } else {
                     player.y = platform.y - player.height;
                     player.velocityY = 0;
@@ -566,10 +588,12 @@ function handleMovement() {
         }, 100);
         player.velocityY = -player.jumpHeight;
         player.isJumping = true;
+        jumpSound.play(); // Play jump sound
     }
 
     if (player.y > canvas.height) {
         gameOver = true;
+        fallSound.play(); // Play fall sound
         if (player.score > highScore) {
             highScore = player.score;
             localStorage.setItem("highScore", highScore);
@@ -646,6 +670,7 @@ function update() {
             ) {
                 if (!player.isShieldActive) {
                     gameOver = true;
+                    enemyDeathSound.play(); // Play enemy death sound
                 }
             }
         });
@@ -660,6 +685,7 @@ function update() {
             ) {
                 if (!player.isShieldActive) {
                     gameOver = true;
+                    enemyDeathSound.play(); // Play enemy death sound
                 }
             }
 
