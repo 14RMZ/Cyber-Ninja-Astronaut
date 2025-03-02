@@ -66,15 +66,14 @@ movingPlatformImage.onerror = () => {
     movingPlatformImage.src = "";
 };
 
-// Sound effects
-const jumpSound = new Audio("jump.mp3");
-const shootSound = new Audio("shoot.mp3");
-const explosionSound = new Audio("explosion.mp3");
-const gameOverSound = new Audio("game-over.mp3");
-
-// Background music
-const backgroundMusic = new Audio("background-music.mp3");
-backgroundMusic.loop = true; // Loop the background music
+// Load the spike image
+const spikeImage = new Image();
+spikeImage.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/spkies.jpg"; // Replace with the path to your spike image
+spikeImage.onerror = () => {
+    console.error("Failed to load spike image.");
+    spikeImage.onload = () => {};
+    spikeImage.src = "";
+};
 
 // Animation class to handle animations
 class Animation {
@@ -225,14 +224,12 @@ class Platform {
             ctx.fillRect(this.x - camera.x, this.y, this.width, this.height);
         }
 
-        if (this.hasSpikes) {
-            ctx.fillStyle = "red";
+        if (this.hasSpikes && spikeImage.complete && spikeImage.naturalWidth !== 0) {
             for (let i = 0; i < this.spikeWidth; i += 20) {
-                ctx.beginPath();
-                ctx.moveTo(this.spikeX + i - camera.x, this.y);
-                ctx.lineTo(this.spikeX + i + 10 - camera.x, this.y - 15);
-                ctx.lineTo(this.spikeX + i + 20 - camera.x, this.y);
-                ctx.fill();
+                ctx.drawImage(
+                    spikeImage,
+                    this.spikeX + i - camera.x, this.y - spikeImage.height, spikeImage.width, spikeImage.height
+                );
             }
         }
     }
@@ -490,7 +487,6 @@ window.addEventListener('keydown', (event) => {
     }
     if (event.code === "KeyF") {
         bullets.push(new Bullet(player.x + player.width / 2, player.y + player.height / 2, player.direction));
-        shootSound.play(); // Play shoot sound
     }
 });
 window.addEventListener('keyup', (event) => keys[event.code] = false);
@@ -565,7 +561,6 @@ function handleMovement() {
         }, 100);
         player.velocityY = -player.jumpHeight;
         player.isJumping = true;
-        jumpSound.play(); // Play jump sound
     }
 
     if (player.y > canvas.height) {
@@ -574,7 +569,6 @@ function handleMovement() {
             highScore = player.score;
             localStorage.setItem("highScore", highScore);
         }
-        gameOverSound.play(); // Play game over sound
     }
 }
 
@@ -626,7 +620,6 @@ function update() {
                     bullets.splice(bulletIndex, 1);
                     enemy.explode(); // Trigger enemy explosion
                     player.score += 20;
-                    explosionSound.play(); // Play explosion sound
                 }
             });
 
@@ -796,8 +789,8 @@ Promise.all([
     new Promise((resolve) => { nonShootingEnemySpriteSheet.onload = resolve; }),
     new Promise((resolve) => { shootingEnemySpriteSheet.onload = resolve; }),
     new Promise((resolve) => { platformImage.onload = resolve; }),
-    new Promise((resolve) => { movingPlatformImage.onload = resolve; })
+    new Promise((resolve) => { movingPlatformImage.onload = resolve; }),
+    new Promise((resolve) => { spikeImage.onload = resolve; }) // Add this line
 ]).then(() => {
-    backgroundMusic.play(); // Start background music
     gameLoop();
 });
