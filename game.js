@@ -68,12 +68,17 @@ movingPlatformImage.onerror = () => {
 
 // Load the spike image
 const spikeImage = new Image();
-spikeImage.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/testingspike.png"; // Replace with the path to your spike image
+spikeImage.src = "spike.png"; // Replace with the path to your spike image
 spikeImage.onerror = () => {
     console.error("Failed to load spike image.");
     spikeImage.onload = () => {};
     spikeImage.src = "";
 };
+
+// Load the background sound
+const backgroundSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/Playingthegamesound.wav"); // Replace with the path to your background music file
+backgroundSound.loop = true; // Ensure the sound loops
+backgroundSound.volume = 0.5; // Set volume (0.5 means 50% volume)
 
 // Animation class to handle animations
 class Animation {
@@ -226,7 +231,6 @@ class Platform {
 
         if (this.hasSpikes && spikeImage.complete && spikeImage.naturalWidth !== 0) {
             for (let i = 0; i < this.spikeWidth; i += 20) {
-                // Draw spike image with the same size as the old red triangles
                 ctx.drawImage(
                     spikeImage,
                     this.spikeX + i - camera.x, this.y - 15, 20, 15 // Match the size of the old spikes
@@ -605,6 +609,8 @@ function resetGame() {
     enemyBullets.length = 0;
     shieldPowerUps.length = 0;
     generatePlatforms();
+
+    backgroundSound.play(); // Resume the background sound
 }
 
 function update() {
@@ -742,6 +748,8 @@ function drawGameOverScreen() {
     ctx.fillStyle = "white";
     ctx.font = "20px Arial";
     ctx.fillText("Press R to Restart", canvas.width / 2, canvas.height / 2 + 100);
+
+    backgroundSound.pause(); // Pause the background sound
 }
 
 function render() {
@@ -783,7 +791,7 @@ function gameLoop() {
     requestAnimationFrame(gameLoop);
 }
 
-// Ensure all images are loaded before starting the game
+// Ensure all images and sounds are loaded before starting the game
 Promise.all([
     new Promise((resolve) => { backgroundImage.onload = resolve; }),
     new Promise((resolve) => { playerSpriteSheet.onload = resolve; }),
@@ -791,7 +799,11 @@ Promise.all([
     new Promise((resolve) => { shootingEnemySpriteSheet.onload = resolve; }),
     new Promise((resolve) => { platformImage.onload = resolve; }),
     new Promise((resolve) => { movingPlatformImage.onload = resolve; }),
-    new Promise((resolve) => { spikeImage.onload = resolve; }) // Add this line
+    new Promise((resolve) => { spikeImage.onload = resolve; }),
+    new Promise((resolve) => {
+        backgroundSound.addEventListener("canplaythrough", resolve); // Wait for the sound to load
+    })
 ]).then(() => {
-    gameLoop();
+    backgroundSound.play(); // Start playing the background sound
+    gameLoop(); // Start the game loop
 });
