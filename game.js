@@ -70,31 +70,31 @@ backgroundSound.onerror = () => {
 };
 
 // Load player sound effects
-const jumpSound = new Audio("jump.wav");
+const jumpSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/jumping_sound.wav");
 jumpSound.volume = 0.5;
 jumpSound.onerror = () => {
     console.error("Failed to load jump sound.");
 };
 
-const shootSound = new Audio("shoot.wav");
+const shootSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/Playershooting.mp3");
 shootSound.volume = 0.5;
 shootSound.onerror = () => {
     console.error("Failed to load shoot sound.");
 };
 
-const fallSound = new Audio("fall.wav");
+const fallSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/Playerfallingdown.mp3");
 fallSound.volume = 0.5;
 fallSound.onerror = () => {
     console.error("Failed to load fall sound.");
 };
 
-const spikeDeathSound = new Audio("spike-death.wav");
+const spikeDeathSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/Playerkilledbyspikes.wav");
 spikeDeathSound.volume = 0.5;
 spikeDeathSound.onerror = () => {
     console.error("Failed to load spike death sound.");
 };
 
-const enemyDeathSound = new Audio("enemy-death.wav");
+const enemyDeathSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/Playergetsshootbyenemy.mp3");
 enemyDeathSound.volume = 0.5;
 enemyDeathSound.onerror = () => {
     console.error("Failed to load enemy death sound.");
