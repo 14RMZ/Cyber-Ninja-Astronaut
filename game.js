@@ -226,9 +226,10 @@ class Platform {
 
         if (this.hasSpikes && spikeImage.complete && spikeImage.naturalWidth !== 0) {
             for (let i = 0; i < this.spikeWidth; i += 20) {
+                // Draw spike image with the same size as the old red triangles
                 ctx.drawImage(
                     spikeImage,
-                    this.spikeX + i - camera.x, this.y - spikeImage.height, spikeImage.width, spikeImage.height
+                    this.spikeX + i - camera.x, this.y - 15, 20, 15 // Match the size of the old spikes
                 );
             }
         }
