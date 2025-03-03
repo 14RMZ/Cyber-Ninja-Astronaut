@@ -657,28 +657,17 @@ function resetGame() {
     isJumping = false;
     isJumpStarting = false;
     isJumpLanding = false;
-
-    // Reset player position and state
     player.x = 100;
-    player.y = canvas.height - 150; // Ensure this is calculated relative to the canvas height
-    player.velocityX = 0;
-    player.velocityY = 0;
+    player.y = canvas.height - 150;
     player.score = 0;
     player.lastPlatform = null;
     player.isShieldActive = false;
     player.shieldTimer = 0;
-
-    // Reset camera
-    camera.x = 0;
-
-    // Reset platforms, enemies, bullets, and power-ups
     platforms.length = 1;
     enemies.length = 0;
     bullets.length = 0;
     enemyBullets.length = 0;
     shieldPowerUps.length = 0;
-
-    // Regenerate platforms
     generatePlatforms();
 
     // Reset the background sound
