@@ -624,9 +624,11 @@ function handleMovement() {
     if (player.y > canvas.height) {
         gameOver = true;
         fallSound.play(); // Play fall sound
+
+        // Update high score if the current score is greater
         if (player.score > highScore) {
-            highScore = player.score;
-            localStorage.setItem("highScore", highScore);
+            highScore = player.score; // Update the high score
+            localStorage.setItem("highScore", highScore); // Save the new high score to localStorage
             newHighScoreSound.play(); // Play new high score sound
         }
     }
