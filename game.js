@@ -7,7 +7,7 @@ function resizeCanvas() {
     canvas.height = window.innerHeight;
 }
 window.addEventListener('resize', resizeCanvas);
-resizeCanvas();
+resizeCanvas(); // Initial resize to fit the window
 
 let gameOver = false;
 let highScore = localStorage.getItem("highScore") || 0;
