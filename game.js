@@ -515,7 +515,7 @@ function generatePlatforms() {
         let hasSpikes = player.score >= 50 && Math.random() > 0.7;
         let hasNonShootingEnemy = player.score >= 50 && !isMoving && !hasSpikes && Math.random() > 0.5;
         let hasShootingEnemy = player.score >= 50 && !isMoving && !hasSpikes && Math.random() > 0.5;
-        let hasShieldPowerUp = player.score >= 10 && Math.random() > 0.8;
+        let hasShieldPowerUp = player.score >= 150 && Math.random() > 0.8;
 
         let platform = new Platform(x, y, 180, 20, isMoving, hasSpikes);
         platforms.push(platform);
@@ -665,7 +665,33 @@ function resetGame() {
     shieldPowerUps.length = 0;
     generatePlatforms();
 
-    backgroundSound.play(); // Resume the background sound
+    // Reset the background sound
+    backgroundSound.currentTime = 0; // Reset the sound to the beginning
+    backgroundSound.play(); // Play the background sound
+}
+
+function drawGameOverScreen() {
+    ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = "red";
+    ctx.font = "60px Arial";
+    ctx.textAlign = "center";
+    ctx.fillText("Game Over", canvas.width / 2, canvas.height / 2 - 60);
+
+    ctx.fillStyle = "white";
+    ctx.font = "30px Arial";
+    ctx.fillText(`Your Score: ${player.score}`, canvas.width / 2, canvas.height / 2);
+
+    ctx.fillStyle = "gold";
+    ctx.font = "30px Arial";
+    ctx.fillText(`High Score: ${highScore}`, canvas.width / 2, canvas.height / 2 + 40);
+
+    ctx.fillStyle = "white";
+    ctx.font = "20px Arial";
+    ctx.fillText("Press R to Restart", canvas.width / 2, canvas.height / 2 + 100);
+
+    backgroundSound.pause(); // Pause the background sound when the game is over
 }
 
 function update() {
@@ -786,30 +812,6 @@ function drawPlayer() {
     }
 }
 
-function drawGameOverScreen() {
-    ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    ctx.fillStyle = "red";
-    ctx.font = "60px Arial";
-    ctx.textAlign = "center";
-    ctx.fillText("Game Over", canvas.width / 2, canvas.height / 2 - 60);
-
-    ctx.fillStyle = "white";
-    ctx.font = "30px Arial";
-    ctx.fillText(`Your Score: ${player.score}`, canvas.width / 2, canvas.height / 2);
-
-    ctx.fillStyle = "gold";
-    ctx.font = "30px Arial";
-    ctx.fillText(`High Score: ${highScore}`, canvas.width / 2, canvas.height / 2 + 40);
-
-    ctx.fillStyle = "white";
-    ctx.font = "20px Arial";
-    ctx.fillText("Press R to Restart", canvas.width / 2, canvas.height / 2 + 100);
-
-    backgroundSound.pause(); // Pause the background sound
-}
-
 function render() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -868,6 +870,6 @@ Promise.all([
         newHighScoreSound.addEventListener("canplaythrough", resolve); // Wait for the sound to load
     })
 ]).then(() => {
-    backgroundSound.play(); // Start playing the background sound
+    backgroundSound.play(); // Start playing the background sound when the game starts
     gameLoop(); // Start the game loop
 });
