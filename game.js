@@ -113,6 +113,20 @@ enemyDeathSound.onerror = () => {
     console.error("Failed to load enemy death sound.");
 };
 
+// Load the power-up sound
+const powerUpSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/playerpowerup.wav");
+powerUpSound.volume = 0.5;
+powerUpSound.onerror = () => {
+    console.error("Failed to load power-up sound.");
+};
+
+// Load the new high score sound
+const newHighScoreSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/highscore.wav");
+newHighScoreSound.volume = 0.5;
+newHighScoreSound.onerror = () => {
+    console.error("Failed to load new high score sound.");
+};
+
 // Animation class to handle animations
 class Animation {
     constructor(frames, frameRate) {
@@ -613,6 +627,7 @@ function handleMovement() {
         if (player.score > highScore) {
             highScore = player.score;
             localStorage.setItem("highScore", highScore);
+            newHighScoreSound.play(); // Play new high score sound
         }
     }
 }
@@ -714,6 +729,7 @@ function update() {
             if (powerUp.isCollected()) {
                 activateShield(powerUp.duration);
                 shieldPowerUps.splice(index, 1);
+                powerUpSound.play(); // Play power-up sound
             }
         });
     }
@@ -844,6 +860,12 @@ Promise.all([
     new Promise((resolve) => { spikeImage.onload = resolve; }),
     new Promise((resolve) => {
         backgroundSound.addEventListener("canplaythrough", resolve); // Wait for the sound to load
+    }),
+    new Promise((resolve) => {
+        powerUpSound.addEventListener("canplaythrough", resolve); // Wait for the sound to load
+    }),
+    new Promise((resolve) => {
+        newHighScoreSound.addEventListener("canplaythrough", resolve); // Wait for the sound to load
     })
 ]).then(() => {
     backgroundSound.play(); // Start playing the background sound
