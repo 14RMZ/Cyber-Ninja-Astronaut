@@ -1,6 +1,72 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
+const menuOptions = ["Start Game", "Settings", "How to Play", "Highest Score"];
+let selectedOption = 0;
+let inMenu = true;
+
+function drawMenu() {
+    ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    ctx.fillStyle = "white";
+    ctx.font = "40px Arial";
+    ctx.textAlign = "center";
+    ctx.fillText("Cyber Ninja Astronaut", canvas.width / 2, 100);
+    
+    ctx.font = "30px Arial";
+    menuOptions.forEach((option, index) => {
+        ctx.fillStyle = index === selectedOption ? "cyan" : "white";
+        ctx.fillText(option, canvas.width / 2, 200 + index * 50);
+    });
+    
+    ctx.font = "15px Arial";
+    ctx.fillStyle = "white";
+    ctx.fillText("Credits: Made by You", canvas.width - 100, canvas.height - 20);
+}
+
+window.addEventListener("keydown", (event) => {
+    if (inMenu) {
+        if (event.code === "ArrowUp") {
+            selectedOption = (selectedOption - 1 + menuOptions.length) % menuOptions.length;
+        } else if (event.code === "ArrowDown") {
+            selectedOption = (selectedOption + 1) % menuOptions.length;
+        } else if (event.code === "Enter") {
+            handleMenuSelection();
+        }
+    }
+});
+
+canvas.addEventListener("mousemove", (event) => {
+    if (inMenu) {
+        const rect = canvas.getBoundingClientRect();
+        const mouseY = event.clientY - rect.top;
+        menuOptions.forEach((_, index) => {
+            if (mouseY >= 180 + index * 50 && mouseY < 230 + index * 50) {
+                selectedOption = index;
+            }
+        });
+    }
+});
+
+canvas.addEventListener("click", () => {
+    if (inMenu) {
+        handleMenuSelection();
+    }
+});
+
+function handleMenuSelection() {
+    if (menuOptions[selectedOption] === "Start Game") {
+        inMenu = false;
+        gameLoop();
+    } else {
+        alert(`${menuOptions[selectedOption]} selected!`);
+    }
+}
+
+drawMenu();
+
+
 // Resize canvas to fit the window
 function resizeCanvas() {
     canvas.width = window.innerWidth;
