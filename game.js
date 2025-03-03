@@ -574,6 +574,7 @@ function handleMovement() {
                 if (!player.isShieldActive) {
                     gameOver = true;
                     spikeDeathSound.play(); // Play spike death sound
+                    updateHighScore(); // Update high score when the player dies
                 } else {
                     player.y = platform.y - player.height;
                     player.velocityY = 0;
@@ -624,13 +625,15 @@ function handleMovement() {
     if (player.y > canvas.height) {
         gameOver = true;
         fallSound.play(); // Play fall sound
+        updateHighScore(); // Update high score when the player falls
+    }
+}
 
-        // Update high score if the current score is greater
-        if (player.score > highScore) {
-            highScore = player.score; // Update the high score
-            localStorage.setItem("highScore", highScore); // Save the new high score to localStorage
-            newHighScoreSound.play(); // Play new high score sound
-        }
+function updateHighScore() {
+    if (player.score > highScore) {
+        highScore = player.score; // Update the high score
+        localStorage.setItem("highScore", highScore); // Save the new high score to localStorage
+        newHighScoreSound.play(); // Play new high score sound
     }
 }
 
@@ -730,6 +733,7 @@ function update() {
                 if (!player.isShieldActive) {
                     gameOver = true;
                     playerDeathSound.play(); // Play player death sound
+                    updateHighScore(); // Update high score when the player dies
                 }
             }
         });
@@ -745,6 +749,7 @@ function update() {
                 if (!player.isShieldActive) {
                     gameOver = true;
                     playerDeathSound.play(); // Play player death sound
+                    updateHighScore(); // Update high score when the player dies
                 }
             }
 
