@@ -15,6 +15,7 @@ highScore = parseInt(highScore);
 
 // Game state
 let gameState = "menu"; // Possible values: "menu", "playing", "gameOver"
+let settingsState = false; // Tracks if the settings menu is open
 
 // Load the background image
 const backgroundImage = new Image();
@@ -743,6 +744,65 @@ function drawMainMenu() {
     ctx.fillText("Created by [Your Name]", canvas.width - 20, canvas.height - 20);
 }
 
+function drawSettingsMenu() {
+    // Clear the canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Draw the background
+    ctx.fillStyle = "rgba(0, 0, 0, 0.9)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Draw the title
+    ctx.fillStyle = "white";
+    ctx.font = "60px Arial";
+    ctx.textAlign = "center";
+    ctx.fillText("Settings", canvas.width / 2, canvas.height / 2 - 150);
+
+    // Draw settings options
+    ctx.font = "30px Arial";
+    ctx.fillText("1. Sound Volume: " + backgroundSound.volume.toFixed(2), canvas.width / 2, canvas.height / 2 - 50);
+    ctx.fillText("2. Back to Main Menu", canvas.width / 2, canvas.height / 2);
+
+    // Draw instructions
+    ctx.font = "20px Arial";
+    ctx.fillText("Use Arrow Keys to adjust volume. Press Enter to go back.", canvas.width / 2, canvas.height / 2 + 100);
+}
+
+function drawHowToPlayScreen() {
+    // Clear the canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Draw the background
+    ctx.fillStyle = "rgba(0, 0, 0, 0.9)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Draw the title
+    ctx.fillStyle = "white";
+    ctx.font = "60px Arial";
+    ctx.textAlign = "center";
+    ctx.fillText("How to Play", canvas.width / 2, canvas.height / 2 - 150);
+
+    // Draw instructions
+    ctx.font = "20px Arial";
+    ctx.textAlign = "left";
+    const instructions = [
+        "1. Use Arrow Keys or WASD to move.",
+        "2. Press Space to jump.",
+        "3. Press F to shoot.",
+        "4. Avoid enemies and spikes.",
+        "5. Collect power-ups for shields.",
+        "6. Reach the highest score!"
+    ];
+    instructions.forEach((line, index) => {
+        ctx.fillText(line, canvas.width / 2 - 200, canvas.height / 2 - 50 + index * 30);
+    });
+
+    // Draw back option
+    ctx.font = "30px Arial";
+    ctx.textAlign = "center";
+    ctx.fillText("Press Enter to go back", canvas.width / 2, canvas.height / 2 + 150);
+}
+
 function update() {
     if (!gameOver) {
         updateShield();
@@ -912,7 +972,11 @@ function render() {
 
 function gameLoop() {
     if (gameState === "menu") {
-        drawMainMenu(); // Draw the main menu
+        if (settingsState) {
+            drawSettingsMenu(); // Draw the settings menu
+        } else {
+            drawMainMenu(); // Draw the main menu
+        }
     } else if (gameState === "playing") {
         update(); // Update game logic
         render(); // Render the game
@@ -937,15 +1001,36 @@ canvas.addEventListener("click", (event) => {
                 gameState = "playing";
                 resetGame();
             } else if (mouseY > canvas.height / 2 - 20 && mouseY < canvas.height / 2 + 20) {
-                // Settings (to be implemented)
-                alert("Settings menu will be added later!");
+                // Open Settings Menu
+                settingsState = true;
             } else if (mouseY > canvas.height / 2 + 30 && mouseY < canvas.height / 2 + 70) {
-                // How to Play
-                alert("How to Play:\n- Use Arrow Keys or WASD to move.\n- Press Space to jump.\n- Press F to shoot.\n- Avoid enemies and spikes!");
+                // Open How to Play Screen
+                drawHowToPlayScreen();
             } else if (mouseY > canvas.height / 2 + 80 && mouseY < canvas.height / 2 + 120) {
-                // Highest Score
+                // Show Highest Score
                 alert(`Highest Score: ${highScore}`);
             }
+        }
+    }
+});
+
+// Handle key presses for settings and how-to-play screens
+window.addEventListener('keydown', (event) => {
+    if (gameState === "menu") {
+        if (settingsState) {
+            if (event.code === "ArrowUp") {
+                // Increase volume
+                backgroundSound.volume = Math.min(1, backgroundSound.volume + 0.1);
+            } else if (event.code === "ArrowDown") {
+                // Decrease volume
+                backgroundSound.volume = Math.max(0, backgroundSound.volume - 0.1);
+            } else if (event.code === "Enter") {
+                // Go back to the main menu
+                settingsState = false;
+            }
+        } else if (event.code === "Enter") {
+            // Go back to the main menu from how-to-play screen
+            settingsState = false;
         }
     }
 });
