@@ -1061,6 +1061,7 @@ window.addEventListener('keydown', (event) => {
         } else if (event.code === "KeyM") {
             // Return to the main menu
             gameState = "menu";
+            gameOver = false; // Reset the gameOver state
         }
     }
 });
