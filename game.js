@@ -551,7 +551,7 @@ window.addEventListener('keydown', (event) => {
         bullets.push(new Bullet(player.x + player.width / 2, player.y + player.height / 2, player.direction));
         shootSound.play(); // Play shoot sound
     }
-});
+};
 window.addEventListener('keyup', (event) => keys[event.code] = false);
 
 function handleMovement() {
