@@ -13,6 +13,9 @@ let gameOver = false;
 let highScore = localStorage.getItem("highScore") || 0;
 highScore = parseInt(highScore);
 
+// Game state
+let gameState = "menu"; // Possible values: "menu", "playing", "gameOver"
+
 // Load the background image
 const backgroundImage = new Image();
 backgroundImage.src = "GameBackground.jpg";
@@ -713,6 +716,33 @@ function drawGameOverScreen() {
     backgroundSound.pause(); // Pause the background sound when the game is over
 }
 
+function drawMainMenu() {
+    // Clear the canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Draw the background (optional: use an image or gradient)
+    ctx.fillStyle = "black";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Draw the title
+    ctx.fillStyle = "white";
+    ctx.font = "60px Arial";
+    ctx.textAlign = "center";
+    ctx.fillText("Cyber Ninja Astronaut", canvas.width / 2, canvas.height / 2 - 150);
+
+    // Draw menu options
+    ctx.font = "30px Arial";
+    ctx.fillText("1. Start Game", canvas.width / 2, canvas.height / 2 - 50);
+    ctx.fillText("2. Settings", canvas.width / 2, canvas.height / 2);
+    ctx.fillText("3. How to Play", canvas.width / 2, canvas.height / 2 + 50);
+    ctx.fillText("4. Highest Score", canvas.width / 2, canvas.height / 2 + 100);
+
+    // Draw credits in the bottom-right corner
+    ctx.font = "20px Arial";
+    ctx.textAlign = "right";
+    ctx.fillText("Created by [Your Name]", canvas.width - 20, canvas.height - 20);
+}
+
 function update() {
     if (!gameOver) {
         updateShield();
@@ -881,10 +911,44 @@ function render() {
 }
 
 function gameLoop() {
-    update();
-    render();
+    if (gameState === "menu") {
+        drawMainMenu(); // Draw the main menu
+    } else if (gameState === "playing") {
+        update(); // Update game logic
+        render(); // Render the game
+    } else if (gameState === "gameOver") {
+        drawGameOverScreen(); // Draw the game over screen
+    }
+
     requestAnimationFrame(gameLoop);
 }
+
+// Handle mouse clicks on the menu
+canvas.addEventListener("click", (event) => {
+    if (gameState === "menu") {
+        const rect = canvas.getBoundingClientRect();
+        const mouseX = event.clientX - rect.left;
+        const mouseY = event.clientY - rect.top;
+
+        // Check if the user clicked on a menu option
+        if (mouseX > canvas.width / 2 - 100 && mouseX < canvas.width / 2 + 100) {
+            if (mouseY > canvas.height / 2 - 70 && mouseY < canvas.height / 2 - 30) {
+                // Start Game
+                gameState = "playing";
+                resetGame();
+            } else if (mouseY > canvas.height / 2 - 20 && mouseY < canvas.height / 2 + 20) {
+                // Settings (to be implemented)
+                alert("Settings menu will be added later!");
+            } else if (mouseY > canvas.height / 2 + 30 && mouseY < canvas.height / 2 + 70) {
+                // How to Play
+                alert("How to Play:\n- Use Arrow Keys or WASD to move.\n- Press Space to jump.\n- Press F to shoot.\n- Avoid enemies and spikes!");
+            } else if (mouseY > canvas.height / 2 + 80 && mouseY < canvas.height / 2 + 120) {
+                // Highest Score
+                alert(`Highest Score: ${highScore}`);
+            }
+        }
+    }
+});
 
 // Ensure all images and sounds are loaded before starting the game
 Promise.all([
