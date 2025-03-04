@@ -542,6 +542,12 @@ const keys = {};
 window.addEventListener('keydown', (event) => {
     keys[event.code] = true;
     if (event.code === "KeyR" && gameOver) {
+        // Restart the game
+        resetGame();
+        gameState = "playing";
+    } else if (event.code === "KeyM" && gameOver) {
+        // Return to the main menu
+        gameState = "menu";
         resetGame();
     }
     if (event.code === "KeyF") {
@@ -694,27 +700,37 @@ function resetGame() {
 }
 
 function drawGameOverScreen() {
+    // Clear the canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Draw the background
     ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+    // Draw the title
     ctx.fillStyle = "red";
     ctx.font = "60px Arial";
     ctx.textAlign = "center";
-    ctx.fillText("Game Over", canvas.width / 2, canvas.height / 2 - 60);
+    ctx.fillText("Game Over", canvas.width / 2, canvas.height / 2 - 100);
 
+    // Draw the player's score
     ctx.fillStyle = "white";
     ctx.font = "30px Arial";
     ctx.fillText(`Your Score: ${player.score}`, canvas.width / 2, canvas.height / 2);
 
+    // Draw the high score
     ctx.fillStyle = "gold";
     ctx.font = "30px Arial";
     ctx.fillText(`High Score: ${highScore}`, canvas.width / 2, canvas.height / 2 + 40);
 
+    // Draw restart and back options
     ctx.fillStyle = "white";
     ctx.font = "20px Arial";
     ctx.fillText("Press R to Restart", canvas.width / 2, canvas.height / 2 + 100);
+    ctx.fillText("Press M to Return to Menu", canvas.width / 2, canvas.height / 2 + 140);
 
-    backgroundSound.pause(); // Pause the background sound when the game is over
+    // Pause the background sound
+    backgroundSound.pause();
 }
 
 function drawMainMenu() {
