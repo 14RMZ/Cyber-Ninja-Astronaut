@@ -999,9 +999,11 @@ function render() {
 
 function gameLoop() {
     if (gameState === "menu") {
-        if (!menuSound.paused && backgroundSound.paused) {
+        if (menuSound.paused) {
             // Play the menu sound if it's not already playing
-            menuSound.play();
+            menuSound.play().catch((error) => {
+                console.error("Failed to play menu sound:", error);
+            });
             backgroundSound.pause(); // Ensure the background sound is paused
         }
         if (settingsState) {
@@ -1010,9 +1012,11 @@ function gameLoop() {
             drawMainMenu(); // Draw the main menu
         }
     } else if (gameState === "playing") {
-        if (!backgroundSound.paused && menuSound.paused) {
+        if (backgroundSound.paused) {
             // Play the background sound if it's not already playing
-            backgroundSound.play();
+            backgroundSound.play().catch((error) => {
+                console.error("Failed to play background sound:", error);
+            });
             menuSound.pause(); // Ensure the menu sound is paused
         }
         update(); // Update game logic
@@ -1104,16 +1108,22 @@ Promise.all([
     new Promise((resolve) => { platformImage.onload = resolve; }),
     new Promise((resolve) => { movingPlatformImage.onload = resolve; }),
     new Promise((resolve) => { spikeImage.onload = resolve; }),
+    new Promise((resolve) => { menuImage.onload = resolve; }), // Wait for the menu image to load
     new Promise((resolve) => {
-        backgroundSound.addEventListener("canplaythrough", resolve); // Wait for the sound to load
+        backgroundSound.addEventListener("canplaythrough", resolve); // Wait for the background sound to load
     }),
     new Promise((resolve) => {
-        powerUpSound.addEventListener("canplaythrough", resolve); // Wait for the sound to load
+        menuSound.addEventListener("canplaythrough", resolve); // Wait for the menu sound to load
     }),
     new Promise((resolve) => {
-        newHighScoreSound.addEventListener("canplaythrough", resolve); // Wait for the sound to load
+        powerUpSound.addEventListener("canplaythrough", resolve); // Wait for the power-up sound to load
+    }),
+    new Promise((resolve) => {
+        newHighScoreSound.addEventListener("canplaythrough", resolve); // Wait for the high score sound to load
     })
 ]).then(() => {
-    backgroundSound.play(); // Start playing the background sound when the game starts
+    console.log("All assets loaded successfully.");
     gameLoop(); // Start the game loop
+}).catch((error) => {
+    console.error("Error loading assets:", error);
 });
