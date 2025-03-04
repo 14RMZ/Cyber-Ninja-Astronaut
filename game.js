@@ -995,11 +995,11 @@ function gameLoop() {
 
 // Handle mouse clicks on the menu
 canvas.addEventListener("click", (event) => {
-    if (gameState === "menu") {
-        const rect = canvas.getBoundingClientRect();
-        const mouseX = event.clientX - rect.left;
-        const mouseY = event.clientY - rect.top;
+    const rect = canvas.getBoundingClientRect();
+    const mouseX = event.clientX - rect.left;
+    const mouseY = event.clientY - rect.top;
 
+    if (gameState === "menu") {
         // Check if the user clicked on a menu option
         if (mouseX > canvas.width / 2 - 100 && mouseX < canvas.width / 2 + 100) {
             if (mouseY > canvas.height / 2 - 70 && mouseY < canvas.height / 2 - 30) {
@@ -1019,11 +1019,6 @@ canvas.addEventListener("click", (event) => {
         }
     } else if (gameState === "gameOver") {
         // Handle mouse clicks on the game over screen
-        const rect = canvas.getBoundingClientRect();
-        const mouseX = event.clientX - rect.left;
-        const mouseY = event.clientY - rect.top;
-
-        // Check if the user clicked on the "Restart" or "Menu" options
         if (mouseX > canvas.width / 2 - 100 && mouseX < canvas.width / 2 + 100) {
             if (mouseY > canvas.height / 2 + 80 && mouseY < canvas.height / 2 + 120) {
                 // Restart Game
@@ -1032,6 +1027,7 @@ canvas.addEventListener("click", (event) => {
             } else if (mouseY > canvas.height / 2 + 120 && mouseY < canvas.height / 2 + 160) {
                 // Return to Main Menu
                 gameState = "menu";
+                gameOver = false; // Reset the gameOver state
             }
         }
     }
