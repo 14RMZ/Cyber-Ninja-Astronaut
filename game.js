@@ -547,18 +547,20 @@ window.addEventListener('keydown', (event) => {
 });
 window.addEventListener('keyup', (event) => keys[event.code] = false);
 
-function handleMovement() {
+function handleMovement(deltaTime) {
+    const speedMultiplier = deltaTime / 16.67; // Normalize speed based on 60 FPS
+
     if (keys['ArrowLeft'] || keys['KeyA']) {
-        player.x -= player.speed;
+        player.x -= player.speed * speedMultiplier;
         player.direction = -1;
     }
     if (keys['ArrowRight'] || keys['KeyD']) {
-        player.x += player.speed;
+        player.x += player.speed * speedMultiplier;
         player.direction = 1;
     }
 
-    player.velocityY += 0.5;
-    player.y += player.velocityY;
+    player.velocityY += 0.5 * speedMultiplier;
+    player.y += player.velocityY * speedMultiplier;
 
     let onPlatform = false;
     platforms.forEach(platform => {
@@ -587,7 +589,7 @@ function handleMovement() {
 
                 // Track the moving platform
                 if (platform.isMoving) {
-                    player.x += platform.direction * platform.speed; // Move the player with the platform
+                    player.x += platform.direction * platform.speed * speedMultiplier; // Move the player with the platform
                 }
 
                 if (player.lastPlatform !== platform) {
@@ -710,10 +712,10 @@ function drawGameOverScreen() {
     backgroundSound.pause(); // Pause the background sound when the game is over
 }
 
-function update() {
+function update(deltaTime) {
     if (!gameOver) {
         updateShield();
-        handleMovement();
+        handleMovement(deltaTime);
         generatePlatforms();
         camera.update();
 
@@ -870,8 +872,13 @@ function render() {
     }
 }
 
-function gameLoop() {
-    update();
+let lastTime = 0;
+
+function gameLoop(timestamp) {
+    const deltaTime = timestamp - lastTime;
+    lastTime = timestamp;
+
+    update(deltaTime);
     render();
     requestAnimationFrame(gameLoop);
 }
