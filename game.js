@@ -971,6 +971,11 @@ function render() {
         );
     }
 
+    // Apply blur effect to the background
+    ctx.filter = "blur(5px)";
+    ctx.drawImage(canvas, 0, 0);
+    ctx.filter = "none";
+
     // Draw platforms, enemies, bullets, power-ups, player, and score
     platforms.forEach(platform => platform.draw());
     enemies.forEach(enemy => enemy.draw());
