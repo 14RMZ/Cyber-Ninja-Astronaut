@@ -782,7 +782,14 @@ function update() {
 function drawScore() {
     ctx.fillStyle = "white";
     ctx.font = "20px Arial";
+    
+    // Draw the score on the left side
     ctx.fillText(`Score: ${player.score}`, 20, 30);
+    
+    // Draw the high score on the right side
+    const highScoreText = `High Score: ${highScore}`;
+    const textWidth = ctx.measureText(highScoreText).width;
+    ctx.fillText(highScoreText, canvas.width - textWidth - 20, 30);
 }
 
 function drawPlayer() {
