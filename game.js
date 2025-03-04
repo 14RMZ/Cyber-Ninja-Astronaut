@@ -543,15 +543,17 @@ window.addEventListener('keydown', (event) => {
     keys[event.code] = true;
     if (event.code === "KeyR" && gameOver) {
         resetGame();
-
-    if (event.code == "KeyM" && gameOver) {
-        drawMainMenu();
+        gameState = "playing";
+    }
+    if (event.code === "KeyM" && gameOver) {
+        gameState = "menu";
+        gameOver = false; // Reset the gameOver state
     }
     if (event.code === "KeyF") {
         bullets.push(new Bullet(player.x + player.width / 2, player.y + player.height / 2, player.direction));
         shootSound.play(); // Play shoot sound
     }
-};
+});
 window.addEventListener('keyup', (event) => keys[event.code] = false);
 
 function handleMovement() {
