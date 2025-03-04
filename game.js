@@ -129,6 +129,22 @@ const newHighScoreSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astrona
 newHighScoreSound.volume = 0.5;
 newHighScoreSound.onerror = () => {
     console.error("Failed to load new high score sound.");
+    
+};
+// Load the menu image
+const menuImage = new Image();
+menuImage.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/GameMenuBackground.webp"; // Replace with your menu image URL
+menuImage.onerror = () => {
+    console.error("Failed to load menu image.");
+};
+
+// Load the menu sound
+const menuSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/GameMenuSound.wav"); // Replace with your menu sound URL
+menuSound.loop = true;
+menuSound.volume = 0.5;
+menuSound.onerror = () => {
+    console.error("Failed to load menu sound.");
+
 };
 
 // Animation class to handle animations
@@ -727,9 +743,14 @@ function drawMainMenu() {
     // Clear the canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Draw the background (optional: use an image or gradient)
-    ctx.fillStyle = "black";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    // Draw the menu background image
+    if (menuImage.complete && menuImage.naturalWidth !== 0) {
+        ctx.drawImage(menuImage, 0, 0, canvas.width, canvas.height);
+    } else {
+        // Fallback background if the image fails to load
+        ctx.fillStyle = "black";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
 
     // Draw the title
     ctx.fillStyle = "white";
@@ -978,12 +999,22 @@ function render() {
 
 function gameLoop() {
     if (gameState === "menu") {
+        if (!menuSound.paused && backgroundSound.paused) {
+            // Play the menu sound if it's not already playing
+            menuSound.play();
+            backgroundSound.pause(); // Ensure the background sound is paused
+        }
         if (settingsState) {
             drawSettingsMenu(); // Draw the settings menu
         } else {
             drawMainMenu(); // Draw the main menu
         }
     } else if (gameState === "playing") {
+        if (!backgroundSound.paused && menuSound.paused) {
+            // Play the background sound if it's not already playing
+            backgroundSound.play();
+            menuSound.pause(); // Ensure the menu sound is paused
+        }
         update(); // Update game logic
         render(); // Render the game
     } else if (gameState === "gameOver") {
