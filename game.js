@@ -542,12 +542,6 @@ const keys = {};
 window.addEventListener('keydown', (event) => {
     keys[event.code] = true;
     if (event.code === "KeyR" && gameOver) {
-        // Restart the game
-        resetGame();
-        gameState = "playing";
-    } else if (event.code === "KeyM" && gameOver) {
-        // Return to the main menu
-        gameState = "menu";
         resetGame();
     }
     if (event.code === "KeyF") {
@@ -700,37 +694,28 @@ function resetGame() {
 }
 
 function drawGameOverScreen() {
-    // Clear the canvas
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // Draw the background
     ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Draw the title
     ctx.fillStyle = "red";
     ctx.font = "60px Arial";
     ctx.textAlign = "center";
-    ctx.fillText("Game Over", canvas.width / 2, canvas.height / 2 - 100);
+    ctx.fillText("Game Over", canvas.width / 2, canvas.height / 2 - 60);
 
-    // Draw the player's score
     ctx.fillStyle = "white";
     ctx.font = "30px Arial";
     ctx.fillText(`Your Score: ${player.score}`, canvas.width / 2, canvas.height / 2);
 
-    // Draw the high score
     ctx.fillStyle = "gold";
     ctx.font = "30px Arial";
     ctx.fillText(`High Score: ${highScore}`, canvas.width / 2, canvas.height / 2 + 40);
 
-    // Draw restart and back options
     ctx.fillStyle = "white";
     ctx.font = "20px Arial";
     ctx.fillText("Press R to Restart", canvas.width / 2, canvas.height / 2 + 100);
     ctx.fillText("Press M to Return to Menu", canvas.width / 2, canvas.height / 2 + 140);
 
-    // Pause the background sound
-    backgroundSound.pause();
+    backgroundSound.pause(); // Pause the background sound when the game is over
 }
 
 function drawMainMenu() {
@@ -971,11 +956,6 @@ function render() {
         );
     }
 
-    // Apply blur effect to the background
-    ctx.filter = "blur(5px)";
-    ctx.drawImage(canvas, 0, 0);
-    ctx.filter = "none";
-
     // Draw platforms, enemies, bullets, power-ups, player, and score
     platforms.forEach(platform => platform.draw());
     enemies.forEach(enemy => enemy.draw());
@@ -1052,6 +1032,11 @@ window.addEventListener('keydown', (event) => {
         } else if (event.code === "Enter") {
             // Go back to the main menu from how-to-play screen
             settingsState = false;
+        }
+    } else if (gameState === "gameOver") {
+        if (event.code === "KeyM") {
+            // Return to the main menu
+            gameState = "menu";
         }
     }
 });
