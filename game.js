@@ -16,9 +16,6 @@ highScore = parseInt(highScore);
 // Load the background image
 const backgroundImage = new Image();
 backgroundImage.src = "GameBackground.jpg";
-backgroundImage.onload = () => {
-    console.log("Background image loaded successfully.");
-};
 backgroundImage.onerror = () => {
     console.error("Failed to load background image.");
 };
@@ -26,9 +23,6 @@ backgroundImage.onerror = () => {
 // Load the player sprite sheet
 const playerSpriteSheet = new Image();
 playerSpriteSheet.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/NewPlayermovement.png";
-playerSpriteSheet.onload = () => {
-    console.log("Player sprite sheet loaded successfully.");
-};
 playerSpriteSheet.onerror = () => {
     console.error("Failed to load player sprite sheet.");
 };
@@ -36,9 +30,6 @@ playerSpriteSheet.onerror = () => {
 // Load the non-shooting enemy sprite sheet
 const nonShootingEnemySpriteSheet = new Image();
 nonShootingEnemySpriteSheet.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/AlienRoboticEnemyMovement.png";
-nonShootingEnemySpriteSheet.onload = () => {
-    console.log("Non-shooting enemy sprite sheet loaded successfully.");
-};
 nonShootingEnemySpriteSheet.onerror = () => {
     console.error("Failed to load non-shooting enemy sprite sheet.");
 };
@@ -46,9 +37,6 @@ nonShootingEnemySpriteSheet.onerror = () => {
 // Load the shooting enemy (drone) sprite sheet
 const shootingEnemySpriteSheet = new Image();
 shootingEnemySpriteSheet.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/AIDroneEnemyMovement.png";
-shootingEnemySpriteSheet.onload = () => {
-    console.log("Shooting enemy sprite sheet loaded successfully.");
-};
 shootingEnemySpriteSheet.onerror = () => {
     console.error("Failed to load shooting enemy sprite sheet.");
 };
@@ -56,18 +44,12 @@ shootingEnemySpriteSheet.onerror = () => {
 // Load platform images
 const platformImage = new Image();
 platformImage.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/platform.jpg";
-platformImage.onload = () => {
-    console.log("Platform image loaded successfully.");
-};
 platformImage.onerror = () => {
     console.error("Failed to load platform image.");
 };
 
 const movingPlatformImage = new Image();
 movingPlatformImage.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/moving-platform.jpg";
-movingPlatformImage.onload = () => {
-    console.log("Moving platform image loaded successfully.");
-};
 movingPlatformImage.onerror = () => {
     console.error("Failed to load moving platform image.");
 };
@@ -75,9 +57,6 @@ movingPlatformImage.onerror = () => {
 // Load the spike image
 const spikeImage = new Image();
 spikeImage.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/testingspike.png";
-spikeImage.onload = () => {
-    console.log("Spike image loaded successfully.");
-};
 spikeImage.onerror = () => {
     console.error("Failed to load spike image.");
 };
@@ -568,20 +547,18 @@ window.addEventListener('keydown', (event) => {
 });
 window.addEventListener('keyup', (event) => keys[event.code] = false);
 
-function handleMovement(deltaTime) {
-    const speedMultiplier = deltaTime / 16.67; // Normalize speed based on 60 FPS
-
+function handleMovement() {
     if (keys['ArrowLeft'] || keys['KeyA']) {
-        player.x -= player.speed * speedMultiplier;
+        player.x -= player.speed;
         player.direction = -1;
     }
     if (keys['ArrowRight'] || keys['KeyD']) {
-        player.x += player.speed * speedMultiplier;
+        player.x += player.speed;
         player.direction = 1;
     }
 
-    player.velocityY += 0.5 * speedMultiplier;
-    player.y += player.velocityY * speedMultiplier;
+    player.velocityY += 0.5;
+    player.y += player.velocityY;
 
     let onPlatform = false;
     platforms.forEach(platform => {
@@ -610,7 +587,7 @@ function handleMovement(deltaTime) {
 
                 // Track the moving platform
                 if (platform.isMoving) {
-                    player.x += platform.direction * platform.speed * speedMultiplier; // Move the player with the platform
+                    player.x += platform.direction * platform.speed; // Move the player with the platform
                 }
 
                 if (player.lastPlatform !== platform) {
@@ -733,10 +710,10 @@ function drawGameOverScreen() {
     backgroundSound.pause(); // Pause the background sound when the game is over
 }
 
-function update(deltaTime) {
+function update() {
     if (!gameOver) {
         updateShield();
-        handleMovement(deltaTime);
+        handleMovement();
         generatePlatforms();
         camera.update();
 
@@ -828,9 +805,6 @@ function drawPlayer() {
     }
 
     const frame = currentAnimation.getCurrentFrame();
-    console.log("Player frame:", frame); // Debugging log
-    console.log("Player position:", player.x, player.y); // Debugging log
-    console.log("Camera position:", camera.x); // Debugging log
 
     ctx.save();
     if (player.direction === -1) {
@@ -896,13 +870,8 @@ function render() {
     }
 }
 
-let lastTime = 0;
-
-function gameLoop(timestamp) {
-    const deltaTime = timestamp - lastTime;
-    lastTime = timestamp;
-
-    update(deltaTime);
+function gameLoop() {
+    update();
     render();
     requestAnimationFrame(gameLoop);
 }
