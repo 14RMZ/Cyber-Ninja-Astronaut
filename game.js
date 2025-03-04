@@ -652,6 +652,9 @@ function updateShield() {
 }
 
 function resetGame() {
+    // Resize the canvas to fit the window
+    resizeCanvas();
+
     gameOver = false;
     isDying = false;
     isJumping = false;
