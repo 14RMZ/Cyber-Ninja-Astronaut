@@ -129,22 +129,21 @@ const newHighScoreSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astrona
 newHighScoreSound.volume = 0.5;
 newHighScoreSound.onerror = () => {
     console.error("Failed to load new high score sound.");
-    
 };
+
 // Load the menu image
 const menuImage = new Image();
-menuImage.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/GameMenuBackground.webp"; // Replace with your menu image URL
+menuImage.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/GameMenuBackground.webp";
 menuImage.onerror = () => {
     console.error("Failed to load menu image.");
 };
 
 // Load the menu sound
-const menuSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/GameMenuSound.wav"); // Replace with your menu sound URL
+const menuSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/GameMenuSound.wav");
 menuSound.loop = true;
 menuSound.volume = 0.5;
 menuSound.onerror = () => {
     console.error("Failed to load menu sound.");
-
 };
 
 // Animation class to handle animations
