@@ -66,11 +66,11 @@ spikeImage.onerror = () => {
 };
 
 // Load the background sound
-const backgroundSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/Playingthegamesound.wav");
-backgroundSound.loop = true;
-backgroundSound.volume = 0.5;
-backgroundSound.onerror = () => {
-    console.error("Failed to load background sound.");
+const gameMusic = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/Playingthegamesound.wav");
+gameMusic.loop = true;
+gameMusic.volume = 0.5;
+gameMusic.onerror = () => {
+    console.error("Failed to load game music.");
 };
 
 // Load player sound effects
@@ -139,12 +139,30 @@ menuImage.onerror = () => {
 };
 
 // Load the menu sound
-const menuSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/GameMenuSound.wav");
-menuSound.loop = true;
-menuSound.volume = 0.5;
-menuSound.onerror = () => {
-    console.error("Failed to load menu sound.");
+const menuMusic = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/GameMenuSound.wav");
+menuMusic.loop = true;
+menuMusic.volume = 0.5;
+menuMusic.onerror = () => {
+    console.error("Failed to load menu music.");
 };
+
+// Music management functions
+function playMenuMusic() {
+    gameMusic.pause();
+    gameMusic.currentTime = 0; // Reset game music
+    menuMusic.play();
+}
+
+function playGameMusic() {
+    menuMusic.pause();
+    menuMusic.currentTime = 0; // Reset menu music
+    gameMusic.play();
+}
+
+function stopAllMusic() {
+    menuMusic.pause();
+    gameMusic.pause();
+}
 
 // Animation class to handle animations
 class Animation {
@@ -785,7 +803,7 @@ function drawSettingsMenu() {
 
     // Draw settings options
     ctx.font = "30px Arial";
-    ctx.fillText("1. Sound Volume: " + backgroundSound.volume.toFixed(2), canvas.width / 2, canvas.height / 2 - 50);
+    ctx.fillText("1. Sound Volume: " + gameMusic.volume.toFixed(2), canvas.width / 2, canvas.height / 2 - 50);
     ctx.fillText("2. Back to Main Menu", canvas.width / 2, canvas.height / 2);
 
     // Draw instructions
@@ -1101,10 +1119,10 @@ Promise.all([
     new Promise((resolve) => { spikeImage.onload = resolve; }),
     new Promise((resolve) => { menuImage.onload = resolve; }), // Wait for the menu image to load
     new Promise((resolve) => {
-        backgroundSound.addEventListener("canplaythrough", resolve); // Wait for the background sound to load
+        gameMusic.addEventListener("canplaythrough", resolve); // Wait for the game music to load
     }),
     new Promise((resolve) => {
-        menuSound.addEventListener("canplaythrough", resolve); // Wait for the menu sound to load
+        menuMusic.addEventListener("canplaythrough", resolve); // Wait for the menu music to load
     }),
     new Promise((resolve) => {
         powerUpSound.addEventListener("canplaythrough", resolve); // Wait for the power-up sound to load
