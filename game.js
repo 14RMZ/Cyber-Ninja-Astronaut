@@ -803,7 +803,7 @@ function drawSettingsMenu() {
 
     // Draw settings options
     ctx.font = "30px Arial";
-    ctx.fillText("1. Sound Volume: " + gameMusic.volume.toFixed(2), canvas.width / 2, canvas.height / 2 - 50);
+    ctx.fillText("1. Sound Volume: " + gameMusicBuffer.volume.toFixed(2), canvas.width / 2, canvas.height / 2 - 50);
     ctx.fillText("2. Back to Main Menu", canvas.width / 2, canvas.height / 2);
 
     // Draw instructions
@@ -1081,14 +1081,14 @@ window.addEventListener('keydown', (event) => {
         if (settingsState) {
             if (event.code === "ArrowUp") {
                 // Increase volume
-                gameMusic.volume = Math.min(1, gameMusic.volume + 0.1);
-                menuMusic.volume = Math.min(1, menuMusic.volume + 0.1);
-                gameOverMusic.volume = Math.min(1, gameOverMusic.volume + 0.1);
+                gameMusicBuffer.volume = Math.min(1, gameMusicBuffer.volume + 0.1);
+                menuMusicBuffer.volume = Math.min(1, menuMusicBuffer.volume + 0.1);
+                gameOverMusicBuffer.volume = Math.min(1, gameOverMusicBuffer.volume + 0.1);
             } else if (event.code === "ArrowDown") {
                 // Decrease volume
-                gameMusic.volume = Math.max(0, gameMusic.volume - 0.1);
-                menuMusic.volume = Math.max(0, menuMusic.volume - 0.1);
-                gameOverMusic.volume = Math.max(0, gameOverMusic.volume - 0.1);
+                gameMusicBuffer.volume = Math.max(0, gameMusicBuffer.volume - 0.1);
+                menuMusicBuffer.volume = Math.max(0, menuMusicBuffer.volume - 0.1);
+                gameOverMusicBuffer.volume = Math.max(0, gameOverMusicBuffer.volume - 0.1);
             } else if (event.code === "Enter") {
                 // Go back to the main menu
                 settingsState = false;
@@ -1121,13 +1121,13 @@ Promise.all([
     new Promise((resolve) => { spikeImage.onload = resolve; }),
     new Promise((resolve) => { menuImage.onload = resolve; }), // Wait for the menu image to load
     new Promise((resolve) => {
-        gameMusic.addEventListener("canplaythrough", resolve); // Wait for the game music to load
+        gameMusicBuffer.addEventListener("canplaythrough", resolve); // Wait for the game music to load
     }),
     new Promise((resolve) => {
-        menuMusic.addEventListener("canplaythrough", resolve); // Wait for the menu music to load
+        menuMusicBuffer.addEventListener("canplaythrough", resolve); // Wait for the menu music to load
     }),
     new Promise((resolve) => {
-        gameOverMusic.addEventListener("canplaythrough", resolve); // Wait for the game over music to load
+        gameOverMusicBuffer.addEventListener("canplaythrough", resolve); // Wait for the game over music to load
     }),
     new Promise((resolve) => {
         powerUpSound.addEventListener("canplaythrough", resolve); // Wait for the power-up sound to load
