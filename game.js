@@ -65,12 +65,26 @@ spikeImage.onerror = () => {
     console.error("Failed to load spike image.");
 };
 
-// Load the background sound
+// Load the background sounds
 const gameMusic = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/Playingthegamesound.wav");
 gameMusic.loop = true;
 gameMusic.volume = 0.5;
 gameMusic.onerror = () => {
     console.error("Failed to load game music.");
+};
+
+const menuMusic = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/GameMenuSound.wav");
+menuMusic.loop = true;
+menuMusic.volume = 0.5;
+menuMusic.onerror = () => {
+    console.error("Failed to load menu music.");
+};
+
+const gameOverMusic = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/GameMenuSound.wav"); // Replace with your game over sound URL
+gameOverMusic.loop = true;
+gameOverMusic.volume = 0;
+gameOverMusic.onerror = () => {
+    console.error("Failed to load game over music.");
 };
 
 // Load player sound effects
@@ -138,25 +152,29 @@ menuImage.onerror = () => {
     console.error("Failed to load menu image.");
 };
 
-// Load the menu sound
-const menuMusic = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/GameMenuSound.wav");
-menuMusic.loop = true;
-menuMusic.volume = 0.5;
-menuMusic.onerror = () => {
-    console.error("Failed to load menu music.");
-};
-
 // Music management functions
 function playMenuMusic() {
     gameMusic.pause();
     gameMusic.currentTime = 0; // Reset game music
+    gameOverMusic.pause();
+    gameOverMusic.currentTime = 0; // Reset game over music
     menuMusic.play();
 }
 
 function playGameMusic() {
     menuMusic.pause();
     menuMusic.currentTime = 0; // Reset menu music
+    gameOverMusic.pause();
+    gameOverMusic.currentTime = 0; // Reset game over music
     gameMusic.play();
+}
+
+function playGameOverMusic() {
+    menuMusic.pause();
+    menuMusic.currentTime = 0; // Reset menu music
+    gameMusic.pause();
+    gameMusic.currentTime = 0; // Reset game music
+    gameOverMusic.play();
 }
 
 function stopAllMusic() {
@@ -164,6 +182,8 @@ function stopAllMusic() {
     menuMusic.currentTime = 0; // Reset playback position
     gameMusic.pause();
     gameMusic.currentTime = 0; // Reset playback position
+    gameOverMusic.pause();
+    gameOverMusic.currentTime = 0; // Reset playback position
 }
 
 // Animation class to handle animations
@@ -696,6 +716,8 @@ function updateShield() {
 }
 
 function resetGame() {
+    stopAllMusic(); // Stop all music, including game over music
+
     // Resize the canvas to fit the window
     resizeCanvas();
 
@@ -738,12 +760,8 @@ function resetGame() {
 }
 
 function drawGameOverScreen() {
-    stopAllMusic(); // Stop only menu and game music
-
-    // Mute or stop specific sounds
-    playerDeathSound.volume = 0;
-    spikeDeathSound.volume = 0;
-    fallSound.volume = 0;
+    stopAllMusic(); // Stop all other music
+    playGameOverMusic(); // Play the game over music
 
     ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -1095,10 +1113,12 @@ window.addEventListener('keydown', (event) => {
                 // Increase volume
                 gameMusic.volume = Math.min(1, gameMusic.volume + 0.1);
                 menuMusic.volume = Math.min(1, menuMusic.volume + 0.1);
+                gameOverMusic.volume = Math.min(1, gameOverMusic.volume + 0.1);
             } else if (event.code === "ArrowDown") {
                 // Decrease volume
                 gameMusic.volume = Math.max(0, gameMusic.volume - 0.1);
                 menuMusic.volume = Math.max(0, menuMusic.volume - 0.1);
+                gameOverMusic.volume = Math.max(0, gameOverMusic.volume - 0.1);
             } else if (event.code === "Enter") {
                 // Go back to the main menu
                 settingsState = false;
@@ -1137,6 +1157,9 @@ Promise.all([
     }),
     new Promise((resolve) => {
         menuMusic.addEventListener("canplaythrough", resolve); // Wait for the menu music to load
+    }),
+    new Promise((resolve) => {
+        gameOverMusic.addEventListener("canplaythrough", resolve); // Wait for the game over music to load
     }),
     new Promise((resolve) => {
         powerUpSound.addEventListener("canplaythrough", resolve); // Wait for the power-up sound to load
