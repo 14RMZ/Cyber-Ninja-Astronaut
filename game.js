@@ -145,6 +145,13 @@ newHighScoreSound.onerror = () => {
     console.error("Failed to load new high score sound.");
 };
 
+// Load the menu image
+const menuImage = new Image();
+menuImage.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/GameMenuBackground.webp";
+menuImage.onerror = () => {
+    console.error("Failed to load menu image.");
+};
+
 // Music control variables
 let currentMusic = null;
 
