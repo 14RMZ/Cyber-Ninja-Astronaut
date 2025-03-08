@@ -65,6 +65,86 @@ spikeImage.onerror = () => {
     console.error("Failed to load spike image.");
 };
 
+// Load the background sounds
+const gameMusic = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/Playingthegamesound.wav");
+gameMusic.loop = true;
+gameMusic.volume = 0.5;
+gameMusic.onerror = () => {
+    console.error("Failed to load game music.");
+};
+
+const menuMusic = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/GameMenuSound.wav");
+menuMusic.loop = true;
+menuMusic.volume = 0.5;
+menuMusic.onerror = () => {
+    console.error("Failed to load menu music.");
+};
+
+const gameOverMusic = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/GameMenuSound.wav"); // Game over sound
+gameOverMusic.loop = true;
+gameOverMusic.volume = 0.5;
+gameOverMusic.onerror = () => {
+    console.error("Failed to load game over music.");
+};
+
+// Load player sound effects
+const jumpSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/jumping_sound.wav");
+jumpSound.volume = 0.5;
+jumpSound.onerror = () => {
+    console.error("Failed to load jump sound.");
+};
+
+const shootSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/Playershooting.mp3");
+shootSound.volume = 0.5;
+shootSound.onerror = () => {
+    console.error("Failed to load shoot sound.");
+};
+
+const fallSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/Playerfallingdown.mp3");
+fallSound.volume = 0.5;
+fallSound.onerror = () => {
+    console.error("Failed to load fall sound.");
+};
+
+const spikeDeathSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/Playerkilledbyspikes.wav");
+spikeDeathSound.volume = 0.5;
+spikeDeathSound.onerror = () => {
+    console.error("Failed to load spike death sound.");
+};
+
+const playerDeathSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/Playergetsshootbyenemy.mp3");
+playerDeathSound.volume = 0.5;
+playerDeathSound.onerror = () => {
+    console.error("Failed to load player death sound.");
+};
+
+// Load enemy sound effects
+const enemyShootSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/Droneshooting.mp3");
+enemyShootSound.volume = 0.5;
+enemyShootSound.onerror = () => {
+    console.error("Failed to load enemy shoot sound.");
+};
+
+const enemyDeathSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/Enemydying.wav");
+enemyDeathSound.volume = 0.5;
+enemyDeathSound.onerror = () => {
+    console.error("Failed to load enemy death sound.");
+};
+
+// Load the power-up sound
+const powerUpSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/playerpowerup.wav");
+powerUpSound.volume = 0.5;
+powerUpSound.onerror = () => {
+    console.error("Failed to load power-up sound.");
+};
+
+// Load the new high score sound
+const newHighScoreSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/highscore.wav");
+newHighScoreSound.volume = 0.5;
+newHighScoreSound.onerror = () => {
+    console.error("Failed to load new high score sound.");
+};
+
 // Load the menu image
 const menuImage = new Image();
 menuImage.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/GameMenuBackground.webp";
@@ -72,86 +152,45 @@ menuImage.onerror = () => {
     console.error("Failed to load menu image.");
 };
 
-// Create an AudioContext for better audio control
-const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-
-// Function to decode audio data
-function decodeAudioData(audioFile, callback) {
-    const request = new XMLHttpRequest();
-    request.open('GET', audioFile, true);
-    request.responseType = 'arraybuffer';
-
-    request.onload = () => {
-        audioContext.decodeAudioData(request.response, (buffer) => {
-            callback(buffer);
-        }, (error) => {
-            console.error("Error decoding audio data:", error);
-        });
-    };
-
-    request.send();
-}
-
-// Load audio files
-let menuMusicBuffer, gameMusicBuffer, gameOverMusicBuffer;
-
-decodeAudioData("https://14rmz.github.io/Cyber-Ninja-Astronaut/GameMenuSound.wav", (buffer) => {
-    menuMusicBuffer = buffer;
-});
-
-decodeAudioData("https://14rmz.github.io/Cyber-Ninja-Astronaut/Playingthegamesound.wav", (buffer) => {
-    gameMusicBuffer = buffer;
-});
-
-decodeAudioData("https://14rmz.github.io/Cyber-Ninja-Astronaut/GameMenuSound.wav", (buffer) => {
-    gameOverMusicBuffer = buffer;
-});
-
-// Function to play audio
-function playAudio(buffer, loop = true) {
-    const source = audioContext.createBufferSource();
-    source.buffer = buffer;
-    source.loop = loop;
-    source.connect(audioContext.destination);
-    source.start(0);
-    return source;
-}
-
-// Function to stop audio
-function stopAudio(source) {
-    if (source) {
-        source.stop();
-    }
-}
-
-// Global variables for audio sources
-let currentAudioSource = null;
+// Music control variables
+let currentMusic = null;
 
 // Function to play music
-function playMusic(buffer) {
-    stopAudio(currentAudioSource); // Stop the current audio
-    currentAudioSource = playAudio(buffer); // Play the new audio
+function playMusic(music) {
+    if (currentMusic !== music) {
+        if (currentMusic) {
+            currentMusic.pause();
+            currentMusic.currentTime = 0; // Reset playback position
+        }
+        currentMusic = music;
+        currentMusic.play();
+    }
 }
 
 // Function to stop all music
 function stopAllMusic() {
-    stopAudio(currentAudioSource);
-    currentAudioSource = null;
+    if (currentMusic) {
+        currentMusic.pause();
+        currentMusic.currentTime = 0; // Reset playback position
+    }
+    currentMusic = null;
 }
 
-// Handle tab visibility changes
-document.addEventListener("visibilitychange", () => {
+// Pause audio when the tab is inactive
+document.addEventListener('visibilitychange', () => {
     if (document.hidden) {
-        // Pause audio when the tab is inactive
-        stopAllMusic();
+        // Pause all audio when the tab is inactive
+        gameMusic.pause();
+        menuMusic.pause();
+        gameOverMusic.pause();
     } else {
-        // Resume audio when the tab becomes active
-        if (gameState === "menu") {
-            playMusic(menuMusicBuffer);
-        } else if (gameState === "playing") {
-            playMusic(gameMusicBuffer);
+        // Resume audio when the tab becomes active again
+        if (gameState === "playing") {
+            playMusic(gameMusic);
+        } else if (gameState === "menu") {
+            playMusic(menuMusic);
         } else if (gameState === "gameOver") {
-            playMusic(gameOverMusicBuffer);
+            playMusic(gameOverMusic);
         }
     }
 });
@@ -726,12 +765,13 @@ function resetGame() {
     fallSound.volume = 0.5;
 
     // Start the game music
-    playMusic(gameMusicBuffer);
+    playMusic(gameMusic);
 }
 
 function drawGameOverScreen() {
     stopAllMusic(); // Stop all other music
-    playMusic(gameOverMusicBuffer); // Play the game over music
+    gameOverMusic.currentTime = 0; // Reset the playback position
+    playMusic(gameOverMusic); // Play the game over music
 
     ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -803,7 +843,7 @@ function drawSettingsMenu() {
 
     // Draw settings options
     ctx.font = "30px Arial";
-    ctx.fillText("1. Sound Volume: " + gameMusicBuffer.volume.toFixed(2), canvas.width / 2, canvas.height / 2 - 50);
+    ctx.fillText("1. Sound Volume: " + gameMusic.volume.toFixed(2), canvas.width / 2, canvas.height / 2 - 50);
     ctx.fillText("2. Back to Main Menu", canvas.width / 2, canvas.height / 2);
 
     // Draw instructions
@@ -1020,11 +1060,11 @@ function gameLoop() {
         } else {
             drawMainMenu(); // Draw the main menu
         }
-        playMusic(menuMusicBuffer); // Ensure menu music is playing
+        playMusic(menuMusic); // Ensure menu music is playing
     } else if (gameState === "playing") {
         update(); // Update game logic
         render(); // Render the game
-        playMusic(gameMusicBuffer); // Ensure game music is playing
+        playMusic(gameMusic); // Ensure game music is playing
     } else if (gameState === "gameOver") {
         if (!gameOver) {
             gameOver = true; // Ensure gameOver is set to true
@@ -1081,14 +1121,14 @@ window.addEventListener('keydown', (event) => {
         if (settingsState) {
             if (event.code === "ArrowUp") {
                 // Increase volume
-                gameMusicBuffer.volume = Math.min(1, gameMusicBuffer.volume + 0.1);
-                menuMusicBuffer.volume = Math.min(1, menuMusicBuffer.volume + 0.1);
-                gameOverMusicBuffer.volume = Math.min(1, gameOverMusicBuffer.volume + 0.1);
+                gameMusic.volume = Math.min(1, gameMusic.volume + 0.1);
+                menuMusic.volume = Math.min(1, menuMusic.volume + 0.1);
+                gameOverMusic.volume = Math.min(1, gameOverMusic.volume + 0.1);
             } else if (event.code === "ArrowDown") {
                 // Decrease volume
-                gameMusicBuffer.volume = Math.max(0, gameMusicBuffer.volume - 0.1);
-                menuMusicBuffer.volume = Math.max(0, menuMusicBuffer.volume - 0.1);
-                gameOverMusicBuffer.volume = Math.max(0, gameOverMusicBuffer.volume - 0.1);
+                gameMusic.volume = Math.max(0, gameMusic.volume - 0.1);
+                menuMusic.volume = Math.max(0, menuMusic.volume - 0.1);
+                gameOverMusic.volume = Math.max(0, gameOverMusic.volume - 0.1);
             } else if (event.code === "Enter") {
                 // Go back to the main menu
                 settingsState = false;
@@ -1121,13 +1161,13 @@ Promise.all([
     new Promise((resolve) => { spikeImage.onload = resolve; }),
     new Promise((resolve) => { menuImage.onload = resolve; }), // Wait for the menu image to load
     new Promise((resolve) => {
-        gameMusicBuffer.addEventListener("canplaythrough", resolve); // Wait for the game music to load
+        gameMusic.addEventListener("canplaythrough", resolve); // Wait for the game music to load
     }),
     new Promise((resolve) => {
-        menuMusicBuffer.addEventListener("canplaythrough", resolve); // Wait for the menu music to load
+        menuMusic.addEventListener("canplaythrough", resolve); // Wait for the menu music to load
     }),
     new Promise((resolve) => {
-        gameOverMusicBuffer.addEventListener("canplaythrough", resolve); // Wait for the game over music to load
+        gameOverMusic.addEventListener("canplaythrough", resolve); // Wait for the game over music to load
     }),
     new Promise((resolve) => {
         powerUpSound.addEventListener("canplaythrough", resolve); // Wait for the power-up sound to load
