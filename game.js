@@ -728,12 +728,23 @@ function resetGame() {
     // Regenerate platforms
     generatePlatforms();
 
+    // Reset sound volumes
+    playerDeathSound.volume = 0.5;
+    spikeDeathSound.volume = 0.5;
+    fallSound.volume = 0.5;
+
     // Start the game music
     playGameMusic();
 }
 
 function drawGameOverScreen() {
     stopAllMusic(); // Stop only menu and game music
+
+    // Mute or stop specific sounds
+    playerDeathSound.volume = 0;
+    spikeDeathSound.volume = 0;
+    fallSound.volume = 0;
+
     ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -754,7 +765,6 @@ function drawGameOverScreen() {
     ctx.font = "20px Arial";
     ctx.fillText("Press R to Restart", canvas.width / 2, canvas.height / 2 + 100);
     ctx.fillText("Press M to Return to Menu", canvas.width / 2, canvas.height / 2 + 140);
-
 }
 
 function drawMainMenu() {
