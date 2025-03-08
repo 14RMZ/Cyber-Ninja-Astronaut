@@ -161,8 +161,20 @@ async function playMusic(music) {
         if (currentMusic) {
             currentMusic.pause();
             currentMusic.currentTime = 0; // Reset playback position
-}
+        }
+        currentMusic = music;
 
+        try {
+            await currentMusic.play(); // Use await to handle the promise
+        } catch (error) {
+            if (error.name === 'AbortError') {
+                console.log('Audio playback was aborted:', error.message);
+            } else {
+                console.error('Error playing audio:', error);
+            }
+        }
+    }
+}
 
 // Function to stop all music
 function stopAllMusic() {
