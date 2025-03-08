@@ -697,7 +697,6 @@ function handleMovement() {
 
     if (player.y > canvas.height) {
         gameOver = true;
-        stopAllMusic(); // Stop all music when game over
         fallSound.play(); // Play fall sound
         updateHighScore(); // Update high score when the player falls
     }
@@ -763,6 +762,8 @@ function resetGame() {
 }
 
 function drawGameOverScreen() {
+    stopAllSounds(); // Stop all sounds when the game is over
+    stopAllMusic(); // Stop all music when game over screen appears
     ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -912,7 +913,6 @@ function update() {
                 if (!player.isShieldActive) {
                     gameOver = true;
                     playerDeathSound.play(); // Play player death sound
-                    stopAllMusic(); // Stop all music when game over
                     updateHighScore(); // Update high score when the player dies
                 }
             }
