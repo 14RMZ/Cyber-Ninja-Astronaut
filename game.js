@@ -779,6 +779,7 @@ function resetGame() {
 }
 
 const gameOverSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/GameMenuSound.wav"); // Update path if needed
+gameOverSound.volume = 0; // Set volume to 50% (adjust as needed)
 
 function playGameOverSound() {
     if (!gameOverSound.paused) return; // Prevent repeated play
