@@ -152,55 +152,28 @@ menuImage.onerror = () => {
     console.error("Failed to load menu image.");
 };
 
-// Global variables for music control
-let isMenuMusicPlaying = false;
-let isGameMusicPlaying = false;
-let isGameOverMusicPlaying = false;
+// Music control variables
+let currentMusic = null;
 
-// Function to play menu music in a while loop
-function playMenuMusicLoop() {
-    isMenuMusicPlaying = true;
-    while (isMenuMusicPlaying) {
-        if (menuMusic.paused) {
-            menuMusic.play();
+// Function to play music
+function playMusic(music) {
+    if (currentMusic !== music) {
+        if (currentMusic) {
+            currentMusic.pause();
+            currentMusic.currentTime = 0; // Reset playback position
         }
-        // Add a small delay to avoid blocking the main thread
-        setTimeout(() => {}, 100);
+        currentMusic = music;
+        currentMusic.play();
     }
-    menuMusic.pause(); // Stop the menu music when the loop exits
 }
 
-// Function to play game music in a while loop
-function playGameMusicLoop() {
-    isGameMusicPlaying = true;
-    while (isGameMusicPlaying) {
-        if (gameMusic.paused) {
-            gameMusic.play();
-        }
-        // Add a small delay to avoid blocking the main thread
-        setTimeout(() => {}, 100);
+// Function to stop all music
+function stopAllMusic() {
+    if (currentMusic) {
+        currentMusic.pause();
+        currentMusic.currentTime = 0; // Reset playback position
     }
-    gameMusic.pause(); // Stop the game music when the loop exits
-}
-
-// Function to play game over music in a while loop
-function playGameOverMusicLoop() {
-    isGameOverMusicPlaying = true;
-    while (isGameOverMusicPlaying) {
-        if (gameOverMusic.paused) {
-            gameOverMusic.play();
-        }
-        // Add a small delay to avoid blocking the main thread
-        setTimeout(() => {}, 100);
-    }
-    gameOverMusic.pause(); // Stop the game over music when the loop exits
-}
-
-// Function to stop all music loops
-function stopAllMusicLoops() {
-    isMenuMusicPlaying = false;
-    isGameMusicPlaying = false;
-    isGameOverMusicPlaying = false;
+    currentMusic = null;
 }
 
 // Animation class to handle animations
@@ -733,7 +706,7 @@ function updateShield() {
 }
 
 function resetGame() {
-    stopAllMusicLoops(); // Stop all music loops
+    stopAllMusic(); // Stop all music
 
     // Resize the canvas to fit the window
     resizeCanvas();
@@ -773,12 +746,12 @@ function resetGame() {
     fallSound.volume = 0.5;
 
     // Start the game music
-    playGameMusicLoop();
+    playMusic(gameMusic);
 }
 
 function drawGameOverScreen() {
-    stopAllMusicLoops(); // Stop all other music loops
-    playGameOverMusicLoop(); // Play the game over music loop
+    stopAllMusic(); // Stop all other music
+    playMusic(gameOverMusic); // Play the game over music
 
     ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -1067,11 +1040,11 @@ function gameLoop() {
         } else {
             drawMainMenu(); // Draw the main menu
         }
-        playMenuMusicLoop(); // Ensure menu music is playing
+        playMusic(menuMusic); // Ensure menu music is playing
     } else if (gameState === "playing") {
         update(); // Update game logic
         render(); // Render the game
-        playGameMusicLoop(); // Ensure game music is playing
+        playMusic(gameMusic); // Ensure game music is playing
     } else if (gameState === "gameOver") {
         if (!gameOver) {
             gameOver = true; // Ensure gameOver is set to true
