@@ -80,9 +80,9 @@ menuMusic.onerror = () => {
     console.error("Failed to load menu music.");
 };
 
-const gameOverMusic = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/GameMenuSound.wav"); // Replace with your game over sound URL
+const gameOverMusic = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/GameMenuSound.wav"); // Game over sound
 gameOverMusic.loop = true;
-gameOverMusic.volume = 0;
+gameOverMusic.volume = 0.5;
 gameOverMusic.onerror = () => {
     console.error("Failed to load game over music.");
 };
@@ -152,38 +152,55 @@ menuImage.onerror = () => {
     console.error("Failed to load menu image.");
 };
 
-// Music management functions
-function playMenuMusic() {
-    gameMusic.pause();
-    gameMusic.currentTime = 0; // Reset game music
-    gameOverMusic.pause();
-    gameOverMusic.currentTime = 0; // Reset game over music
-    menuMusic.play();
+// Global variables for music control
+let isMenuMusicPlaying = false;
+let isGameMusicPlaying = false;
+let isGameOverMusicPlaying = false;
+
+// Function to play menu music in a while loop
+function playMenuMusicLoop() {
+    isMenuMusicPlaying = true;
+    while (isMenuMusicPlaying) {
+        if (menuMusic.paused) {
+            menuMusic.play();
+        }
+        // Add a small delay to avoid blocking the main thread
+        setTimeout(() => {}, 100);
+    }
+    menuMusic.pause(); // Stop the menu music when the loop exits
 }
 
-function playGameMusic() {
-    menuMusic.pause();
-    menuMusic.currentTime = 0; // Reset menu music
-    gameOverMusic.pause();
-    gameOverMusic.currentTime = 0; // Reset game over music
-    gameMusic.play();
+// Function to play game music in a while loop
+function playGameMusicLoop() {
+    isGameMusicPlaying = true;
+    while (isGameMusicPlaying) {
+        if (gameMusic.paused) {
+            gameMusic.play();
+        }
+        // Add a small delay to avoid blocking the main thread
+        setTimeout(() => {}, 100);
+    }
+    gameMusic.pause(); // Stop the game music when the loop exits
 }
 
-function playGameOverMusic() {
-    menuMusic.pause();
-    menuMusic.currentTime = 0; // Reset menu music
-    gameMusic.pause();
-    gameMusic.currentTime = 0; // Reset game music
-    gameOverMusic.play();
+// Function to play game over music in a while loop
+function playGameOverMusicLoop() {
+    isGameOverMusicPlaying = true;
+    while (isGameOverMusicPlaying) {
+        if (gameOverMusic.paused) {
+            gameOverMusic.play();
+        }
+        // Add a small delay to avoid blocking the main thread
+        setTimeout(() => {}, 100);
+    }
+    gameOverMusic.pause(); // Stop the game over music when the loop exits
 }
 
-function stopAllMusic() {
-    menuMusic.pause();
-    menuMusic.currentTime = 0; // Reset playback position
-    gameMusic.pause();
-    gameMusic.currentTime = 0; // Reset playback position
-    gameOverMusic.pause();
-    gameOverMusic.currentTime = 0; // Reset playback position
+// Function to stop all music loops
+function stopAllMusicLoops() {
+    isMenuMusicPlaying = false;
+    isGameMusicPlaying = false;
+    isGameOverMusicPlaying = false;
 }
 
 // Animation class to handle animations
@@ -716,7 +733,7 @@ function updateShield() {
 }
 
 function resetGame() {
-    stopAllMusic(); // Stop all music, including game over music
+    stopAllMusicLoops(); // Stop all music loops
 
     // Resize the canvas to fit the window
     resizeCanvas();
@@ -756,12 +773,12 @@ function resetGame() {
     fallSound.volume = 0.5;
 
     // Start the game music
-    playGameMusic();
+    playGameMusicLoop();
 }
 
 function drawGameOverScreen() {
-    stopAllMusic(); // Stop all other music
-    playGameOverMusic(); // Play the game over music
+    stopAllMusicLoops(); // Stop all other music loops
+    playGameOverMusicLoop(); // Play the game over music loop
 
     ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -1050,11 +1067,11 @@ function gameLoop() {
         } else {
             drawMainMenu(); // Draw the main menu
         }
-        playMenuMusic(); // Ensure menu music is playing
+        playMenuMusicLoop(); // Ensure menu music is playing
     } else if (gameState === "playing") {
         update(); // Update game logic
         render(); // Render the game
-        playGameMusic(); // Ensure game music is playing
+        playGameMusicLoop(); // Ensure game music is playing
     } else if (gameState === "gameOver") {
         if (!gameOver) {
             gameOver = true; // Ensure gameOver is set to true
@@ -1132,12 +1149,10 @@ window.addEventListener('keydown', (event) => {
             // Restart the game
             resetGame();
             gameState = "playing";
-            playGameMusic(); // Start the game music
         } else if (event.code === "KeyM") {
             // Return to the main menu
             gameState = "menu";
             gameOver = false; // Reset the gameOver state
-            playMenuMusic(); // Start the menu music
         }
     }
 });
