@@ -160,8 +160,12 @@ function playGameMusic() {
 }
 
 function stopAllMusic() {
+    console.log("Stopping all music..."); // Debugging
     menuMusic.pause();
+    menuMusic.currentTime = 0; // Reset playback position
     gameMusic.pause();
+    gameMusic.currentTime = 0; // Reset playback position
+    console.log("All music stopped."); // Debugging
 }
 
 // Animation class to handle animations
@@ -1026,7 +1030,10 @@ function gameLoop() {
         render(); // Render the game
         playGameMusic(); // Ensure game music is playing
     } else if (gameState === "gameOver") {
-        stopAllMusic(); // Stop all music when the game is over
+        if (!gameOver) {
+            gameOver = true; // Ensure gameOver is set to true
+            stopAllMusic(); // Stop all music when the game is over
+        }
         drawGameOverScreen(); // Draw the game over screen
     }
 
