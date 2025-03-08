@@ -168,6 +168,33 @@ function stopAllMusic() {
     console.log("All music stopped."); // Debugging
 }
 
+// Stop all sounds (music and sound effects)
+function stopAllSounds() {
+    stopAllMusic(); // Stop all music
+
+    // Stop all sound effects
+    jumpSound.pause();
+    jumpSound.currentTime = 0;
+    shootSound.pause();
+    shootSound.currentTime = 0;
+    fallSound.pause();
+    fallSound.currentTime = 0;
+    spikeDeathSound.pause();
+    spikeDeathSound.currentTime = 0;
+    playerDeathSound.pause();
+    playerDeathSound.currentTime = 0;
+    enemyShootSound.pause();
+    enemyShootSound.currentTime = 0;
+    enemyDeathSound.pause();
+    enemyDeathSound.currentTime = 0;
+    powerUpSound.pause();
+    powerUpSound.currentTime = 0;
+    newHighScoreSound.pause();
+    newHighScoreSound.currentTime = 0;
+
+    console.log("All sounds stopped."); // Debugging
+}
+
 // Animation class to handle animations
 class Animation {
     constructor(frames, frameRate) {
@@ -756,7 +783,7 @@ function drawGameOverScreen() {
     ctx.fillText("Press R to Restart", canvas.width / 2, canvas.height / 2 + 100);
     ctx.fillText("Press M to Return to Menu", canvas.width / 2, canvas.height / 2 + 140);
 
-    stopAllMusic(); // Stop all music when the game is over
+    stopAllSounds(); // Stop all sounds when the game is over
 }
 
 function drawMainMenu() {
@@ -1032,7 +1059,7 @@ function gameLoop() {
     } else if (gameState === "gameOver") {
         if (!gameOver) {
             gameOver = true; // Ensure gameOver is set to true
-            stopAllMusic(); // Stop all music when the game is over
+            stopAllSounds(); // Stop all sounds when the game is over
         }
         drawGameOverScreen(); // Draw the game over screen
     }
