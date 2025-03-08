@@ -697,6 +697,7 @@ function handleMovement() {
 
     if (player.y > canvas.height) {
         gameOver = true;
+        stopAllMusic(); // Stop all music when game over
         fallSound.play(); // Play fall sound
         updateHighScore(); // Update high score when the player falls
     }
@@ -911,6 +912,7 @@ function update() {
                 if (!player.isShieldActive) {
                     gameOver = true;
                     playerDeathSound.play(); // Play player death sound
+                    stopAllMusic(); // Stop all music when game over
                     updateHighScore(); // Update high score when the player dies
                 }
             }
