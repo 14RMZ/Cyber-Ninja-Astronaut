@@ -156,14 +156,23 @@ menuImage.onerror = () => {
 let currentMusic = null;
 
 // Function to play music
-function playMusic(music) {
+async function playMusic(music) {
     if (currentMusic !== music) {
         if (currentMusic) {
             currentMusic.pause();
             currentMusic.currentTime = 0; // Reset playback position
         }
         currentMusic = music;
-        currentMusic.play();
+
+        try {
+            await currentMusic.play(); // Use await to handle the promise
+        } catch (error) {
+            if (error.name === 'AbortError') {
+                console.log('Audio playback was aborted:', error.message);
+            } else {
+                console.error('Error playing audio:', error);
+            }
+        }
     }
 }
 
@@ -395,7 +404,7 @@ class NonShootingEnemy {
 
     draw() {
         const frame = this.currentAnimation.getCurrentFrame();
-        console.log("NonShootingEnemy Frame:", frame); // Debugging log
+        // console.log("NonShootingEnemy Frame:", frame); // Debugging log (commented out)
 
         ctx.save();
         if (this.direction === -1 && !this.isExploding) {
@@ -472,7 +481,7 @@ class ShootingEnemy {
 
     draw() {
         const frame = this.currentAnimation.getCurrentFrame();
-        console.log("ShootingEnemy Frame:", frame); // Debugging log
+        // console.log("ShootingEnemy Frame:", frame); // Debugging log (commented out)
 
         ctx.save();
 
@@ -724,10 +733,9 @@ function updateShield() {
     }
 }
 
-// Modify the resetGame function to stop and reset the game over music
 function resetGame() {
     stopAllMusic(); // Stop all music
-    stopAndResetGameOverMusic(); // Ensure game over music is stopped and reset
+    gameOverMusic.currentTime = 0; // Reset the game over music
 
     // Resize the canvas to fit the window
     resizeCanvas();
@@ -770,24 +778,15 @@ function resetGame() {
     playMusic(gameMusic);
 }
 
-// Add this function to stop and reset the game over music
-function stopAndResetGameOverMusic() {
-    gameOverMusic.pause(); // Stop the music
-    gameOverMusic.currentTime = 0; // Reset the playback position
-}
-
-// Modify the drawGameOverScreen function
 function drawGameOverScreen() {
-    // Stop all other music and reset the game over music
-    stopAllMusic();
-    stopAndResetGameOverMusic();
+    stopAllMusic(); // Stop all other music
+    gameOverMusic.currentTime = 0; // Reset the playback position
 
     // Play the game over music only if it's not already playing
     if (currentMusic !== gameOverMusic) {
         playMusic(gameOverMusic);
     }
 
-    // Draw the game over screen
     ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -809,6 +808,7 @@ function drawGameOverScreen() {
     ctx.fillText("Press R to Restart", canvas.width / 2, canvas.height / 2 + 100);
     ctx.fillText("Press M to Return to Menu", canvas.width / 2, canvas.height / 2 + 140);
 }
+
 function drawMainMenu() {
     // Clear the canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
