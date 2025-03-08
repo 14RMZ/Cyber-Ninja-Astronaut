@@ -687,7 +687,7 @@ function resetGame() {
 
     // Reset player position and state
     player.x = 100;
-    player.y = canvas.height - 150; // Ensure this is calculated relative to the canvas height
+    player.y = canvas.height - 150;
     player.velocityX = 0;
     player.velocityY = 0;
     player.score = 0;
@@ -696,7 +696,7 @@ function resetGame() {
     player.shieldTimer = 0;
 
     // Reset camera
-    camera.x = 0; // Ensure the camera is reset to the starting position
+    camera.x = 0;
 
     // Reset platforms, enemies, bullets, and power-ups
     platforms.length = 1;
@@ -708,9 +708,8 @@ function resetGame() {
     // Regenerate platforms
     generatePlatforms();
 
-    // Reset the background sound
-    backgroundSound.currentTime = 0; // Reset the sound to the beginning
-    backgroundSound.play(); // Play the background sound
+    // Start the game music
+    playGameMusic();
 }
 
 function drawGameOverScreen() {
@@ -735,9 +734,7 @@ function drawGameOverScreen() {
     ctx.fillText("Press R to Restart", canvas.width / 2, canvas.height / 2 + 100);
     ctx.fillText("Press M to Return to Menu", canvas.width / 2, canvas.height / 2 + 140);
 
-    // Pause both sounds when the game is over
-    menuSound.pause();
-    backgroundSound.pause();
+    stopAllMusic(); // Stop all music when the game is over
 }
 
 function drawMainMenu() {
@@ -1000,32 +997,18 @@ function render() {
 
 function gameLoop() {
     if (gameState === "menu") {
-        if (menuSound.paused) {
-            // Play the menu sound if it's not already playing
-            menuSound.play().catch((error) => {
-                console.error("Failed to play menu sound:", error);
-            });
-            backgroundSound.pause(); // Ensure the background sound is paused
-        }
         if (settingsState) {
             drawSettingsMenu(); // Draw the settings menu
         } else {
             drawMainMenu(); // Draw the main menu
         }
+        playMenuMusic(); // Ensure menu music is playing
     } else if (gameState === "playing") {
-        if (backgroundSound.paused) {
-            // Play the background sound if it's not already playing
-            backgroundSound.play().catch((error) => {
-                console.error("Failed to play background sound:", error);
-            });
-            menuSound.pause(); // Ensure the menu sound is paused
-        }
         update(); // Update game logic
         render(); // Render the game
+        playGameMusic(); // Ensure game music is playing
     } else if (gameState === "gameOver") {
-        // Pause both sounds when the game is over
-        menuSound.pause();
-        backgroundSound.pause();
+        stopAllMusic(); // Stop all music when the game is over
         drawGameOverScreen(); // Draw the game over screen
     }
 
@@ -1078,10 +1061,12 @@ window.addEventListener('keydown', (event) => {
         if (settingsState) {
             if (event.code === "ArrowUp") {
                 // Increase volume
-                backgroundSound.volume = Math.min(1, backgroundSound.volume + 0.1);
+                gameMusic.volume = Math.min(1, gameMusic.volume + 0.1);
+                menuMusic.volume = Math.min(1, menuMusic.volume + 0.1);
             } else if (event.code === "ArrowDown") {
                 // Decrease volume
-                backgroundSound.volume = Math.max(0, backgroundSound.volume - 0.1);
+                gameMusic.volume = Math.max(0, gameMusic.volume - 0.1);
+                menuMusic.volume = Math.max(0, menuMusic.volume - 0.1);
             } else if (event.code === "Enter") {
                 // Go back to the main menu
                 settingsState = false;
@@ -1095,13 +1080,12 @@ window.addEventListener('keydown', (event) => {
             // Restart the game
             resetGame();
             gameState = "playing";
-            backgroundSound.play(); // Start the game sound
+            playGameMusic(); // Start the game music
         } else if (event.code === "KeyM") {
             // Return to the main menu
             gameState = "menu";
             gameOver = false; // Reset the gameOver state
-            menuSound.play(); // Start the menu sound
-            backgroundSound.pause(); // Stop the game sound
+            playMenuMusic(); // Start the menu music
         }
     }
 });
