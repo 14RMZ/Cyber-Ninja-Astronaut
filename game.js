@@ -160,12 +160,12 @@ function playGameMusic() {
 }
 
 function stopAllMusic() {
-    console.log("Stopping all music..."); // Debugging
+    console.log("Stopping menu and game music..."); // Debugging
     menuMusic.pause();
     menuMusic.currentTime = 0; // Reset playback position
     gameMusic.pause();
     gameMusic.currentTime = 0; // Reset playback position
-    console.log("All music stopped."); // Debugging
+    console.log("Menu and game music stopped."); // Debugging
 }
 
 // Stop all sounds (music and sound effects)
@@ -762,8 +762,6 @@ function resetGame() {
 }
 
 function drawGameOverScreen() {
-    stopAllSounds(); // Stop all sounds when the game is over
-    stopAllMusic(); // Stop all music when game over screen appears
     ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -785,7 +783,7 @@ function drawGameOverScreen() {
     ctx.fillText("Press R to Restart", canvas.width / 2, canvas.height / 2 + 100);
     ctx.fillText("Press M to Return to Menu", canvas.width / 2, canvas.height / 2 + 140);
 
-    stopAllSounds(); // Stop all sounds when the game is over
+    stopAllMusic(); // Stop only menu and game music
 }
 
 function drawMainMenu() {
