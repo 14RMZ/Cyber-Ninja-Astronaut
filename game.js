@@ -782,14 +782,26 @@ const gameOverSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/G
 gameOverSound.volume = 0; // Set volume (0.0 to 1.0)
 
 document.addEventListener("click", () => {
-    gameOverSound.play().catch(err => console.warn("User interaction required:", err));
+    let playPromise = gameOverSound.play();
+    if (playPromise !== undefined) {
+        playPromise.catch(error => console.warn("User interaction required for audio:", error));
+    }
 }, { once: true });
 
+
 function playGameOverSound() {
-    if (!gameOverSound.ended && !gameOverSound.paused) return; // Only play if not already playing
+    if (!gameOverSound.paused && !gameOverSound.ended) return; // Prevent multiple plays
 
     gameOverSound.currentTime = 0; // Reset if needed
-    gameOverSound.play().catch(err => console.warn("Audio playback issue:", err));
+    let playPromise = gameOverSound.play();
+
+    if (playPromise !== undefined) {
+        playPromise.then(() => {
+            console.log("Game over sound is playing.");
+        }).catch(error => {
+            console.warn("Audio playback issue:", error);
+        });
+    }
 }
 
 
@@ -797,13 +809,19 @@ function drawGameOverScreen() {
     stopAllMusic(); // Stop all background music
 
     if (currentMusic !== gameOverMusic) {
-        gameOverMusic.currentTime = 0; // Reset position ONLY if needed
-        gameOverMusic.volume = 0; // Set music volume (adjust as needed)
-        playMusic(gameOverMusic); // Start the game-over music
-        
+        gameOverMusic.currentTime = 0; // Reset only if switching music
+        let musicPromise = gameOverMusic.play();
+
+        if (musicPromise !== undefined) {
+            musicPromise.then(() => {
+                console.log("Game over music is playing.");
+            }).catch(error => {
+                console.warn("Game over music playback issue:", error);
+            });
+        }
     }
 
-    playGameOverSound(); // Play game-over sound effect once
+    playGameOverSound(); // Play sound effect safely
 
     ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
