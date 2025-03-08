@@ -796,32 +796,30 @@ function playGameOverSound() {
     let playPromise = gameOverSound.play();
 
     if (playPromise !== undefined) {
-        playPromise.then(() => {
-            console.log("Game over sound is playing.");
-        }).catch(error => {
-            console.warn("Audio playback issue:", error);
-        });
+        playPromise.catch(error => console.warn("Game over sound playback issue:", error));
     }
 }
 
 
 function drawGameOverScreen() {
-    stopAllMusic(); // Stop all background music
+    // Ensure no other music is playing
+    if (currentMusic && !currentMusic.paused) {
+        currentMusic.pause();
+        currentMusic.currentTime = 0; // Reset only after pausing
+    }
 
+    // Play game over music if it's not already playing
     if (currentMusic !== gameOverMusic) {
-        gameOverMusic.currentTime = 0; // Reset only if switching music
+        gameOverMusic.currentTime = 0; // Reset only when switching
         let musicPromise = gameOverMusic.play();
 
         if (musicPromise !== undefined) {
-            musicPromise.then(() => {
-                console.log("Game over music is playing.");
-            }).catch(error => {
-                console.warn("Game over music playback issue:", error);
-            });
+            musicPromise.catch(error => console.warn("Game over music playback issue:", error));
         }
+        currentMusic = gameOverMusic; // Track currently playing music
     }
 
-    playGameOverSound(); // Play sound effect safely
+    playGameOverSound(); // Play game-over sound safely
 
     ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
