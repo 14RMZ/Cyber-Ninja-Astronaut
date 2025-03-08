@@ -734,48 +734,23 @@ function updateShield() {
 }
 
 function resetGame() {
-    stopAllMusic(); // Stop all music
-    gameOverMusic.currentTime = 0; // Reset the game over music
-
-    // Resize the canvas to fit the window
-    resizeCanvas();
-
     gameOver = false;
-    isDying = false;
-    isJumping = false;
-    isJumpStarting = false;
-    isJumpLanding = false;
-
-    // Reset player position and state
     player.x = 100;
     player.y = canvas.height - 150;
-    player.velocityX = 0;
-    player.velocityY = 0;
     player.score = 0;
     player.lastPlatform = null;
     player.isShieldActive = false;
     player.shieldTimer = 0;
-
-    // Reset camera
-    camera.x = 0;
-
-    // Reset platforms, enemies, bullets, and power-ups
     platforms.length = 1;
     enemies.length = 0;
     bullets.length = 0;
     enemyBullets.length = 0;
     shieldPowerUps.length = 0;
-
-    // Regenerate platforms
     generatePlatforms();
 
-    // Reset sound volumes
-    playerDeathSound.volume = 0.5;
-    spikeDeathSound.volume = 0.5;
-    fallSound.volume = 0.5;
-
-    // Start the game music
-    playMusic(gameMusic);
+    // Resume background music on restart
+    gameplayMusic.currentTime = 0; 
+    gameplayMusic.play();
 }
 
 const gameOverSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/GameMenuSound.wav"); // Update path if needed
@@ -808,7 +783,11 @@ function drawGameOverScreen() {
     ctx.font = "20px Arial";
     ctx.fillText("Press R to Restart", canvas.width / 2, canvas.height / 2 + 100);
 
-    playGameOverSound(); // Play sound when game over screen is drawn
+    // Stop gameplay music when game over
+    gameplayMusic.pause();
+
+    // Play game over sound
+    playGameOverSound();
 }
 
 
