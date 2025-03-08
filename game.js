@@ -786,22 +786,24 @@ document.addEventListener("click", () => {
 }, { once: true });
 
 function playGameOverSound() {
-    if (gameOverSound.paused || gameOverSound.ended) { 
-        gameOverSound.currentTime = 0; // Reset only if it's not playing
-        gameOverSound.play().catch(err => console.warn("Audio playback issue:", err));
-    }
+    if (!gameOverSound.ended && !gameOverSound.paused) return; // Only play if not already playing
+
+    gameOverSound.currentTime = 0; // Reset if needed
+    gameOverSound.play().catch(err => console.warn("Audio playback issue:", err));
 }
+
 
 function drawGameOverScreen() {
     stopAllMusic(); // Stop all background music
-    gameOverMusic.currentTime = 0; // Reset game-over music playback
-    gameOverMusic.volume = 0; // Set music volume (adjust as needed)
 
     if (currentMusic !== gameOverMusic) {
-        playMusic(gameOverMusic);
+        gameOverMusic.currentTime = 0; // Reset position ONLY if needed
+        gameOverMusic.volume = 0; // Set music volume (adjust as needed)
+        playMusic(gameOverMusic); // Start the game-over music
+        
     }
 
-    playGameOverSound(); // ✅ Play short game-over sound effect
+    playGameOverSound(); // Play game-over sound effect once
 
     ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -824,6 +826,7 @@ function drawGameOverScreen() {
     ctx.fillText("Press R to Restart", canvas.width / 2, canvas.height / 2 + 100);
     ctx.fillText("Press M to Return to Menu", canvas.width / 2, canvas.height / 2 + 140);
 }
+
 
 function drawMainMenu() {
     // Clear the canvas
