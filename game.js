@@ -82,7 +82,7 @@ menuMusic.onerror = () => {
 
 const gameOverMusic = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/GameMenuSound.wav"); // Game over sound
 gameOverMusic.loop = true;
-gameOverMusic.volume = 0;
+gameOverMusic.volume = 0.5;
 gameOverMusic.onerror = () => {
     console.error("Failed to load game over music.");
 };
@@ -778,48 +778,14 @@ function resetGame() {
     playMusic(gameMusic);
 }
 
-const gameOverSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/GameMenuSound.wav"); // Short game-over sound effect
-gameOverSound.volume = 0; // Set volume (0.0 to 1.0)
-
-document.addEventListener("click", () => {
-    let playPromise = gameOverSound.play();
-    if (playPromise !== undefined) {
-        playPromise.catch(error => console.warn("User interaction required for audio:", error));
-    }
-}, { once: true });
-
-
-function playGameOverSound() {
-    if (!gameOverSound.paused && !gameOverSound.ended) return; // Prevent multiple plays
-
-    gameOverSound.currentTime = 0; // Reset if needed
-    let playPromise = gameOverSound.play();
-
-    if (playPromise !== undefined) {
-        playPromise.catch(error => console.warn("Game over sound playback issue:", error));
-    }
-}
-
-
 function drawGameOverScreen() {
-    // Ensure no other music is playing
-    if (currentMusic && !currentMusic.paused) {
-        currentMusic.pause();
-        currentMusic.currentTime = 0; // Reset only after pausing
-    }
+    stopAllMusic(); // Stop all other music
+    gameOverMusic.currentTime = 0; // Reset the playback position
 
-    // Play game over music if it's not already playing
+    // Play the game over music only if it's not already playing
     if (currentMusic !== gameOverMusic) {
-        gameOverMusic.currentTime = 0; // Reset only when switching
-        let musicPromise = gameOverMusic.play();
-
-        if (musicPromise !== undefined) {
-            musicPromise.catch(error => console.warn("Game over music playback issue:", error));
-        }
-        currentMusic = gameOverMusic; // Track currently playing music
+        playMusic(gameOverMusic);
     }
-
-    playGameOverSound(); // Play game-over sound safely
 
     ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -842,7 +808,6 @@ function drawGameOverScreen() {
     ctx.fillText("Press R to Restart", canvas.width / 2, canvas.height / 2 + 100);
     ctx.fillText("Press M to Return to Menu", canvas.width / 2, canvas.height / 2 + 140);
 }
-
 
 function drawMainMenu() {
     // Clear the canvas
