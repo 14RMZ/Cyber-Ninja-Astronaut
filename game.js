@@ -160,39 +160,10 @@ function playGameMusic() {
 }
 
 function stopAllMusic() {
-    console.log("Stopping menu and game music..."); // Debugging
     menuMusic.pause();
     menuMusic.currentTime = 0; // Reset playback position
     gameMusic.pause();
     gameMusic.currentTime = 0; // Reset playback position
-    console.log("Menu and game music stopped."); // Debugging
-}
-
-// Stop all sounds (music and sound effects)
-function stopAllSounds() {
-    stopAllMusic(); // Stop all music
-
-    // Stop all sound effects
-    jumpSound.pause();
-    jumpSound.currentTime = 0;
-    shootSound.pause();
-    shootSound.currentTime = 0;
-    fallSound.pause();
-    fallSound.currentTime = 0;
-    spikeDeathSound.pause();
-    spikeDeathSound.currentTime = 0;
-    playerDeathSound.pause();
-    playerDeathSound.currentTime = 0;
-    enemyShootSound.pause();
-    enemyShootSound.currentTime = 0;
-    enemyDeathSound.pause();
-    enemyDeathSound.currentTime = 0;
-    powerUpSound.pause();
-    powerUpSound.currentTime = 0;
-    newHighScoreSound.pause();
-    newHighScoreSound.currentTime = 0;
-
-    console.log("All sounds stopped."); // Debugging
 }
 
 // Animation class to handle animations
@@ -1059,7 +1030,6 @@ function gameLoop() {
     } else if (gameState === "gameOver") {
         if (!gameOver) {
             gameOver = true; // Ensure gameOver is set to true
-            stopAllSounds(); // Stop all sounds when the game is over
         }
         drawGameOverScreen(); // Draw the game over screen
     }
