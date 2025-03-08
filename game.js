@@ -82,7 +82,7 @@ menuMusic.onerror = () => {
 
 const gameOverMusic = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/GameMenuSound.wav"); // Game over sound
 gameOverMusic.loop = true;
-gameOverMusic.volume = 0.5;
+gameOverMusic.volume = 0;
 gameOverMusic.onerror = () => {
     console.error("Failed to load game over music.");
 };
@@ -778,44 +778,46 @@ function resetGame() {
     playMusic(gameMusic);
 }
 
-function drawGameOverScreen() {
-    // Stop all background music
-    stopAllMusic(); 
+const gameOverSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/GameMenuSound.wav"); // Short game-over sound effect
+gameOverSound.volume = 0; // Set volume (0.0 to 1.0)
+function playGameOverSound() {
+    if (!gameOverSound.paused) return; // Prevent repeated play
+    gameOverSound.currentTime = 0; // Reset sound to start
+    gameOverSound.play().catch(err => console.warn("Audio playback issue:", err));
+}
 
-    // Reset and play game over music if it's not already playing
-    gameOverMusic.currentTime = 0;
+function drawGameOverScreen() {
+    stopAllMusic(); // Stop all background music
+    gameOverMusic.currentTime = 0; // Reset game-over music playback
+    gameOverMusic.volume = 0; // Set music volume (adjust as needed)
+
+    // Play game-over music only if it's not already playing
     if (currentMusic !== gameOverMusic) {
         playMusic(gameOverMusic);
     }
 
-    // Display semi-transparent black overlay
+    playGameOverSound(); // Play short game-over sound effect
+
     ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Display "Game Over" text
     ctx.fillStyle = "red";
     ctx.font = "60px Arial";
     ctx.textAlign = "center";
     ctx.fillText("Game Over", canvas.width / 2, canvas.height / 2 - 60);
 
-    // Display player's score
     ctx.fillStyle = "white";
     ctx.font = "30px Arial";
     ctx.fillText(`Your Score: ${player.score}`, canvas.width / 2, canvas.height / 2);
 
-    // Display high score
     ctx.fillStyle = "gold";
     ctx.font = "30px Arial";
     ctx.fillText(`High Score: ${highScore}`, canvas.width / 2, canvas.height / 2 + 40);
 
-    // Display restart and menu instructions
     ctx.fillStyle = "white";
     ctx.font = "20px Arial";
     ctx.fillText("Press R to Restart", canvas.width / 2, canvas.height / 2 + 100);
     ctx.fillText("Press M to Return to Menu", canvas.width / 2, canvas.height / 2 + 140);
-
-    // Play game over sound effect
-    playGameOverSound();
 }
 
 function drawMainMenu() {
