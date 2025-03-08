@@ -733,6 +733,7 @@ function resetGame() {
 }
 
 function drawGameOverScreen() {
+    stopAllMusic(); // Stop only menu and game music
     ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -754,7 +755,6 @@ function drawGameOverScreen() {
     ctx.fillText("Press R to Restart", canvas.width / 2, canvas.height / 2 + 100);
     ctx.fillText("Press M to Return to Menu", canvas.width / 2, canvas.height / 2 + 140);
 
-    stopAllMusic(); // Stop only menu and game music
 }
 
 function drawMainMenu() {
