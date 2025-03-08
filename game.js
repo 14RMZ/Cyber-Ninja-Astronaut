@@ -735,7 +735,9 @@ function drawGameOverScreen() {
     ctx.fillText("Press R to Restart", canvas.width / 2, canvas.height / 2 + 100);
     ctx.fillText("Press M to Return to Menu", canvas.width / 2, canvas.height / 2 + 140);
 
-    backgroundSound.pause(); // Pause the background sound when the game is over
+    // Pause both sounds when the game is over
+    menuSound.pause();
+    backgroundSound.pause();
 }
 
 function drawMainMenu() {
@@ -1021,6 +1023,9 @@ function gameLoop() {
         update(); // Update game logic
         render(); // Render the game
     } else if (gameState === "gameOver") {
+        // Pause both sounds when the game is over
+        menuSound.pause();
+        backgroundSound.pause();
         drawGameOverScreen(); // Draw the game over screen
     }
 
@@ -1090,10 +1095,13 @@ window.addEventListener('keydown', (event) => {
             // Restart the game
             resetGame();
             gameState = "playing";
+            backgroundSound.play(); // Start the game sound
         } else if (event.code === "KeyM") {
             // Return to the main menu
             gameState = "menu";
             gameOver = false; // Reset the gameOver state
+            menuSound.play(); // Start the menu sound
+            backgroundSound.pause(); // Stop the game sound
         }
     }
 });
