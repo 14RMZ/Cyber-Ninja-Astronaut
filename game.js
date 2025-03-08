@@ -780,10 +780,16 @@ function resetGame() {
 
 const gameOverSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/GameMenuSound.wav"); // Short game-over sound effect
 gameOverSound.volume = 0; // Set volume (0.0 to 1.0)
+
+document.addEventListener("click", () => {
+    gameOverSound.play().catch(err => console.warn("User interaction required:", err));
+}, { once: true });
+
 function playGameOverSound() {
-    if (!gameOverSound.paused) return; // Prevent repeated play
-    gameOverSound.currentTime = 0; // Reset sound to start
-    gameOverSound.play().catch(err => console.warn("Audio playback issue:", err));
+    if (gameOverSound.paused || gameOverSound.ended) { 
+        gameOverSound.currentTime = 0; // Reset only if it's not playing
+        gameOverSound.play().catch(err => console.warn("Audio playback issue:", err));
+    }
 }
 
 function drawGameOverScreen() {
@@ -791,12 +797,11 @@ function drawGameOverScreen() {
     gameOverMusic.currentTime = 0; // Reset game-over music playback
     gameOverMusic.volume = 0; // Set music volume (adjust as needed)
 
-    // Play game-over music only if it's not already playing
     if (currentMusic !== gameOverMusic) {
         playMusic(gameOverMusic);
     }
 
-    playGameOverSound(); // Play short game-over sound effect
+    playGameOverSound(); // ✅ Play short game-over sound effect
 
     ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
