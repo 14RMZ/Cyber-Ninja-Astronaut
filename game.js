@@ -82,7 +82,7 @@ menuMusic.onerror = () => {
 
 const gameOverMusic = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/GameMenuSound.wav"); // Game over sound
 gameOverMusic.loop = true;
-gameOverMusic.volume = 0;
+gameOverMusic.volume = 0.5;
 gameOverMusic.onerror = () => {
     console.error("Failed to load game over music.");
 };
