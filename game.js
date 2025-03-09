@@ -1116,12 +1116,10 @@ window.addEventListener('keydown', (event) => {
                 // Increase volume
                 gameMusic.volume = Math.min(1, gameMusic.volume + 0.1);
                 menuMusic.volume = Math.min(1, menuMusic.volume + 0.1);
-                gameOverMusic.volume = Math.min(1, gameOverMusic.volume + 0.1);
             } else if (event.code === "ArrowDown") {
                 // Decrease volume
                 gameMusic.volume = Math.max(0, gameMusic.volume - 0.1);
                 menuMusic.volume = Math.max(0, menuMusic.volume - 0.1);
-                gameOverMusic.volume = Math.max(0, gameOverMusic.volume - 0.1);
             } else if (event.code === "Enter") {
                 // Go back to the main menu
                 settingsState = false;
