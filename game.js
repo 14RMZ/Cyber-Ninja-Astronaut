@@ -807,10 +807,15 @@ canvas.addEventListener("mousemove", function (event) {
 });
 
 // Draw the menu with hover effects
+// Store menu items and positions
+let menuItems = ["Start Game", "Settings", "How To Play", "Highest Score"];
+let menuPositions = [];
+let hoveredIndex = -1; // To track hovered item
+
 function drawMainMenu() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Draw background
+    // Draw menu background image
     if (menuImage.complete && menuImage.naturalWidth !== 0) {
         ctx.drawImage(menuImage, 0, 0, canvas.width, canvas.height);
     } else {
@@ -824,50 +829,70 @@ function drawMainMenu() {
     ctx.textAlign = "left";
     ctx.fillText("Cyber Ninja Astronaut", 100, 80);
 
-    // Draw menu items with hover effect
+    // Center menu
+    let centerX = canvas.width - 350;
+    let centerY = canvas.height / 2;
+    let radius = 180;
+
+    menuPositions = []; // Clear previous positions
+
+    // Draw curved menu items
     for (let i = 0; i < menuItems.length; i++) {
         let angle = (-Math.PI / 3.5) + (i * (Math.PI / 5));
         let x = centerX + radius * Math.cos(angle);
         let y = centerY + radius * Math.sin(angle);
 
-        if (hoveredMenuIndex === i) {
-            ctx.fillStyle = "yellow"; // Highlight on hover
-            ctx.font = "35px Arial"; // Slightly bigger
-        } else {
-            ctx.fillStyle = "rgba(0, 255, 255, 1)"; // Default color
-            ctx.font = "30px Arial";
-        }
+        // Get text width for box size
+        ctx.font = "30px Arial";
+        let textWidth = ctx.measureText(menuItems[i]).width;
+        let padding = 10;
+        let boxWidth = textWidth + padding * 2;
+        let boxHeight = 40;
 
-        ctx.shadowColor = "black";
-        ctx.shadowBlur = hoveredMenuIndex === i ? 15 : 5; // Glow effect only on hover
+        // Save positions for hover detection
+        menuPositions.push({ x: x - boxWidth / 2, y: y - 30, width: boxWidth, height: boxHeight });
+
+        // Draw dark background box
+        ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+        ctx.fillRect(x - boxWidth / 2, y - 30, boxWidth, boxHeight);
+
+        // Change text color if hovered
+        ctx.fillStyle = hoveredIndex === i ? "yellow" : "rgba(0, 255, 255, 1)";
+        ctx.shadowColor = hoveredIndex === i ? "yellow" : "cyan";
+        ctx.shadowBlur = 10;
+
+        // Draw border
+        ctx.strokeStyle = "white";
+        ctx.lineWidth = 3;
+        ctx.strokeRect(x - boxWidth / 2, y - 30, boxWidth, boxHeight);
+
+        // Draw text
+        ctx.textAlign = "center";
         ctx.fillText(menuItems[i], x, y);
     }
 
-    requestAnimationFrame(drawMainMenu); // Keeps menu updating
+    // Draw credits
+    ctx.font = "20px Arial";
+    ctx.textAlign = "right";
+    ctx.fillText("Created by [Your Name]", canvas.width - 20, canvas.height - 20);
 }
 
-
-// Animate hover effect (fade-in & movement)
-function animateHover() {
-    for (let i = 0; i < menuItems.length; i++) {
-        if (hoveredIndex === i) {
-            // Fade in and move up
-            hoverAnimation[i].opacity = Math.min(hoverAnimation[i].opacity + 0.05, 1);
-            hoverAnimation[i].offsetY = Math.max(hoverAnimation[i].offsetY - 2, -10);
-        } else {
-            // Fade out and reset position
-            hoverAnimation[i].opacity = Math.max(hoverAnimation[i].opacity - 0.05, 1);
-            hoverAnimation[i].offsetY = Math.min(hoverAnimation[i].offsetY + 2, 0);
+// Mouse move event to detect hovering
+canvas.addEventListener("mousemove", function (event) {
+    let rect = canvas.getBoundingClientRect();
+    let mouseX = event.clientX - rect.left;
+    let mouseY = event.clientY - rect.top;
+    
+    hoveredIndex = -1; // Reset hover state
+    for (let i = 0; i < menuPositions.length; i++) {
+        let pos = menuPositions[i];
+        if (mouseX >= pos.x && mouseX <= pos.x + pos.width && mouseY >= pos.y && mouseY <= pos.y + pos.height) {
+            hoveredIndex = i;
+            break;
         }
     }
-    drawMainMenu(); // Redraw with animation
-    requestAnimationFrame(animateHover);
-}
-
-// Start menu
-drawMainMenu();
-
-
+    drawMainMenu(); // Redraw with hover effect
+});
 
 function drawSettingsMenu() {
     // Clear the canvas
