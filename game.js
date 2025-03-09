@@ -797,7 +797,7 @@ function drawMainMenu() {
     let radius = 180; // Increased radius for better spacing
     let menuItems = ["START GAME", "SETTINGS", "HOW TO PLAY", "HIGHEST SCORE"];
 
-    ctx.font = "bold 40px Orbitron"; // Bigger menu items
+    ctx.font = "bold 30px Orbitron"; // Bigger menu items
     ctx.textAlign = "center";
 
     for (let i = 0; i < menuItems.length; i++) {
