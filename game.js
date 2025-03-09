@@ -780,31 +780,32 @@ function drawMainMenu() {
         ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
 
-    // Draw the title with a neon glow effect
+    // Draw the game title in the top-left corner
     ctx.fillStyle = "white";
-    ctx.font = "bold 60px Orbitron"; // Use a futuristic font
-    ctx.textAlign = "center";
+    ctx.font = "bold 50px Orbitron"; // Sci-fi font
+    ctx.textAlign = "left";
     ctx.shadowColor = "cyan";
     ctx.shadowBlur = 10;
-    ctx.fillText("Cyber Ninja Astronaut", canvas.width / 2, canvas.height / 2 - 180);
+    ctx.fillText("Cyber Ninja Astronaut", 30, 60);
 
-    // Reset shadow
+    // Reset shadow for menu items
     ctx.shadowBlur = 0;
 
-    // Curved Menu Layout
-    let centerX = canvas.width / 2;
+    // Curved Menu Layout on the right side
+    let centerX = canvas.width - 200; // Positioning near the right side
     let centerY = canvas.height / 2;
-    let radius = 150; // Adjust curve radius
+    let radius = 150; // Adjust curvature
     let menuItems = ["Start Game", "Settings", "How to Play", "Highest Score"];
-    
+
     ctx.font = "30px Orbitron";
-    
+    ctx.textAlign = "center";
+
     for (let i = 0; i < menuItems.length; i++) {
-        let angle = (-Math.PI / 4) + (i * (Math.PI / 8)); // Adjust spread
+        let angle = (-Math.PI / 3) + (i * (Math.PI / 6)); // Adjust curve
         let x = centerX + radius * Math.cos(angle);
         let y = centerY + radius * Math.sin(angle);
 
-        ctx.fillStyle = "rgba(0, 255, 255, 0.8)"; // Neon cyan text
+        ctx.fillStyle = "rgba(0, 255, 255, 0.8)"; // Neon cyan
         ctx.shadowColor = "cyan";
         ctx.shadowBlur = 5;
         ctx.fillText(menuItems[i], x, y);
@@ -817,6 +818,7 @@ function drawMainMenu() {
     ctx.shadowBlur = 0;
     ctx.fillText("Created by [Your Name]", canvas.width - 20, canvas.height - 20);
 }
+
 
 function drawSettingsMenu() {
     // Clear the canvas
