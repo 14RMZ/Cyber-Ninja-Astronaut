@@ -791,9 +791,6 @@ function drawMainMenu() {
     ctx.textAlign = "left";
     ctx.fillText("Cyber Ninja Astronaut", 100, 80);
 
-    // Define menu items
-    let menuItems = ["Start Game", "Settings", "How To Play", "Highest Score"];
-
     // Move menu slightly to the left to keep it on-screen
     let centerX = canvas.width - 350;
     let centerY = canvas.height / 2;
@@ -834,7 +831,6 @@ function drawMainMenu() {
     ctx.textAlign = "right";
     ctx.fillText("Created by [Your Name]", canvas.width - 20, canvas.height - 20);
 }
-
 
 function drawSettingsMenu() {
     // Clear the canvas
