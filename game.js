@@ -828,6 +828,29 @@ const menuButtons = [
     { text: "High Score", action: () => alert(`High Score: ${highScore}`) }
 ];
 
+let mouseX = 0, mouseY = 0;
+canvas.addEventListener("mousemove", (event) => {
+    const rect = canvas.getBoundingClientRect();
+    mouseX = event.clientX - rect.left;
+    mouseY = event.clientY - rect.top;
+});
+
+canvas.addEventListener("click", () => {
+    if (gameState === "menu") {
+        menuButtons.forEach((button, index) => {
+            const y = canvas.height / 2 - 50 + index * 60;
+            if (
+                mouseX > canvas.width / 2 - 100 &&
+                mouseX < canvas.width / 2 + 100 &&
+                mouseY > y - 20 &&
+                mouseY < y + 20
+            ) {
+                button.action();
+            }
+        });
+    }
+});
+
 // Draw the main menu
 function drawMainMenu() {
     // Clear the canvas
