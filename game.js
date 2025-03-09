@@ -767,68 +767,6 @@ function drawGameOverScreen() {
     ctx.fillText("Press M to Return to Menu", canvas.width / 2, canvas.height / 2 + 140);
 }
 
-// Particle system for menu effects
-class Particle {
-    constructor(x, y, size, color, velocity) {
-        this.x = x;
-        this.y = y;
-        this.size = size;
-        this.color = color;
-        this.velocity = velocity;
-    }
-
-    update() {
-        this.x += this.velocity.x;
-        this.y += this.velocity.y;
-        if (this.size > 0.2) this.size -= 0.1;
-    }
-
-    draw() {
-        ctx.save();
-        ctx.globalAlpha = this.size / 5;
-        ctx.fillStyle = this.color;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.restore();
-    }
-}
-
-const particles = [];
-
-function createParticles() {
-    for (let i = 0; i < 5; i++) {
-        const size = Math.random() * 5 + 2;
-        const x = Math.random() * canvas.width;
-        const y = Math.random() * canvas.height;
-        const color = `hsl(${Math.random() * 360}, 50%, 50%)`;
-        const velocity = {
-            x: (Math.random() - 0.5) * 2,
-            y: (Math.random() - 0.5) * 2
-        };
-        particles.push(new Particle(x, y, size, color, velocity));
-    }
-}
-
-function updateParticles() {
-    particles.forEach((particle, index) => {
-        particle.update();
-        particle.draw();
-        if (particle.size <= 0.2) {
-            particles.splice(index, 1);
-        }
-    });
-}
-
-// Menu buttons
-const menuButtons = [
-    { text: "Start Game", action: () => setGameState("playing") },
-    { text: "Settings", action: () => settingsState = true },
-    { text: "How to Play", action: () => drawHowToPlayScreen() },
-    { text: "High Score", action: () => alert(`High Score: ${highScore}`) }
-];
-
-// Draw the main menu
 function drawMainMenu() {
     // Clear the canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -842,64 +780,24 @@ function drawMainMenu() {
         ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
 
-    // Draw particles
-    createParticles();
-    updateParticles();
-
     // Draw the title
     ctx.fillStyle = "white";
     ctx.font = "60px Arial";
     ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.shadowBlur = 10;
-    ctx.shadowColor = "#00ffff";
     ctx.fillText("Cyber Ninja Astronaut", canvas.width / 2, canvas.height / 2 - 150);
 
-    // Draw menu buttons
+    // Draw menu options
     ctx.font = "30px Arial";
-    ctx.shadowBlur = 5;
-    ctx.shadowColor = "#00ffff";
-    menuButtons.forEach((button, index) => {
-        const y = canvas.height / 2 - 50 + index * 60;
-        ctx.fillStyle = "white";
-        ctx.fillText(button.text, canvas.width / 2, y);
+    ctx.fillText("1. Start Game", canvas.width / 2, canvas.height / 2 - 50);
+    ctx.fillText("2. Settings", canvas.width / 2, canvas.height / 2);
+    ctx.fillText("3. How to Play", canvas.width / 2, canvas.height / 2 + 50);
+    ctx.fillText("4. Highest Score", canvas.width / 2, canvas.height / 2 + 100);
 
-        // Check if the mouse is over the button
-        if (
-            mouseX > canvas.width / 2 - 100 &&
-            mouseX < canvas.width / 2 + 100 &&
-            mouseY > y - 20 &&
-            mouseY < y + 20
-        ) {
-            ctx.fillStyle = "#00ffff";
-            ctx.fillText(button.text, canvas.width / 2, y);
-        }
-    });
+    // Draw credits in the bottom-right corner
+    ctx.font = "20px Arial";
+    ctx.textAlign = "right";
+    ctx.fillText("Created by [Your Name]", canvas.width - 20, canvas.height - 20);
 }
-
-// Handle mouse clicks on the menu
-let mouseX = 0, mouseY = 0;
-canvas.addEventListener("mousemove", (event) => {
-    const rect = canvas.getBoundingClientRect();
-    mouseX = event.clientX - rect.left;
-    mouseY = event.clientY - rect.top;
-});
-
-canvas.addEventListener("click", () => {
-    if (gameState === "menu") {
-        menuButtons.forEach((button, index) => {
-            const y = canvas.height / 2 - 50 + index * 60;
-            if (
-                mouseX > canvas.width / 2 - 100 &&
-                mouseX < canvas.width / 2 + 100 &&
-                mouseY > y - 20 &&
-                mouseY < y + 20
-            ) {
-                button.action();
-            }
-        });
-    }
-});
 
 function drawSettingsMenu() {
     // Clear the canvas
@@ -1149,6 +1047,43 @@ function gameLoop() {
 
     requestAnimationFrame(gameLoop);
 }
+
+// Handle mouse clicks on the menu
+canvas.addEventListener("click", (event) => {
+    const rect = canvas.getBoundingClientRect();
+    const mouseX = event.clientX - rect.left;
+    const mouseY = event.clientY - rect.top;
+
+    if (gameState === "menu") {
+        // Check if the user clicked on a menu option
+        if (mouseX > canvas.width / 2 - 100 && mouseX < canvas.width / 2 + 100) {
+            if (mouseY > canvas.height / 2 - 70 && mouseY < canvas.height / 2 - 30) {
+                // Start Game
+                setGameState("playing");
+            } else if (mouseY > canvas.height / 2 - 20 && mouseY < canvas.height / 2 + 20) {
+                // Open Settings Menu
+                settingsState = true;
+            } else if (mouseY > canvas.height / 2 + 30 && mouseY < canvas.height / 2 + 70) {
+                // Open How to Play Screen
+                drawHowToPlayScreen();
+            } else if (mouseY > canvas.height / 2 + 80 && mouseY < canvas.height / 2 + 120) {
+                // Show Highest Score
+                alert(`Highest Score: ${highScore}`);
+            }
+        }
+    } else if (gameState === "gameOver") {
+        // Handle mouse clicks on the game over screen
+        if (mouseX > canvas.width / 2 - 100 && mouseX < canvas.width / 2 + 100) {
+            if (mouseY > canvas.height / 2 + 80 && mouseY < canvas.height / 2 + 120) {
+                // Restart Game
+                setGameState("playing");
+            } else if (mouseY > canvas.height / 2 + 120 && mouseY < canvas.height / 2 + 160) {
+                // Return to Main Menu
+                setGameState("menu");
+            }
+        }
+    }
+});
 
 // Handle key presses for settings and how-to-play screens
 window.addEventListener('keydown', (event) => {
