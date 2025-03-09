@@ -767,11 +767,21 @@ function drawGameOverScreen() {
     ctx.fillText("Press M to Return to Menu", canvas.width / 2, canvas.height / 2 + 140);
 }
 
+// Store menu items and positions
+let menuItems = ["Start Game", "Settings", "How To Play", "Highest Score"];
+let menuPositions = [];
+let hoveredIndex = -1; // Track hovered item
+let hoverAnimation = {}; // Store opacity & movement for smooth effect
+
+// Initialize hover animation values
+menuItems.forEach((_, i) => {
+    hoverAnimation[i] = { opacity: 1, offsetY: 0 };
+});
+
 function drawMainMenu() {
-    // Clear the canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Draw the menu background image
+    // Draw menu background
     if (menuImage.complete && menuImage.naturalWidth !== 0) {
         ctx.drawImage(menuImage, 0, 0, canvas.width, canvas.height);
     } else {
@@ -779,55 +789,98 @@ function drawMainMenu() {
         ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
 
-    // Draw the title at the top-left
+    // Draw title
     ctx.fillStyle = "white";
     ctx.font = "80px Arial";
     ctx.textAlign = "left";
     ctx.fillText("Cyber Ninja Astronaut", 100, 80);
 
-    // Define menu items
-    let menuItems = ["Start Game", "Settings", "How To Play", "Highest Score"];
-
-    // Move menu slightly to the left to keep it on-screen
+    // Center menu
     let centerX = canvas.width - 350;
     let centerY = canvas.height / 2;
     let radius = 180;
 
-    // Draw curved menu items with dark background and borders
+    menuPositions = []; // Clear previous positions
+
+    // Draw curved menu items with fade-in and movement
     for (let i = 0; i < menuItems.length; i++) {
         let angle = (-Math.PI / 3.5) + (i * (Math.PI / 5));
         let x = centerX + radius * Math.cos(angle);
-        let y = centerY + radius * Math.sin(angle);
+        let y = centerY + radius * Math.sin(angle) + hoverAnimation[i].offsetY; // Apply movement
 
-        // Get text size for border calculations
+        // Get text width for box size
         ctx.font = "30px Arial";
         let textWidth = ctx.measureText(menuItems[i]).width;
         let padding = 10;
         let boxWidth = textWidth + padding * 2;
         let boxHeight = 40;
 
-        // Draw dark semi-transparent background behind text
-        ctx.fillStyle = "rgba(0, 0, 0, 0.7)"; // Dark semi-transparent layer
+        // Save positions for hover detection
+        menuPositions.push({ x: x - boxWidth / 2, y: y - 30, width: boxWidth, height: boxHeight });
+
+        // Draw dark background box with fade effect
+        ctx.fillStyle = `rgba(0, 0, 0, ${hoverAnimation[i].opacity * 0.7})`;
         ctx.fillRect(x - boxWidth / 2, y - 30, boxWidth, boxHeight);
 
-        // Draw white border around the menu option
-        ctx.strokeStyle = "white";
+        // Change text color if hovered
+        ctx.fillStyle = hoveredIndex === i ? `rgba(255, 255, 0, ${hoverAnimation[i].opacity})` : `rgba(0, 255, 255, ${hoverAnimation[i].opacity})`;
+        ctx.shadowColor = hoveredIndex === i ? "yellow" : "cyan";
+        ctx.shadowBlur = 10;
+
+        // Draw border with fade effect
+        ctx.strokeStyle = `rgba(255, 255, 255, ${hoverAnimation[i].opacity})`;
         ctx.lineWidth = 3;
         ctx.strokeRect(x - boxWidth / 2, y - 30, boxWidth, boxHeight);
 
-        // Draw menu text
-        ctx.fillStyle = "rgba(0, 255, 255, 1)";
-        ctx.shadowColor = "cyan";
-        ctx.shadowBlur = 10;
+        // Draw text
         ctx.textAlign = "center";
         ctx.fillText(menuItems[i], x, y);
     }
 
-    // Draw credits in the bottom-right
+    // Draw credits
     ctx.font = "20px Arial";
     ctx.textAlign = "right";
     ctx.fillText("Created by [Your Name]", canvas.width - 20, canvas.height - 20);
 }
+
+// Mouse move event to detect hovering & animate
+canvas.addEventListener("mousemove", function (event) {
+    let rect = canvas.getBoundingClientRect();
+    let mouseX = event.clientX - rect.left;
+    let mouseY = event.clientY - rect.top;
+
+    hoveredIndex = -1; // Reset hover state
+    for (let i = 0; i < menuPositions.length; i++) {
+        let pos = menuPositions[i];
+        if (mouseX >= pos.x && mouseX <= pos.x + pos.width && mouseY >= pos.y && mouseY <= pos.y + pos.height) {
+            hoveredIndex = i;
+            break;
+        }
+    }
+
+    animateHover();
+});
+
+// Animate hover effect (fade-in & movement)
+function animateHover() {
+    for (let i = 0; i < menuItems.length; i++) {
+        if (hoveredIndex === i) {
+            // Fade in and move up
+            hoverAnimation[i].opacity = Math.min(hoverAnimation[i].opacity + 0.05, 1);
+            hoverAnimation[i].offsetY = Math.max(hoverAnimation[i].offsetY - 2, -10);
+        } else {
+            // Fade out and reset position
+            hoverAnimation[i].opacity = Math.max(hoverAnimation[i].opacity - 0.05, 1);
+            hoverAnimation[i].offsetY = Math.min(hoverAnimation[i].offsetY + 2, 0);
+        }
+    }
+    drawMainMenu(); // Redraw with animation
+    requestAnimationFrame(animateHover);
+}
+
+// Start menu
+drawMainMenu();
+
 
 
 function drawSettingsMenu() {
