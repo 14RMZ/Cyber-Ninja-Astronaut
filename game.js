@@ -808,9 +808,6 @@ canvas.addEventListener("mousemove", function (event) {
 
 // Draw the menu with hover effects
 // Store menu items and positions
-let menuItems = ["Start Game", "Settings", "How To Play", "Highest Score"];
-let menuPositions = [];
-let hoveredIndex = -1; // To track hovered item
 
 function drawMainMenu() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
