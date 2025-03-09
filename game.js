@@ -781,14 +781,21 @@ function drawMainMenu() {
     }
 
     // Define the dimensions of the semi-transparent overlay
-    const overlayWidth = 600; // Width of the overlay
-    const overlayHeight = 400; // Height of the overlay
-    const overlayX = (canvas.width - overlayWidth) / 2; // Center horizontally
-    const overlayY = (canvas.height - overlayHeight) / 2 - 50; // Center vertically (adjusted for text)
+    const overlayWidth = 600;
+    const overlayHeight = 400;
+    const overlayX = (canvas.width - overlayWidth) / 2;
+    const overlayY = (canvas.height - overlayHeight) / 2 - 50;
 
-    // Draw the semi-transparent overlay
-    ctx.fillStyle = "rgba(0, 0, 0, 0.7)"; // Semi-transparent black
-    ctx.fillRect(overlayX, overlayY, overlayWidth, overlayHeight);
+    // Draw the semi-transparent overlay with rounded corners
+    ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+    ctx.beginPath();
+    ctx.roundRect(overlayX, overlayY, overlayWidth, overlayHeight, 20); // 20px corner radius
+    ctx.fill();
+
+    // Draw a border around the overlay
+    ctx.strokeStyle = "white";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(overlayX, overlayY, overlayWidth, overlayHeight);
 
     // Draw the title
     ctx.fillStyle = "white";
