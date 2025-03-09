@@ -786,22 +786,22 @@ function drawMainMenu() {
     ctx.textAlign = "left";
     ctx.shadowColor = "cyan";
     ctx.shadowBlur = 10;
-    ctx.fillText("Cyber Ninja Astronaut", 30, 60);
+    ctx.fillText("Cyber Ninja Astronaut", 50, 80); // Adjusted position slightly
 
     // Reset shadow for menu items
     ctx.shadowBlur = 0;
 
     // Curved Menu Layout on the right side
-    let centerX = canvas.width - 150; // Positioning near the right side
+    let centerX = canvas.width - 250; // Moved left to avoid clipping
     let centerY = canvas.height / 2;
-    let radius = 150; // Adjust curvature
+    let radius = 120; // Adjust curvature for better fit
     let menuItems = ["Start Game", "Settings", "How to Play", "Highest Score"];
 
     ctx.font = "30px Orbitron";
     ctx.textAlign = "center";
 
     for (let i = 0; i < menuItems.length; i++) {
-        let angle = (-Math.PI / 3) + (i * (Math.PI / 6)); // Adjust curve
+        let angle = (-Math.PI / 4) + (i * (Math.PI / 6)); // Adjust curve
         let x = centerX + radius * Math.cos(angle);
         let y = centerY + radius * Math.sin(angle);
 
@@ -816,7 +816,7 @@ function drawMainMenu() {
     ctx.textAlign = "right";
     ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
     ctx.shadowBlur = 0;
-    ctx.fillText("Created by [Your Name]", canvas.width - 20, canvas.height - 20);
+    ctx.fillText("Created by [Your Name]", canvas.width - 30, canvas.height - 30);
 }
 
 
