@@ -775,44 +775,46 @@ function drawMainMenu() {
     if (menuImage.complete && menuImage.naturalWidth !== 0) {
         ctx.drawImage(menuImage, 0, 0, canvas.width, canvas.height);
     } else {
-        // Fallback background if the image fails to load
+        // Fallback background
         ctx.fillStyle = "black";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
 
-    // Define the dimensions of the semi-transparent overlay
-    const overlayWidth = 600;
-    const overlayHeight = 400;
-    const overlayX = (canvas.width - overlayWidth) / 2;
-    const overlayY = (canvas.height - overlayHeight) / 2 - 50;
-
-    // Draw the semi-transparent overlay with rounded corners
-    ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
-    ctx.beginPath();
-    ctx.roundRect(overlayX, overlayY, overlayWidth, overlayHeight, 20); // 20px corner radius
-    ctx.fill();
-
-    // Draw a border around the overlay
-    ctx.strokeStyle = "white";
-    ctx.lineWidth = 2;
-    ctx.strokeRect(overlayX, overlayY, overlayWidth, overlayHeight);
-
-    // Draw the title
+    // Draw the title with a neon glow effect
     ctx.fillStyle = "white";
-    ctx.font = "60px Arial";
+    ctx.font = "bold 60px Orbitron"; // Use a futuristic font
     ctx.textAlign = "center";
-    ctx.fillText("Cyber Ninja Astronaut", canvas.width / 2, overlayY + 80);
+    ctx.shadowColor = "cyan";
+    ctx.shadowBlur = 10;
+    ctx.fillText("Cyber Ninja Astronaut", canvas.width / 2, canvas.height / 2 - 180);
 
-    // Draw menu options
-    ctx.font = "30px Arial";
-    ctx.fillText("1. Start Game", canvas.width / 2, overlayY + 160);
-    ctx.fillText("2. Settings", canvas.width / 2, overlayY + 210);
-    ctx.fillText("3. How to Play", canvas.width / 2, overlayY + 260);
-    ctx.fillText("4. Highest Score", canvas.width / 2, overlayY + 310);
+    // Reset shadow
+    ctx.shadowBlur = 0;
+
+    // Curved Menu Layout
+    let centerX = canvas.width / 2;
+    let centerY = canvas.height / 2;
+    let radius = 150; // Adjust curve radius
+    let menuItems = ["Start Game", "Settings", "How to Play", "Highest Score"];
+    
+    ctx.font = "30px Orbitron";
+    
+    for (let i = 0; i < menuItems.length; i++) {
+        let angle = (-Math.PI / 4) + (i * (Math.PI / 8)); // Adjust spread
+        let x = centerX + radius * Math.cos(angle);
+        let y = centerY + radius * Math.sin(angle);
+
+        ctx.fillStyle = "rgba(0, 255, 255, 0.8)"; // Neon cyan text
+        ctx.shadowColor = "cyan";
+        ctx.shadowBlur = 5;
+        ctx.fillText(menuItems[i], x, y);
+    }
 
     // Draw credits in the bottom-right corner
-    ctx.font = "20px Arial";
+    ctx.font = "20px Orbitron";
     ctx.textAlign = "right";
+    ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
+    ctx.shadowBlur = 0;
     ctx.fillText("Created by [Your Name]", canvas.width - 20, canvas.height - 20);
 }
 
