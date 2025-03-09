@@ -780,41 +780,41 @@ function drawMainMenu() {
         ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
 
-    // Draw the game title in the top-left corner
+    // Draw the game title in the top-left corner (BIGGER SIZE)
     ctx.fillStyle = "white";
-    ctx.font = "bold 50px Orbitron"; // Sci-fi font
+    ctx.font = "bold 60px Orbitron"; // Larger sci-fi font
     ctx.textAlign = "left";
     ctx.shadowColor = "cyan";
-    ctx.shadowBlur = 10;
-    ctx.fillText("Cyber Ninja Astronaut", 50, 80); // Adjusted position slightly
+    ctx.shadowBlur = 15;
+    ctx.fillText("Cyber Ninja Astronaut", 50, 100); // Slightly lower
 
     // Reset shadow for menu items
     ctx.shadowBlur = 0;
 
-    // Curved Menu Layout on the right side
-    let centerX = canvas.width - 250; // Moved left to avoid clipping
+    // Curved Menu Layout on the right side (BIGGER & MORE SPACED)
+    let centerX = canvas.width - 300; // Adjusted for better alignment
     let centerY = canvas.height / 2;
-    let radius = 120; // Adjust curvature for better fit
-    let menuItems = ["Start Game", "Settings", "How to Play", "Highest Score"];
+    let radius = 180; // Increased radius for better spacing
+    let menuItems = ["START GAME", "SETTINGS", "HOW TO PLAY", "HIGHEST SCORE"];
 
-    ctx.font = "30px Orbitron";
+    ctx.font = "bold 40px Orbitron"; // Bigger menu items
     ctx.textAlign = "center";
 
     for (let i = 0; i < menuItems.length; i++) {
-        let angle = (-Math.PI / 4) + (i * (Math.PI / 6)); // Adjust curve
+        let angle = (-Math.PI / 3.5) + (i * (Math.PI / 5)); // Adjusted spacing
         let x = centerX + radius * Math.cos(angle);
         let y = centerY + radius * Math.sin(angle);
 
-        ctx.fillStyle = "rgba(0, 255, 255, 0.8)"; // Neon cyan
+        ctx.fillStyle = "rgba(0, 255, 255, 1)"; // Bright neon cyan
         ctx.shadowColor = "cyan";
-        ctx.shadowBlur = 5;
+        ctx.shadowBlur = 10;
         ctx.fillText(menuItems[i], x, y);
     }
 
-    // Draw credits in the bottom-right corner
-    ctx.font = "20px Orbitron";
+    // Draw credits in the bottom-right corner (Slightly Bigger)
+    ctx.font = "24px Orbitron";
     ctx.textAlign = "right";
-    ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
+    ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
     ctx.shadowBlur = 0;
     ctx.fillText("Created by [Your Name]", canvas.width - 30, canvas.height - 30);
 }
