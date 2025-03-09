@@ -172,16 +172,23 @@ function playGameMusic() {
 
 function playGameOverMusic() {
     console.log("Playing game over music...");
-    console.log("Game over music state:", gameOverMusic);
     gameMusic.pause();
     gameMusic.currentTime = 0; // Reset game music
     menuMusic.pause();
     menuMusic.currentTime = 0; // Reset menu music
-    gameOverMusic.play().then(() => {
-        console.log("Game over music started playing.");
-    }).catch((error) => {
-        console.error("Error playing game over music:", error);
-    });
+
+    // Try to play the game over music
+    const playPromise = gameOverMusic.play();
+    if (playPromise !== undefined) {
+        playPromise.then(() => {
+            console.log("Game over music started playing.");
+        }).catch((error) => {
+            console.error("Error playing game over music:", error);
+            // Fallback: Use a different audio file or retry
+            gameOverMusic.src = "fallback-game-over-sound.wav";
+            gameOverMusic.play();
+        });
+    }
 }
 
 function stopAllMusic() {
