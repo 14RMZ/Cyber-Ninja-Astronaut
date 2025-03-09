@@ -157,6 +157,7 @@ menuImage.onerror = () => {
 
 // Music control functions
 function playMenuMusic() {
+    console.log("Playing menu music...");
     gameMusic.pause();
     gameMusic.currentTime = 0; // Reset game music
     gameOverMusic.pause(); // Stop game over music if playing
@@ -164,6 +165,7 @@ function playMenuMusic() {
 }
 
 function playGameMusic() {
+    console.log("Playing game music...");
     menuMusic.pause();
     menuMusic.currentTime = 0; // Reset menu music
     gameOverMusic.pause(); // Stop game over music if playing
@@ -171,22 +173,24 @@ function playGameMusic() {
 }
 
 function playGameOverMusic() {
-    console.log("Playing game over music...");
+    console.log("Attempting to play game over music...");
     gameMusic.pause();
     gameMusic.currentTime = 0; // Reset game music
     menuMusic.pause();
     menuMusic.currentTime = 0; // Reset menu music
 
-    // Try to play the game over music
     const playPromise = gameOverMusic.play();
     if (playPromise !== undefined) {
         playPromise.then(() => {
             console.log("Game over music started playing.");
         }).catch((error) => {
             console.error("Error playing game over music:", error);
-            // Fallback: Use a different audio file or retry
-            gameOverMusic.src = "fallback-game-over-sound.wav";
-            gameOverMusic.play();
+            // Fallback: Resume game music if game over music fails to play
+            gameMusic.play().then(() => {
+                console.log("Resuming game music as fallback.");
+            }).catch((fallbackError) => {
+                console.error("Error resuming game music:", fallbackError);
+            });
         });
     }
 }
