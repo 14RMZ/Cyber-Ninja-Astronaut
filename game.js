@@ -779,37 +779,49 @@ function drawMainMenu() {
         ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
 
-    // Draw the title at the top-left
-    ctx.fillStyle = "white";
+    // Draw the title at the top-left with a white outline
     ctx.font = "80px Arial";
     ctx.textAlign = "left";
+    ctx.lineWidth = 5; // Border thickness
+
+    ctx.strokeStyle = "white"; // Outline color
+    ctx.strokeText("Cyber Ninja Astronaut", 100, 80);
+
+    ctx.fillStyle = "cyan"; // Fill color
     ctx.fillText("Cyber Ninja Astronaut", 100, 80);
 
     // Define menu items
     let menuItems = ["Start Game", "Settings", "How To Play", "Highest Score"];
 
     // Move menu slightly to the left to keep it on-screen
-    let centerX = canvas.width - 350; // Adjusted from 250
+    let centerX = canvas.width - 350;
     let centerY = canvas.height / 2;
-    let radius = 180; // Reduce curve size slightly
+    let radius = 180;
 
-    // Draw curved menu items
+    // Draw curved menu items with white borders
     for (let i = 0; i < menuItems.length; i++) {
         let angle = (-Math.PI / 3.5) + (i * (Math.PI / 5));
         let x = centerX + radius * Math.cos(angle);
         let y = centerY + radius * Math.sin(angle);
 
-        ctx.fillStyle = "rgba(0, 255, 255, 1)"; // Neon cyan
-        ctx.shadowColor = "cyan";
-        ctx.shadowBlur = 10;
-        ctx.font = "30px Arial";
+        ctx.font = "40px Arial"; // Increase text size
         ctx.textAlign = "center";
+        ctx.lineWidth = 4; // Thicker outline
+
+        // Draw white outline first
+        ctx.strokeStyle = "white";
+        ctx.strokeText(menuItems[i], x, y);
+
+        // Fill text with neon cyan
+        ctx.fillStyle = "cyan";
         ctx.fillText(menuItems[i], x, y);
     }
 
-    // Draw credits in the bottom-right
+    // Draw credits in the bottom-right with a border
     ctx.font = "20px Arial";
     ctx.textAlign = "right";
+    ctx.lineWidth = 2;
+    ctx.strokeText("Created by [Your Name]", canvas.width - 20, canvas.height - 20);
     ctx.fillText("Created by [Your Name]", canvas.width - 20, canvas.height - 20);
 }
 
