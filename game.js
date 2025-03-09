@@ -782,7 +782,7 @@ function drawMainMenu() {
 
     // Draw the game title in the top-left corner (BIGGER SIZE)
     ctx.fillStyle = "white";
-    ctx.font = "bold 60px Orbitron"; // Larger sci-fi font
+    ctx.font = "bold 70px Orbitron"; // Larger sci-fi font
     ctx.textAlign = "left";
     ctx.shadowColor = "cyan";
     ctx.shadowBlur = 15;
@@ -801,7 +801,7 @@ function drawMainMenu() {
     ctx.textAlign = "center";
 
     for (let i = 0; i < menuItems.length; i++) {
-        let angle = (-Math.PI / 3.5) + (i * (Math.PI / 6.5)); // Adjusted spacing
+        let angle = (-Math.PI / 2.8) + (i * (Math.PI / 4.5)); // Better spacing for all items
         let x = centerX + radius * Math.cos(angle);
         let y = centerY + radius * Math.sin(angle);
 
