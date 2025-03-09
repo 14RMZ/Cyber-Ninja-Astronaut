@@ -781,32 +781,28 @@ function drawMainMenu() {
 
     // Draw the title at the top-left
     ctx.fillStyle = "white";
-    ctx.font = "80px Arial"; // Bigger title
+    ctx.font = "50px Arial";
     ctx.textAlign = "left";
-    ctx.fillText("Cyber Ninja Astronaut", 100, 80);
+    ctx.fillText("Cyber Ninja Astronaut", 50, 100);
 
     // Define menu items
-    // Curved Menu Layout on the right side
-    let centerX = canvas.width - 250; // Moved left to avoid clipping
-    let centerY = canvas.height / 2;
-    let radius = 120; // Adjust curvature for better fit
     let menuItems = ["START GAME", "SETTINGS", "HOW TO PLAY", "HIGHEST SCORE"];
 
-    // Menu positioning
-    let centerX = canvas.width - 250; // Move it to the right side
-    let centerY = canvas.height / 2;  // Center vertically
-    let radius = 200; // Curve size
+    // Move menu slightly to the left to keep it on-screen
+    let centerX = canvas.width - 350; // Adjusted from 250
+    let centerY = canvas.height / 2;
+    let radius = 180; // Reduce curve size slightly
 
     // Draw curved menu items
     for (let i = 0; i < menuItems.length; i++) {
-        let angle = (-Math.PI / 3.5) + (i * (Math.PI / 5)); // Even spacing
+        let angle = (-Math.PI / 3.5) + (i * (Math.PI / 5));
         let x = centerX + radius * Math.cos(angle);
         let y = centerY + radius * Math.sin(angle);
 
         ctx.fillStyle = "rgba(0, 255, 255, 1)"; // Neon cyan
         ctx.shadowColor = "cyan";
         ctx.shadowBlur = 10;
-        ctx.font = "30px Arial"; // Bigger text
+        ctx.font = "40px Arial";
         ctx.textAlign = "center";
         ctx.fillText(menuItems[i], x, y);
     }
@@ -816,7 +812,6 @@ function drawMainMenu() {
     ctx.textAlign = "right";
     ctx.fillText("Created by [Your Name]", canvas.width - 20, canvas.height - 20);
 }
-
 
 
 function drawSettingsMenu() {
