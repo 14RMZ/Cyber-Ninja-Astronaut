@@ -775,49 +775,44 @@ function drawMainMenu() {
     if (menuImage.complete && menuImage.naturalWidth !== 0) {
         ctx.drawImage(menuImage, 0, 0, canvas.width, canvas.height);
     } else {
-        // Fallback background
         ctx.fillStyle = "black";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
 
-    // Draw the game title in the top-left corner (BIGGER SIZE)
+    // Draw the title at the top-left
     ctx.fillStyle = "white";
-    ctx.font = "bold 70px Orbitron"; // Larger sci-fi font
+    ctx.font = "50px Arial"; // Bigger title
     ctx.textAlign = "left";
-    ctx.shadowColor = "cyan";
-    ctx.shadowBlur = 15;
-    ctx.fillText("Cyber Ninja Astronaut", 100, 80); // Slightly lower
+    ctx.fillText("Cyber Ninja Astronaut", 50, 100);
 
-    // Reset shadow for menu items
-    ctx.shadowBlur = 0;
-
-    // Curved Menu Layout on the right side (BIGGER & MORE SPACED)
-    let centerX = canvas.width - 300; // Adjusted for better alignment
-    let centerY = canvas.height / 2;
-    let radius = 180; // Increased radius for better spacing
+    // Define menu items
     let menuItems = ["START GAME", "SETTINGS", "HOW TO PLAY", "HIGHEST SCORE"];
 
-    ctx.font = "bold 30px Orbitron"; // Bigger menu items
-    ctx.textAlign = "center";
+    // Menu positioning
+    let centerX = canvas.width - 250; // Move it to the right side
+    let centerY = canvas.height / 2;  // Center vertically
+    let radius = 200; // Curve size
 
+    // Draw curved menu items
     for (let i = 0; i < menuItems.length; i++) {
-        let angle = (-Math.PI / 2.8) + (i * (Math.PI / 4.5)); // Better spacing for all items
+        let angle = (-Math.PI / 3.5) + (i * (Math.PI / 5)); // Even spacing
         let x = centerX + radius * Math.cos(angle);
         let y = centerY + radius * Math.sin(angle);
 
-        ctx.fillStyle = "rgba(0, 255, 255, 1)"; // Bright neon cyan
+        ctx.fillStyle = "rgba(0, 255, 255, 1)"; // Neon cyan
         ctx.shadowColor = "cyan";
         ctx.shadowBlur = 10;
+        ctx.font = "40px Arial"; // Bigger text
+        ctx.textAlign = "center";
         ctx.fillText(menuItems[i], x, y);
     }
 
-    // Draw credits in the bottom-right corner (Slightly Bigger)
-    ctx.font = "24px Orbitron";
+    // Draw credits in the bottom-right
+    ctx.font = "20px Arial";
     ctx.textAlign = "right";
-    ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
-    ctx.shadowBlur = 0;
-    ctx.fillText("Created by [Your Name]", canvas.width - 30, canvas.height - 30);
+    ctx.fillText("Created by [Your Name]", canvas.width - 20, canvas.height - 20);
 }
+
 
 
 function drawSettingsMenu() {
