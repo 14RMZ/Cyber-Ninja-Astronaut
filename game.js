@@ -801,7 +801,7 @@ function drawMainMenu() {
     ctx.textAlign = "center";
 
     for (let i = 0; i < menuItems.length; i++) {
-        let angle = (-Math.PI / 3.5) + (i * (Math.PI / 6)); // Adjusted spacing
+        let angle = (-Math.PI / 3.5) + (i * (Math.PI / 6.5)); // Adjusted spacing
         let x = centerX + radius * Math.cos(angle);
         let y = centerY + radius * Math.sin(angle);
 
