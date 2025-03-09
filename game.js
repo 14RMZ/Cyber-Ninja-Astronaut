@@ -792,7 +792,7 @@ function drawMainMenu() {
     ctx.shadowBlur = 0;
 
     // Curved Menu Layout on the right side
-    let centerX = canvas.width - 200; // Positioning near the right side
+    let centerX = canvas.width - 150; // Positioning near the right side
     let centerY = canvas.height / 2;
     let radius = 150; // Adjust curvature
     let menuItems = ["Start Game", "Settings", "How to Play", "Highest Score"];
