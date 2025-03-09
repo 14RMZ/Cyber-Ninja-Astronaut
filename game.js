@@ -781,9 +781,9 @@ function drawMainMenu() {
 
     // Draw the title at the top-left
     ctx.fillStyle = "white";
-    ctx.font = "50px Arial"; // Bigger title
+    ctx.font = "80px Arial"; // Bigger title
     ctx.textAlign = "left";
-    ctx.fillText("Cyber Ninja Astronaut", 50, 100);
+    ctx.fillText("Cyber Ninja Astronaut", 100, 80);
 
     // Define menu items
     let menuItems = ["START GAME", "SETTINGS", "HOW TO PLAY", "HIGHEST SCORE"];
@@ -802,7 +802,7 @@ function drawMainMenu() {
         ctx.fillStyle = "rgba(0, 255, 255, 1)"; // Neon cyan
         ctx.shadowColor = "cyan";
         ctx.shadowBlur = 10;
-        ctx.font = "40px Arial"; // Bigger text
+        ctx.font = "30px Arial"; // Bigger text
         ctx.textAlign = "center";
         ctx.fillText(menuItems[i], x, y);
     }
