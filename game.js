@@ -768,6 +768,7 @@ function drawGameOverScreen() {
 }
 
 function drawMainMenu() {
+function drawMainMenu() {
     // Clear the canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -780,18 +781,28 @@ function drawMainMenu() {
         ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
 
+    // Define the dimensions of the semi-transparent overlay
+    const overlayWidth = 600; // Width of the overlay
+    const overlayHeight = 400; // Height of the overlay
+    const overlayX = (canvas.width - overlayWidth) / 2; // Center horizontally
+    const overlayY = (canvas.height - overlayHeight) / 2 - 50; // Center vertically (adjusted for text)
+
+    // Draw the semi-transparent overlay
+    ctx.fillStyle = "rgba(0, 0, 0, 0.7)"; // Semi-transparent black
+    ctx.fillRect(overlayX, overlayY, overlayWidth, overlayHeight);
+
     // Draw the title
     ctx.fillStyle = "white";
     ctx.font = "60px Arial";
     ctx.textAlign = "center";
-    ctx.fillText("Cyber Ninja Astronaut", canvas.width / 2, canvas.height / 2 - 150);
+    ctx.fillText("Cyber Ninja Astronaut", canvas.width / 2, overlayY + 80);
 
     // Draw menu options
     ctx.font = "30px Arial";
-    ctx.fillText("1. Start Game", canvas.width / 2, canvas.height / 2 - 50);
-    ctx.fillText("2. Settings", canvas.width / 2, canvas.height / 2);
-    ctx.fillText("3. How to Play", canvas.width / 2, canvas.height / 2 + 50);
-    ctx.fillText("4. Highest Score", canvas.width / 2, canvas.height / 2 + 100);
+    ctx.fillText("1. Start Game", canvas.width / 2, overlayY + 160);
+    ctx.fillText("2. Settings", canvas.width / 2, overlayY + 210);
+    ctx.fillText("3. How to Play", canvas.width / 2, overlayY + 260);
+    ctx.fillText("4. Highest Score", canvas.width / 2, overlayY + 310);
 
     // Draw credits in the bottom-right corner
     ctx.font = "20px Arial";
