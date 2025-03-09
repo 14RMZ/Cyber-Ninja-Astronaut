@@ -80,13 +80,6 @@ menuMusic.onerror = () => {
     console.error("Failed to load menu music.");
 };
 
-const gameOverMusic = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/GameMenuSound.wav"); // Game over sound
-gameOverMusic.loop = true;
-gameOverMusic.volume = 0.5;
-gameOverMusic.onerror = () => {
-    console.error("Failed to load game over music.");
-};
-
 // Load player sound effects
 const jumpSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/jumping_sound.wav");
 jumpSound.volume = 0.5;
@@ -156,29 +149,18 @@ menuImage.onerror = () => {
 function playMenuMusic() {
     gameMusic.pause();
     gameMusic.currentTime = 0; // Reset game music
-    gameOverMusic.pause(); // Stop game over music if playing
     menuMusic.play();
 }
 
 function playGameMusic() {
     menuMusic.pause();
     menuMusic.currentTime = 0; // Reset menu music
-    gameOverMusic.pause(); // Stop game over music if playing
     gameMusic.play();
-}
-
-function playGameOverMusic() {
-    gameMusic.pause();
-    gameMusic.currentTime = 0; // Reset game music
-    menuMusic.pause();
-    menuMusic.currentTime = 0; // Reset menu music
-    gameOverMusic.play(); // Play game over music
 }
 
 function stopAllMusic() {
     menuMusic.pause();
     gameMusic.pause();
-    gameOverMusic.pause();
 }
 
 // Game state management
@@ -191,7 +173,7 @@ function setGameState(newState) {
         gameOver = false;
         playMenuMusic(); // Play menu music when returning to the menu
     } else if (newState === "gameOver") {
-        playGameOverMusic(); // Play game over music when the game ends
+        stopAllMusic(); // Stop all music during game over
     }
 }
 
@@ -641,7 +623,6 @@ function handleMovement() {
                 if (!player.isShieldActive) {
                     gameOver = true;
                     spikeDeathSound.play(); // Play spike death sound
-                    playGameOverMusic(); // Play game over music
                     updateHighScore(); // Update high score when the player dies
                 } else {
                     player.y = platform.y - player.height;
@@ -693,7 +674,6 @@ function handleMovement() {
     if (player.y > canvas.height) {
         gameOver = true;
         fallSound.play(); // Play fall sound
-        playGameOverMusic(); // Play game over music
         updateHighScore(); // Update high score when the player falls
     }
 }
@@ -722,7 +702,6 @@ function updateShield() {
 
 function resetGame() {
     stopAllMusic(); // Stop all music
-    gameOverMusic.currentTime = 0; // Reset the game over music
 
     // Resize the canvas to fit the window
     resizeCanvas();
@@ -913,7 +892,6 @@ function update() {
                 if (!player.isShieldActive) {
                     gameOver = true;
                     playerDeathSound.play(); // Play player death sound
-                    playGameOverMusic(); // Play game over music
                     updateHighScore(); // Update high score when the player dies
                 }
             }
@@ -930,7 +908,6 @@ function update() {
                 if (!player.isShieldActive) {
                     gameOver = true;
                     playerDeathSound.play(); // Play player death sound
-                    playGameOverMusic(); // Play game over music
                     updateHighScore(); // Update high score when the player dies
                 }
             }
@@ -1065,7 +1042,7 @@ function gameLoop() {
             gameOver = true; // Ensure gameOver is set to true
         }
         drawGameOverScreen(); // Draw the game over screen
-        playGameOverMusic(); // Ensure game over music is playing
+        // No music plays during game over, only sound effects
     }
 
     requestAnimationFrame(gameLoop);
@@ -1116,12 +1093,10 @@ window.addEventListener('keydown', (event) => {
                 // Increase volume
                 gameMusic.volume = Math.min(1, gameMusic.volume + 0.1);
                 menuMusic.volume = Math.min(1, menuMusic.volume + 0.1);
-                gameOverMusic.volume = Math.min(1, gameOverMusic.volume + 0.1);
             } else if (event.code === "ArrowDown") {
                 // Decrease volume
                 gameMusic.volume = Math.max(0, gameMusic.volume - 0.1);
                 menuMusic.volume = Math.max(0, menuMusic.volume - 0.1);
-                gameOverMusic.volume = Math.max(0, gameOverMusic.volume - 0.1);
             } else if (event.code === "Enter") {
                 // Go back to the main menu
                 settingsState = false;
@@ -1156,9 +1131,6 @@ Promise.all([
     }),
     new Promise((resolve) => {
         menuMusic.addEventListener("canplaythrough", resolve); // Wait for the menu music to load
-    }),
-    new Promise((resolve) => {
-        gameOverMusic.addEventListener("canplaythrough", resolve); // Wait for the game over music to load
     }),
     new Promise((resolve) => {
         powerUpSound.addEventListener("canplaythrough", resolve); // Wait for the power-up sound to load
