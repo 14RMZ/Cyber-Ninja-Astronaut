@@ -778,10 +778,39 @@ menuItems.forEach((_, i) => {
     hoverAnimation[i] = { opacity: 1, offsetY: 0 };
 });
 
+let hoveredMenuIndex = null; // Track which menu item is hovered
+
+canvas.addEventListener("mousemove", function (event) {
+    let mouseX = event.clientX;
+    let mouseY = event.clientY;
+
+    // Check if the mouse is over any menu item
+    for (let i = 0; i < menuItems.length; i++) {
+        let angle = (-Math.PI / 3.5) + (i * (Math.PI / 5));
+        let x = centerX + radius * Math.cos(angle);
+        let y = centerY + radius * Math.sin(angle);
+
+        let textWidth = ctx.measureText(menuItems[i]).width;
+        let textHeight = 30; // Estimated height of text
+        if (
+            mouseX >= x - textWidth / 2 &&
+            mouseX <= x + textWidth / 2 &&
+            mouseY >= y - textHeight / 2 &&
+            mouseY <= y + textHeight / 2
+        ) {
+            hoveredMenuIndex = i; // Store hovered index
+            return;
+        }
+    }
+
+    hoveredMenuIndex = null; // No menu item is hovered
+});
+
+// Draw the menu with hover effects
 function drawMainMenu() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Draw menu background
+    // Draw background
     if (menuImage.complete && menuImage.naturalWidth !== 0) {
         ctx.drawImage(menuImage, 0, 0, canvas.width, canvas.height);
     } else {
@@ -795,71 +824,28 @@ function drawMainMenu() {
     ctx.textAlign = "left";
     ctx.fillText("Cyber Ninja Astronaut", 100, 80);
 
-    // Center menu
-    let centerX = canvas.width - 350;
-    let centerY = canvas.height / 2;
-    let radius = 180;
-
-    menuPositions = []; // Clear previous positions
-
-    // Draw curved menu items with fade-in and movement
+    // Draw menu items with hover effect
     for (let i = 0; i < menuItems.length; i++) {
         let angle = (-Math.PI / 3.5) + (i * (Math.PI / 5));
         let x = centerX + radius * Math.cos(angle);
-        let y = centerY + radius * Math.sin(angle) + hoverAnimation[i].offsetY; // Apply movement
+        let y = centerY + radius * Math.sin(angle);
 
-        // Get text width for box size
-        ctx.font = "30px Arial";
-        let textWidth = ctx.measureText(menuItems[i]).width;
-        let padding = 10;
-        let boxWidth = textWidth + padding * 2;
-        let boxHeight = 40;
+        if (hoveredMenuIndex === i) {
+            ctx.fillStyle = "yellow"; // Highlight on hover
+            ctx.font = "35px Arial"; // Slightly bigger
+        } else {
+            ctx.fillStyle = "rgba(0, 255, 255, 1)"; // Default color
+            ctx.font = "30px Arial";
+        }
 
-        // Save positions for hover detection
-        menuPositions.push({ x: x - boxWidth / 2, y: y - 30, width: boxWidth, height: boxHeight });
-
-        // Draw dark background box with fade effect
-        ctx.fillStyle = `rgba(0, 0, 0, ${hoverAnimation[i].opacity * 0.7})`;
-        ctx.fillRect(x - boxWidth / 2, y - 30, boxWidth, boxHeight);
-
-        // Change text color if hovered
-        ctx.fillStyle = hoveredIndex === i ? `rgba(255, 255, 0, ${hoverAnimation[i].opacity})` : `rgba(0, 255, 255, ${hoverAnimation[i].opacity})`;
-        ctx.shadowColor = hoveredIndex === i ? "yellow" : "cyan";
-        ctx.shadowBlur = 10;
-
-        // Draw border with fade effect
-        ctx.strokeStyle = `rgba(255, 255, 255, ${hoverAnimation[i].opacity})`;
-        ctx.lineWidth = 3;
-        ctx.strokeRect(x - boxWidth / 2, y - 30, boxWidth, boxHeight);
-
-        // Draw text
-        ctx.textAlign = "center";
+        ctx.shadowColor = "black";
+        ctx.shadowBlur = hoveredMenuIndex === i ? 15 : 5; // Glow effect only on hover
         ctx.fillText(menuItems[i], x, y);
     }
 
-    // Draw credits
-    ctx.font = "20px Arial";
-    ctx.textAlign = "right";
-    ctx.fillText("Created by [Your Name]", canvas.width - 20, canvas.height - 20);
+    requestAnimationFrame(drawMainMenu); // Keeps menu updating
 }
 
-// Mouse move event to detect hovering & animate
-canvas.addEventListener("mousemove", function (event) {
-    let rect = canvas.getBoundingClientRect();
-    let mouseX = event.clientX - rect.left;
-    let mouseY = event.clientY - rect.top;
-
-    hoveredIndex = -1; // Reset hover state
-    for (let i = 0; i < menuPositions.length; i++) {
-        let pos = menuPositions[i];
-        if (mouseX >= pos.x && mouseX <= pos.x + pos.width && mouseY >= pos.y && mouseY <= pos.y + pos.height) {
-            hoveredIndex = i;
-            break;
-        }
-    }
-
-    animateHover();
-});
 
 // Animate hover effect (fade-in & movement)
 function animateHover() {
