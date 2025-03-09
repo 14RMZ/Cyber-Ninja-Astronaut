@@ -86,6 +86,9 @@ gameOverMusic.volume = 1;
 gameOverMusic.onerror = () => {
     console.error("Failed to load game over music.");
 };
+gameOverMusic.oncanplaythrough = () => {
+    console.log("Game over music loaded successfully.");
+};
 
 // Load player sound effects
 const jumpSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/jumping_sound.wav");
@@ -168,11 +171,17 @@ function playGameMusic() {
 }
 
 function playGameOverMusic() {
+    console.log("Playing game over music...");
+    console.log("Game over music state:", gameOverMusic);
     gameMusic.pause();
     gameMusic.currentTime = 0; // Reset game music
     menuMusic.pause();
     menuMusic.currentTime = 0; // Reset menu music
-    gameOverMusic.play(); // Play game over music
+    gameOverMusic.play().then(() => {
+        console.log("Game over music started playing.");
+    }).catch((error) => {
+        console.error("Error playing game over music:", error);
+    });
 }
 
 function stopAllMusic() {
