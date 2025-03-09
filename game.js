@@ -82,12 +82,9 @@ menuMusic.onerror = () => {
 
 const gameOverMusic = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/GameMenuSound.wav"); // Game over sound
 gameOverMusic.loop = true;
-gameOverMusic.volume = 1;
+gameOverMusic.volume = 0.5;
 gameOverMusic.onerror = () => {
     console.error("Failed to load game over music.");
-};
-gameOverMusic.oncanplaythrough = () => {
-    console.log("Game over music loaded successfully.");
 };
 
 // Load player sound effects
@@ -155,65 +152,57 @@ menuImage.onerror = () => {
     console.error("Failed to load menu image.");
 };
 
-// Music control functions
-function playMenuMusic() {
-    console.log("Playing menu music...");
-    gameMusic.pause();
-    gameMusic.currentTime = 0; // Reset game music
-    gameOverMusic.pause(); // Stop game over music if playing
-    menuMusic.play();
-}
+// Music control variables
+let currentMusic = null;
 
-function playGameMusic() {
-    console.log("Playing game music...");
-    menuMusic.pause();
-    menuMusic.currentTime = 0; // Reset menu music
-    gameOverMusic.pause(); // Stop game over music if playing
-    gameMusic.play();
-}
+// Function to play music
+async function playMusic(music) {
+    if (currentMusic !== music) {
+        if (currentMusic) {
+            currentMusic.pause();
+            currentMusic.currentTime = 0; // Reset playback position
+        }
+        currentMusic = music;
 
-function playGameOverMusic() {
-    console.log("Attempting to play game over music...");
-    gameMusic.pause();
-    gameMusic.currentTime = 0; // Reset game music
-    menuMusic.pause();
-    menuMusic.currentTime = 0; // Reset menu music
-
-    const playPromise = gameOverMusic.play();
-    if (playPromise !== undefined) {
-        playPromise.then(() => {
-            console.log("Game over music started playing.");
-        }).catch((error) => {
-            console.error("Error playing game over music:", error);
-            // Fallback: Resume game music if game over music fails to play
-            gameMusic.play().then(() => {
-                console.log("Resuming game music as fallback.");
-            }).catch((fallbackError) => {
-                console.error("Error resuming game music:", fallbackError);
-            });
-        });
+        try {
+            await currentMusic.play(); // Use await to handle the promise
+        } catch (error) {
+            if (error.name === 'AbortError') {
+                console.log('Audio playback was aborted:', error.message);
+            } else {
+                console.error('Error playing audio:', error);
+            }
+        }
     }
 }
 
+// Function to stop all music
 function stopAllMusic() {
-    menuMusic.pause();
-    gameMusic.pause();
-    gameOverMusic.pause();
+    if (currentMusic) {
+        currentMusic.pause();
+        currentMusic.currentTime = 0; // Reset playback position
+    }
+    currentMusic = null;
 }
 
-// Game state management
-function setGameState(newState) {
-    gameState = newState;
-    if (newState === "playing") {
-        resetGame();
-        playGameMusic(); // Play game music when starting the game
-    } else if (newState === "menu") {
-        gameOver = false;
-        playMenuMusic(); // Play menu music when returning to the menu
-    } else if (newState === "gameOver") {
-        playGameOverMusic(); // Play game over music when the game ends
+// Pause audio when the tab is inactive
+document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+        // Pause all audio when the tab is inactive
+        gameMusic.pause();
+        menuMusic.pause();
+        gameOverMusic.pause();
+    } else {
+        // Resume audio when the tab becomes active again
+        if (gameState === "playing") {
+            playMusic(gameMusic);
+        } else if (gameState === "menu") {
+            playMusic(menuMusic);
+        } else if (gameState === "gameOver") {
+            playMusic(gameOverMusic);
+        }
     }
-}
+});
 
 // Animation class to handle animations
 class Animation {
@@ -415,6 +404,8 @@ class NonShootingEnemy {
 
     draw() {
         const frame = this.currentAnimation.getCurrentFrame();
+        // console.log("NonShootingEnemy Frame:", frame); // Debugging log (commented out)
+
         ctx.save();
         if (this.direction === -1 && !this.isExploding) {
             ctx.scale(-1, 1);
@@ -490,6 +481,8 @@ class ShootingEnemy {
 
     draw() {
         const frame = this.currentAnimation.getCurrentFrame();
+        // console.log("ShootingEnemy Frame:", frame); // Debugging log (commented out)
+
         ctx.save();
 
         // Center the frame if it's smaller than the default size
@@ -622,10 +615,12 @@ const keys = {};
 window.addEventListener('keydown', (event) => {
     keys[event.code] = true;
     if (event.code === "KeyR" && gameOver) {
-        setGameState("playing");
+        resetGame();
+        gameState = "playing";
     }
     if (event.code === "KeyM" && gameOver) {
-        setGameState("menu");
+        gameState = "menu";
+        gameOver = false; // Reset the gameOver state
     }
     if (event.code === "KeyF") {
         bullets.push(new Bullet(player.x + player.width / 2, player.y + player.height / 2, player.direction));
@@ -661,7 +656,6 @@ function handleMovement() {
                 if (!player.isShieldActive) {
                     gameOver = true;
                     spikeDeathSound.play(); // Play spike death sound
-                    playGameOverMusic(); // Play game over music
                     updateHighScore(); // Update high score when the player dies
                 } else {
                     player.y = platform.y - player.height;
@@ -713,7 +707,6 @@ function handleMovement() {
     if (player.y > canvas.height) {
         gameOver = true;
         fallSound.play(); // Play fall sound
-        playGameOverMusic(); // Play game over music
         updateHighScore(); // Update high score when the player falls
     }
 }
@@ -782,10 +775,18 @@ function resetGame() {
     fallSound.volume = 0.5;
 
     // Start the game music
-    playGameMusic();
+    playMusic(gameMusic);
 }
 
 function drawGameOverScreen() {
+    stopAllMusic(); // Stop all other music
+    gameOverMusic.currentTime = 0; // Reset the playback position
+
+    // Play the game over music only if it's not already playing
+    if (currentMusic !== gameOverMusic) {
+        playMusic(gameOverMusic);
+    }
+
     ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -933,7 +934,6 @@ function update() {
                 if (!player.isShieldActive) {
                     gameOver = true;
                     playerDeathSound.play(); // Play player death sound
-                    playGameOverMusic(); // Play game over music
                     updateHighScore(); // Update high score when the player dies
                 }
             }
@@ -950,7 +950,6 @@ function update() {
                 if (!player.isShieldActive) {
                     gameOver = true;
                     playerDeathSound.play(); // Play player death sound
-                    playGameOverMusic(); // Play game over music
                     updateHighScore(); // Update high score when the player dies
                 }
             }
@@ -1075,17 +1074,16 @@ function gameLoop() {
         } else {
             drawMainMenu(); // Draw the main menu
         }
-        playMenuMusic(); // Ensure menu music is playing
+        playMusic(menuMusic); // Ensure menu music is playing
     } else if (gameState === "playing") {
         update(); // Update game logic
         render(); // Render the game
-        playGameMusic(); // Ensure game music is playing
+        playMusic(gameMusic); // Ensure game music is playing
     } else if (gameState === "gameOver") {
         if (!gameOver) {
             gameOver = true; // Ensure gameOver is set to true
         }
         drawGameOverScreen(); // Draw the game over screen
-        playGameOverMusic(); // Ensure game over music is playing
     }
 
     requestAnimationFrame(gameLoop);
@@ -1102,7 +1100,8 @@ canvas.addEventListener("click", (event) => {
         if (mouseX > canvas.width / 2 - 100 && mouseX < canvas.width / 2 + 100) {
             if (mouseY > canvas.height / 2 - 70 && mouseY < canvas.height / 2 - 30) {
                 // Start Game
-                setGameState("playing");
+                gameState = "playing";
+                resetGame();
             } else if (mouseY > canvas.height / 2 - 20 && mouseY < canvas.height / 2 + 20) {
                 // Open Settings Menu
                 settingsState = true;
@@ -1119,10 +1118,12 @@ canvas.addEventListener("click", (event) => {
         if (mouseX > canvas.width / 2 - 100 && mouseX < canvas.width / 2 + 100) {
             if (mouseY > canvas.height / 2 + 80 && mouseY < canvas.height / 2 + 120) {
                 // Restart Game
-                setGameState("playing");
+                resetGame();
+                gameState = "playing";
             } else if (mouseY > canvas.height / 2 + 120 && mouseY < canvas.height / 2 + 160) {
                 // Return to Main Menu
-                setGameState("menu");
+                gameState = "menu";
+                gameOver = false; // Reset the gameOver state
             }
         }
     }
@@ -1136,10 +1137,12 @@ window.addEventListener('keydown', (event) => {
                 // Increase volume
                 gameMusic.volume = Math.min(1, gameMusic.volume + 0.1);
                 menuMusic.volume = Math.min(1, menuMusic.volume + 0.1);
+                gameOverMusic.volume = Math.min(1, gameOverMusic.volume + 0.1);
             } else if (event.code === "ArrowDown") {
                 // Decrease volume
                 gameMusic.volume = Math.max(0, gameMusic.volume - 0.1);
                 menuMusic.volume = Math.max(0, menuMusic.volume - 0.1);
+                gameOverMusic.volume = Math.max(0, gameOverMusic.volume - 0.1);
             } else if (event.code === "Enter") {
                 // Go back to the main menu
                 settingsState = false;
@@ -1151,10 +1154,12 @@ window.addEventListener('keydown', (event) => {
     } else if (gameState === "gameOver") {
         if (event.code === "KeyR") {
             // Restart the game
-            setGameState("playing");
+            resetGame();
+            gameState = "playing";
         } else if (event.code === "KeyM") {
             // Return to the main menu
-            setGameState("menu");
+            gameState = "menu";
+            gameOver = false; // Reset the gameOver state
         }
     }
 });
