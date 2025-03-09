@@ -786,7 +786,7 @@ function drawMainMenu() {
     ctx.textAlign = "left";
     ctx.shadowColor = "cyan";
     ctx.shadowBlur = 15;
-    ctx.fillText("Cyber Ninja Astronaut", 50, 100); // Slightly lower
+    ctx.fillText("Cyber Ninja Astronaut", 100, 80); // Slightly lower
 
     // Reset shadow for menu items
     ctx.shadowBlur = 0;
