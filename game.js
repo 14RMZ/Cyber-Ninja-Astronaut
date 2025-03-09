@@ -786,6 +786,10 @@ function drawMainMenu() {
     ctx.fillText("Cyber Ninja Astronaut", 100, 80);
 
     // Define menu items
+    // Curved Menu Layout on the right side
+    let centerX = canvas.width - 250; // Moved left to avoid clipping
+    let centerY = canvas.height / 2;
+    let radius = 120; // Adjust curvature for better fit
     let menuItems = ["START GAME", "SETTINGS", "HOW TO PLAY", "HIGHEST SCORE"];
 
     // Menu positioning
