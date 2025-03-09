@@ -779,10 +779,10 @@ function drawMainMenu() {
         ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
 
-    // Draw the title at the top-left (NO border)
+    // Draw the title at the top-left
+    ctx.fillStyle = "white";
     ctx.font = "80px Arial";
     ctx.textAlign = "left";
-    ctx.fillStyle = "cyan"; // Fill color
     ctx.fillText("Cyber Ninja Astronaut", 100, 80);
 
     // Define menu items
@@ -793,26 +793,31 @@ function drawMainMenu() {
     let centerY = canvas.height / 2;
     let radius = 180;
 
-    // Draw curved menu items WITH white borders
+    // Draw curved menu items with borders
     for (let i = 0; i < menuItems.length; i++) {
         let angle = (-Math.PI / 3.5) + (i * (Math.PI / 5));
         let x = centerX + radius * Math.cos(angle);
         let y = centerY + radius * Math.sin(angle);
 
-        ctx.font = "40px Arial"; // Bigger text for better visibility
-        ctx.textAlign = "center";
-        ctx.lineWidth = 4; // Thicker outline
+        // Get text size for border calculations
+        ctx.font = "30px Arial";
+        let textWidth = ctx.measureText(menuItems[i]).width;
+        let padding = 10;
 
-        // Draw white outline
+        // Draw border around text
         ctx.strokeStyle = "white";
-        ctx.strokeText(menuItems[i], x, y);
+        ctx.lineWidth = 3;
+        ctx.strokeRect(x - textWidth / 2 - padding, y - 30, textWidth + padding * 2, 40);
 
-        // Fill text with neon cyan
-        ctx.fillStyle = "cyan";
+        // Draw menu text
+        ctx.fillStyle = "rgba(0, 255, 255, 1)";
+        ctx.shadowColor = "cyan";
+        ctx.shadowBlur = 10;
+        ctx.textAlign = "center";
         ctx.fillText(menuItems[i], x, y);
     }
 
-    // Draw credits in the bottom-right (NO border)
+    // Draw credits in the bottom-right
     ctx.font = "20px Arial";
     ctx.textAlign = "right";
     ctx.fillText("Created by [Your Name]", canvas.width - 20, canvas.height - 20);
