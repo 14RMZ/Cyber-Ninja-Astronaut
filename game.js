@@ -793,7 +793,7 @@ function drawMainMenu() {
     let centerY = canvas.height / 2;
     let radius = 180;
 
-    // Draw curved menu items with borders
+    // Draw curved menu items with dark background and borders
     for (let i = 0; i < menuItems.length; i++) {
         let angle = (-Math.PI / 3.5) + (i * (Math.PI / 5));
         let x = centerX + radius * Math.cos(angle);
@@ -803,11 +803,17 @@ function drawMainMenu() {
         ctx.font = "30px Arial";
         let textWidth = ctx.measureText(menuItems[i]).width;
         let padding = 10;
+        let boxWidth = textWidth + padding * 2;
+        let boxHeight = 40;
 
-        // Draw border around text
+        // Draw dark semi-transparent background behind text
+        ctx.fillStyle = "rgba(0, 0, 0, 0.7)"; // Dark semi-transparent layer
+        ctx.fillRect(x - boxWidth / 2, y - 30, boxWidth, boxHeight);
+
+        // Draw white border around the menu option
         ctx.strokeStyle = "white";
         ctx.lineWidth = 3;
-        ctx.strokeRect(x - textWidth / 2 - padding, y - 30, textWidth + padding * 2, 40);
+        ctx.strokeRect(x - boxWidth / 2, y - 30, boxWidth, boxHeight);
 
         // Draw menu text
         ctx.fillStyle = "rgba(0, 255, 255, 1)";
@@ -822,6 +828,7 @@ function drawMainMenu() {
     ctx.textAlign = "right";
     ctx.fillText("Created by [Your Name]", canvas.width - 20, canvas.height - 20);
 }
+
 
 function drawSettingsMenu() {
     // Clear the canvas
