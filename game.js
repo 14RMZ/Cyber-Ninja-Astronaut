@@ -773,46 +773,11 @@ let menuPositions = [];
 let hoveredIndex = -1; // Track hovered item
 let hoverAnimation = {}; // Store opacity & movement for smooth effect
 
-// Initialize hover animation values
-menuItems.forEach((_, i) => {
-    hoverAnimation[i] = { opacity: 1, offsetY: 0 };
-});
-
-let hoveredMenuIndex = null; // Track which menu item is hovered
-
-canvas.addEventListener("mousemove", function (event) {
-    let mouseX = event.clientX;
-    let mouseY = event.clientY;
-
-    // Check if the mouse is over any menu item
-    for (let i = 0; i < menuItems.length; i++) {
-        let angle = (-Math.PI / 3.5) + (i * (Math.PI / 5));
-        let x = centerX + radius * Math.cos(angle);
-        let y = centerY + radius * Math.sin(angle);
-
-        let textWidth = ctx.measureText(menuItems[i]).width;
-        let textHeight = 30; // Estimated height of text
-        if (
-            mouseX >= x - textWidth / 2 &&
-            mouseX <= x + textWidth / 2 &&
-            mouseY >= y - textHeight / 2 &&
-            mouseY <= y + textHeight / 2
-        ) {
-            hoveredMenuIndex = i; // Store hovered index
-            return;
-        }
-    }
-
-    hoveredMenuIndex = null; // No menu item is hovered
-});
-
-// Draw the menu with hover effects
-// Store menu items and positions
-
 function drawMainMenu() {
+    // Clear the canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Draw menu background image
+    // Draw the menu background image
     if (menuImage.complete && menuImage.naturalWidth !== 0) {
         ctx.drawImage(menuImage, 0, 0, canvas.width, canvas.height);
     } else {
@@ -820,76 +785,56 @@ function drawMainMenu() {
         ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
 
-    // Draw title
+    // Draw the title at the top-left
     ctx.fillStyle = "white";
     ctx.font = "80px Arial";
     ctx.textAlign = "left";
     ctx.fillText("Cyber Ninja Astronaut", 100, 80);
 
-    // Center menu
+    // Define menu items
+    let menuItems = ["Start Game", "Settings", "How To Play", "Highest Score"];
+
+    // Move menu slightly to the left to keep it on-screen
     let centerX = canvas.width - 350;
     let centerY = canvas.height / 2;
     let radius = 180;
 
-    menuPositions = []; // Clear previous positions
-
-    // Draw curved menu items
+    // Draw curved menu items with dark background and borders
     for (let i = 0; i < menuItems.length; i++) {
         let angle = (-Math.PI / 3.5) + (i * (Math.PI / 5));
         let x = centerX + radius * Math.cos(angle);
         let y = centerY + radius * Math.sin(angle);
 
-        // Get text width for box size
+        // Get text size for border calculations
         ctx.font = "30px Arial";
         let textWidth = ctx.measureText(menuItems[i]).width;
         let padding = 10;
         let boxWidth = textWidth + padding * 2;
         let boxHeight = 40;
 
-        // Save positions for hover detection
-        menuPositions.push({ x: x - boxWidth / 2, y: y - 30, width: boxWidth, height: boxHeight });
-
-        // Draw dark background box
-        ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+        // Draw dark semi-transparent background behind text
+        ctx.fillStyle = "rgba(0, 0, 0, 0.7)"; // Dark semi-transparent layer
         ctx.fillRect(x - boxWidth / 2, y - 30, boxWidth, boxHeight);
 
-        // Change text color if hovered
-        ctx.fillStyle = hoveredIndex === i ? "yellow" : "rgba(0, 255, 255, 1)";
-        ctx.shadowColor = hoveredIndex === i ? "yellow" : "cyan";
-        ctx.shadowBlur = 10;
-
-        // Draw border
+        // Draw white border around the menu option
         ctx.strokeStyle = "white";
         ctx.lineWidth = 3;
         ctx.strokeRect(x - boxWidth / 2, y - 30, boxWidth, boxHeight);
 
-        // Draw text
+        // Draw menu text
+        ctx.fillStyle = "rgba(0, 255, 255, 1)";
+        ctx.shadowColor = "cyan";
+        ctx.shadowBlur = 10;
         ctx.textAlign = "center";
         ctx.fillText(menuItems[i], x, y);
     }
 
-    // Draw credits
+    // Draw credits in the bottom-right
     ctx.font = "20px Arial";
     ctx.textAlign = "right";
     ctx.fillText("Created by [Your Name]", canvas.width - 20, canvas.height - 20);
 }
 
-// Mouse move event to detect hovering
-canvas.addEventListener("mousemove", function (event) {
-    let rect = canvas.getBoundingClientRect();
-    let mouseX = event.clientX - rect.left;
-    let mouseY = event.clientY - rect.top;
-    
-    hoveredIndex = -1; // Reset hover state
-    for (let i = 0; i < menuPositions.length; i++) {
-        let pos = menuPositions[i];
-        if (mouseX >= pos.x && mouseX <= pos.x + pos.width && mouseY >= pos.y && mouseY <= pos.y + pos.height) {
-            hoveredIndex = i;
-            break;
-        }
-    }
-    drawMainMenu(); // Redraw with hover effect
-});
 
 function drawSettingsMenu() {
     // Clear the canvas
