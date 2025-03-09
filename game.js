@@ -768,7 +768,6 @@ function drawGameOverScreen() {
 }
 
 function drawMainMenu() {
-function drawMainMenu() {
     // Clear the canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
