@@ -803,7 +803,18 @@ function drawMainMenu() {
         let y = centerY + radius * Math.sin(angle);
 
         // Store menu item positions for hover detection
-        menuPositions[i] = { x, y, width: ctx.measureText(menuItems[i]).width, height: 40 };
+        ctx.font = "30px Arial";
+        let textWidth = ctx.measureText(menuItems[i]).width;
+        let padding = 10;
+        let boxWidth = textWidth + padding * 2;
+        let boxHeight = 40;
+
+        menuPositions[i] = {
+            x: x - boxWidth / 2, // Left edge of the box
+            y: y - 30, // Top edge of the box
+            width: boxWidth,
+            height: boxHeight,
+        };
 
         // Save the current canvas state
         ctx.save();
@@ -816,13 +827,6 @@ function drawMainMenu() {
             ctx.scale(hoverAnimation.scale, hoverAnimation.scale);
             ctx.translate(-x, -y);
         }
-
-        // Get text size for border calculations
-        ctx.font = "30px Arial";
-        let textWidth = ctx.measureText(menuItems[i]).width;
-        let padding = 10;
-        let boxWidth = textWidth + padding * 2;
-        let boxHeight = 40;
 
         // Draw dark semi-transparent background behind text
         ctx.fillStyle = "rgba(0, 0, 0, 0.7)"; // Dark semi-transparent layer
@@ -861,10 +865,10 @@ canvas.addEventListener("mousemove", (e) => {
     for (let i = 0; i < menuPositions.length; i++) {
         let pos = menuPositions[i];
         if (
-            mouseX >= pos.x - pos.width / 2 &&
-            mouseX <= pos.x + pos.width / 2 &&
-            mouseY >= pos.y - 30 &&
-            mouseY <= pos.y + 10
+            mouseX >= pos.x &&
+            mouseX <= pos.x + pos.width &&
+            mouseY >= pos.y &&
+            mouseY <= pos.y + pos.height
         ) {
             hoveredIndex = i;
             break;
@@ -879,11 +883,23 @@ canvas.addEventListener("mousemove", (e) => {
         hoverAnimation.opacity = 1;
         hoverAnimation.scale = 1;
     }
+
+    // Redraw the menu to reflect hover changes
+    drawMainMenu();
 });
 
 canvas.addEventListener("mouseleave", () => {
     hoveredIndex = -1; // Reset hover state when mouse leaves canvas
+    drawMainMenu(); // Redraw the menu to remove hover effects
 });
+
+// Continuously redraw the menu to animate hover effects
+function animate() {
+    drawMainMenu();
+    requestAnimationFrame(animate);
+}
+
+animate(); // Start the animation loop
 
 function drawSettingsMenu() {
     // Clear the canvas
