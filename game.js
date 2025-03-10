@@ -773,6 +773,29 @@ let menuPositions = [];
 let hoveredIndex = -1; // Track hovered item
 let hoverAnimation = {}; // Store opacity & movement for smooth effect
 
+canvas.addEventListener("mousemove", (event) => {
+    let rect = canvas.getBoundingClientRect();
+    let mouseX = event.clientX - rect.left;
+    let mouseY = event.clientY - rect.top;
+    hoveredIndex = -1;
+
+    menuPositions.forEach((pos, index) => {
+        let textWidth = ctx.measureText(menuItems[index]).width;
+        let padding = 10;
+        let boxWidth = textWidth + padding * 2;
+        let boxHeight = 40;
+
+        if (
+            mouseX >= pos.x - boxWidth / 2 &&
+            mouseX <= pos.x + boxWidth / 2 &&
+            mouseY >= pos.y - 30 &&
+            mouseY <= pos.y + boxHeight - 30
+        ) {
+            hoveredIndex = index;
+        }
+    });
+});
+
 function drawMainMenu() {
     // Clear the canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -791,47 +814,46 @@ function drawMainMenu() {
     ctx.textAlign = "left";
     ctx.fillText("Cyber Ninja Astronaut", 100, 80);
 
-    // Move menu slightly to the left to keep it on-screen
     let centerX = canvas.width - 350;
     let centerY = canvas.height / 2;
     let radius = 180;
+    menuPositions = [];
 
-    // Draw curved menu items with dark background and borders
     for (let i = 0; i < menuItems.length; i++) {
         let angle = (-Math.PI / 3.5) + (i * (Math.PI / 5));
         let x = centerX + radius * Math.cos(angle);
         let y = centerY + radius * Math.sin(angle);
 
-        // Get text size for border calculations
+        if (hoveredIndex === i) {
+            x += 10; // Move outward slightly when hovered
+        }
+
         ctx.font = "30px Arial";
         let textWidth = ctx.measureText(menuItems[i]).width;
         let padding = 10;
         let boxWidth = textWidth + padding * 2;
         let boxHeight = 40;
 
-        // Draw dark semi-transparent background behind text
-        ctx.fillStyle = "rgba(0, 0, 0, 0.7)"; // Dark semi-transparent layer
+        ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
         ctx.fillRect(x - boxWidth / 2, y - 30, boxWidth, boxHeight);
 
-        // Draw white border around the menu option
         ctx.strokeStyle = "white";
         ctx.lineWidth = 3;
         ctx.strokeRect(x - boxWidth / 2, y - 30, boxWidth, boxHeight);
 
-        // Draw menu text
-        ctx.fillStyle = "rgba(0, 255, 255, 1)";
+        ctx.fillStyle = hoveredIndex === i ? "rgba(0, 255, 255, 1)" : "rgba(0, 255, 255, 0.7)";
         ctx.shadowColor = "cyan";
-        ctx.shadowBlur = 10;
+        ctx.shadowBlur = hoveredIndex === i ? 20 : 10;
         ctx.textAlign = "center";
         ctx.fillText(menuItems[i], x, y);
+
+        menuPositions.push({ x, y });
     }
 
-    // Draw credits in the bottom-right
     ctx.font = "20px Arial";
     ctx.textAlign = "right";
     ctx.fillText("Created by [Your Name]", canvas.width - 20, canvas.height - 20);
 }
-
 function drawSettingsMenu() {
     // Clear the canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
