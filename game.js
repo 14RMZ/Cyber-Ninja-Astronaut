@@ -805,6 +805,9 @@ function drawMainMenu() {
         // Store menu item positions for hover detection
         menuPositions[i] = { x, y, width: ctx.measureText(menuItems[i]).width, height: 40 };
 
+        // Save the current canvas state
+        ctx.save();
+
         // Check if the mouse is hovering over this item
         if (hoveredIndex === i) {
             // Apply hover animation (scale and opacity)
@@ -837,11 +840,8 @@ function drawMainMenu() {
         ctx.textAlign = "center";
         ctx.fillText(menuItems[i], x, y);
 
-        // Reset transformations and global alpha
-        if (hoveredIndex === i) {
-            ctx.globalAlpha = 1;
-            ctx.setTransform(1, 0, 0, 1, 0, 0); // Reset transformations
-        }
+        // Restore the canvas state to isolate hover effects
+        ctx.restore();
     }
 
     // Draw credits in the bottom-right
