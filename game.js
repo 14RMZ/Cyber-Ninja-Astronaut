@@ -870,7 +870,6 @@ function drawMainMenu() {
     ctx.font = "20px Arial";
     ctx.textAlign = "right";
     ctx.fillText("Created by [Your Name]", canvas.width - 20, canvas.height - 20);
-}
 
 // Add event listeners for hover detection
 canvas.addEventListener("mousemove", (e) => {
