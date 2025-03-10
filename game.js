@@ -767,6 +767,34 @@ function drawGameOverScreen() {
     ctx.fillText("Press M to Return to Menu", canvas.width / 2, canvas.height / 2 + 140);
 }
 
+// Update menuPositions to match the new button layout
+function updateMenuPositions() {
+    let centerX = canvas.width - 350; // Center of the curved menu (right side)
+    let centerY = canvas.height / 2;
+    let radius = 180;
+
+    for (let i = 0; i < menuItems.length; i++) {
+        let angle = (-Math.PI / 3.5) + (i * (Math.PI / 5)); // Calculate angle for curved layout
+        let x = centerX + radius * Math.cos(angle); // X position of the button
+        let y = centerY + radius * Math.sin(angle); // Y position of the button
+
+        // Calculate the bounding box for the button
+        ctx.font = "30px Arial";
+        let textWidth = ctx.measureText(menuItems[i]).width;
+        let padding = 10;
+        let boxWidth = textWidth + padding * 2;
+        let boxHeight = 40;
+
+        // Store the bounding box in menuPositions
+        menuPositions[i] = {
+            x: x - boxWidth / 2, // Left edge of the button
+            y: y - 30, // Top edge of the button
+            width: boxWidth, // Width of the button
+            height: boxHeight, // Height of the button
+        };
+    }
+}
+
 // Store menu items and positions
 let menuItems = ["Start Game", "Settings", "How To Play", "Highest Score"];
 let menuPositions = [];
@@ -802,18 +830,8 @@ function drawMainMenu() {
         let x = centerX + radius * Math.cos(angle);
         let y = centerY + radius * Math.sin(angle);
 
-        // Store menu item positions for hover detection
-        ctx.font = "30px Arial";
-        let textWidth = ctx.measureText(menuItems[i]).width;
-        let padding = 10;
-        let boxWidth = textWidth + padding * 2;
-        let boxHeight = 40;
-
-        menuPositions[i] = {
-            x: x - boxWidth / 2, // Left edge of the box
-            y: y - 30, // Top edge of the box
-            width: boxWidth,
-            height: boxHeight,
+    // Update menu positions for hover and click detection
+    updateMenuPositions();
         };
 
         // Save the current canvas state
@@ -1158,19 +1176,30 @@ canvas.addEventListener("click", (event) => {
 
     if (gameState === "menu") {
         // Check if the user clicked on a menu option
-        if (mouseX > canvas.width / 2 - 100 && mouseX < canvas.width / 2 + 100) {
-            if (mouseY > canvas.height / 2 - 70 && mouseY < canvas.height / 2 - 30) {
-                // Start Game
-                setGameState("playing");
-            } else if (mouseY > canvas.height / 2 - 20 && mouseY < canvas.height / 2 + 20) {
-                // Open Settings Menu
-                settingsState = true;
-            } else if (mouseY > canvas.height / 2 + 30 && mouseY < canvas.height / 2 + 70) {
-                // Open How to Play Screen
-                drawHowToPlayScreen();
-            } else if (mouseY > canvas.height / 2 + 80 && mouseY < canvas.height / 2 + 120) {
-                // Show Highest Score
-                alert(`Highest Score: ${highScore}`);
+        for (let i = 0; i < menuPositions.length; i++) {
+            const pos = menuPositions[i];
+            if (
+                mouseX >= pos.x &&
+                mouseX <= pos.x + pos.width &&
+                mouseY >= pos.y &&
+                mouseY <= pos.y + pos.height
+            ) {
+                // Handle button click based on index
+                switch (i) {
+                    case 0: // Start Game
+                        setGameState("playing");
+                        break;
+                    case 1: // Settings
+                        settingsState = true;
+                        break;
+                    case 2: // How to Play
+                        drawHowToPlayScreen();
+                        break;
+                    case 3: // Highest Score
+                        alert(`Highest Score: ${highScore}`);
+                        break;
+                }
+                break; // Exit the loop after handling the click
             }
         }
     } else if (gameState === "gameOver") {
