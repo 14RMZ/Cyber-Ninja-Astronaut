@@ -771,30 +771,7 @@ function drawGameOverScreen() {
 let menuItems = ["Start Game", "Settings", "How To Play", "Highest Score"];
 let menuPositions = [];
 let hoveredIndex = -1; // Track hovered item
-let hoverAnimation = {}; // Store opacity & movement for smooth effect
-
-canvas.addEventListener("mousemove", (event) => {
-    let rect = canvas.getBoundingClientRect();
-    let mouseX = event.clientX - rect.left;
-    let mouseY = event.clientY - rect.top;
-    hoveredIndex = -1;
-
-    menuPositions.forEach((pos, index) => {
-        let textWidth = ctx.measureText(menuItems[index]).width;
-        let padding = 10;
-        let boxWidth = textWidth + padding * 2;
-        let boxHeight = 40;
-
-        if (
-            mouseX >= pos.x - boxWidth / 2 &&
-            mouseX <= pos.x + boxWidth / 2 &&
-            mouseY >= pos.y - 30 &&
-            mouseY <= pos.y + boxHeight - 30
-        ) {
-            hoveredIndex = index;
-        }
-    });
-});
+let hoverAnimation = { opacity: 1, scale: 1 }; // Store opacity & scale for smooth effect
 
 function drawMainMenu() {
     // Clear the canvas
@@ -814,46 +791,100 @@ function drawMainMenu() {
     ctx.textAlign = "left";
     ctx.fillText("Cyber Ninja Astronaut", 100, 80);
 
+    // Move menu slightly to the left to keep it on-screen
     let centerX = canvas.width - 350;
     let centerY = canvas.height / 2;
     let radius = 180;
-    menuPositions = [];
 
+    // Draw curved menu items with dark background and borders
     for (let i = 0; i < menuItems.length; i++) {
         let angle = (-Math.PI / 3.5) + (i * (Math.PI / 5));
         let x = centerX + radius * Math.cos(angle);
         let y = centerY + radius * Math.sin(angle);
 
+        // Store menu item positions for hover detection
+        menuPositions[i] = { x, y, width: ctx.measureText(menuItems[i]).width, height: 40 };
+
+        // Check if the mouse is hovering over this item
         if (hoveredIndex === i) {
-            x += 10; // Move outward slightly when hovered
+            // Apply hover animation (scale and opacity)
+            ctx.globalAlpha = hoverAnimation.opacity;
+            ctx.translate(x, y);
+            ctx.scale(hoverAnimation.scale, hoverAnimation.scale);
+            ctx.translate(-x, -y);
         }
 
+        // Get text size for border calculations
         ctx.font = "30px Arial";
         let textWidth = ctx.measureText(menuItems[i]).width;
         let padding = 10;
         let boxWidth = textWidth + padding * 2;
         let boxHeight = 40;
 
-        ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+        // Draw dark semi-transparent background behind text
+        ctx.fillStyle = "rgba(0, 0, 0, 0.7)"; // Dark semi-transparent layer
         ctx.fillRect(x - boxWidth / 2, y - 30, boxWidth, boxHeight);
 
+        // Draw white border around the menu option
         ctx.strokeStyle = "white";
         ctx.lineWidth = 3;
         ctx.strokeRect(x - boxWidth / 2, y - 30, boxWidth, boxHeight);
 
-        ctx.fillStyle = hoveredIndex === i ? "rgba(0, 255, 255, 1)" : "rgba(0, 255, 255, 0.7)";
-        ctx.shadowColor = "cyan";
-        ctx.shadowBlur = hoveredIndex === i ? 20 : 10;
+        // Draw menu text
+        ctx.fillStyle = hoveredIndex === i ? "rgba(255, 255, 0, 1)" : "rgba(0, 255, 255, 1)"; // Change color on hover
+        ctx.shadowColor = hoveredIndex === i ? "yellow" : "cyan"; // Change shadow color on hover
+        ctx.shadowBlur = 10;
         ctx.textAlign = "center";
         ctx.fillText(menuItems[i], x, y);
 
-        menuPositions.push({ x, y });
+        // Reset transformations and global alpha
+        if (hoveredIndex === i) {
+            ctx.globalAlpha = 1;
+            ctx.setTransform(1, 0, 0, 1, 0, 0); // Reset transformations
+        }
     }
 
+    // Draw credits in the bottom-right
     ctx.font = "20px Arial";
     ctx.textAlign = "right";
     ctx.fillText("Created by [Your Name]", canvas.width - 20, canvas.height - 20);
 }
+
+// Add event listeners for hover detection
+canvas.addEventListener("mousemove", (e) => {
+    let rect = canvas.getBoundingClientRect();
+    let mouseX = e.clientX - rect.left;
+    let mouseY = e.clientY - rect.top;
+
+    // Check if the mouse is over any menu item
+    hoveredIndex = -1;
+    for (let i = 0; i < menuPositions.length; i++) {
+        let pos = menuPositions[i];
+        if (
+            mouseX >= pos.x - pos.width / 2 &&
+            mouseX <= pos.x + pos.width / 2 &&
+            mouseY >= pos.y - 30 &&
+            mouseY <= pos.y + 10
+        ) {
+            hoveredIndex = i;
+            break;
+        }
+    }
+
+    // Update hover animation properties
+    if (hoveredIndex !== -1) {
+        hoverAnimation.opacity = 0.8 + 0.2 * Math.sin(Date.now() / 200); // Fade effect
+        hoverAnimation.scale = 1 + 0.1 * Math.sin(Date.now() / 200); // Scale effect
+    } else {
+        hoverAnimation.opacity = 1;
+        hoverAnimation.scale = 1;
+    }
+});
+
+canvas.addEventListener("mouseleave", () => {
+    hoveredIndex = -1; // Reset hover state when mouse leaves canvas
+});
+
 function drawSettingsMenu() {
     // Clear the canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
