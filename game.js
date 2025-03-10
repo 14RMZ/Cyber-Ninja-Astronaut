@@ -874,32 +874,32 @@ canvas.addEventListener("mousemove", (e) => {
             break;
         }
     }
-
-    // Update hover animation properties
-    if (hoveredIndex !== -1) {
-        hoverAnimation.opacity = 0.8 + 0.2 * Math.sin(Date.now() / 200); // Fade effect
-        hoverAnimation.scale = 1 + 0.1 * Math.sin(Date.now() / 200); // Scale effect
-    } else {
-        hoverAnimation.opacity = 1;
-        hoverAnimation.scale = 1;
-    }
-
-    // Redraw the menu to reflect hover changes
-    drawMainMenu();
 });
 
 canvas.addEventListener("mouseleave", () => {
     hoveredIndex = -1; // Reset hover state when mouse leaves canvas
-    drawMainMenu(); // Redraw the menu to remove hover effects
 });
 
-// Continuously redraw the menu to animate hover effects
-function animate() {
+// Smoothly animate hover effects
+function animateHover() {
+    if (hoveredIndex !== -1) {
+        // Fade in and scale up when hovered
+        hoverAnimation.opacity = Math.min(hoverAnimation.opacity + 0.05, 1); // Fade in to 1
+        hoverAnimation.scale = Math.min(hoverAnimation.scale + 0.01, 1.1); // Scale up to 1.1
+    } else {
+        // Fade out and scale down when not hovered
+        hoverAnimation.opacity = Math.max(hoverAnimation.opacity - 0.05, 0.8); // Fade out to 0.8
+        hoverAnimation.scale = Math.max(hoverAnimation.scale - 0.01, 1); // Scale down to 1
+    }
+
+    // Redraw the menu to reflect hover changes
     drawMainMenu();
-    requestAnimationFrame(animate);
+
+    // Continue the animation loop
+    requestAnimationFrame(animateHover);
 }
 
-animate(); // Start the animation loop
+animateHover(); // Start the hover animation loop
 
 function drawSettingsMenu() {
     // Clear the canvas
