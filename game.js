@@ -824,15 +824,14 @@ function drawMainMenu() {
     let centerY = canvas.height / 2;
     let radius = 180;
 
+    // Update menu positions for hover and click detection
+    updateMenuPositions();
+
     // Draw curved menu items with dark background and borders
     for (let i = 0; i < menuItems.length; i++) {
         let angle = (-Math.PI / 3.5) + (i * (Math.PI / 5));
         let x = centerX + radius * Math.cos(angle);
         let y = centerY + radius * Math.sin(angle);
-
-    // Update menu positions for hover and click detection
-    updateMenuPositions();
-        };
 
         // Save the current canvas state
         ctx.save();
@@ -870,6 +869,7 @@ function drawMainMenu() {
     ctx.font = "20px Arial";
     ctx.textAlign = "right";
     ctx.fillText("Created by [Your Name]", canvas.width - 20, canvas.height - 20);
+}
 
 // Add event listeners for hover detection
 canvas.addEventListener("mousemove", (e) => {
