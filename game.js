@@ -16,6 +16,7 @@ highScore = parseInt(highScore);
 // Game state
 let gameState = "menu"; // Possible values: "menu", "playing", "gameOver"
 let settingsState = false; // Tracks if the settings menu is open
+let howToPlayState = false; // Tracks if the "How to Play" screen is active
 
 // Load the background image
 const backgroundImage = new Image();
@@ -1122,6 +1123,8 @@ function gameLoop() {
 
         if (settingsState) {
             drawSettingsMenu(); // Draw the settings menu
+        } else if (howToPlayState) {
+            drawHowToPlayScreen(); // Draw the "How to Play" screen
         } else {
             drawMainMenu(); // Draw the main menu
         }
@@ -1163,6 +1166,7 @@ canvas.addEventListener("click", (event) => {
                         break;
                     case 2: // How to Play
                         drawHowToPlayScreen();
+                        howToPlayState = true; // Show the "How to Play" screen
                         break;
                     case 3: // Highest Score
                         alert(`Highest Score: ${highScore}`);
@@ -1201,9 +1205,11 @@ window.addEventListener('keydown', (event) => {
                 // Go back to the main menu
                 settingsState = false;
             }
-        } else if (event.code === "Enter") {
-            // Go back to the main menu from how-to-play screen
-            settingsState = false;
+        } else if (howToPlayState) {
+            if (event.code === "Enter") {
+                // Go back to the main menu
+                howToPlayState = false;
+            }
         }
     } else if (gameState === "gameOver") {
         if (event.code === "KeyR") {
