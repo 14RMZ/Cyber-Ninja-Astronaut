@@ -1,3 +1,37 @@
+// Get modal elements
+const welcomeModal = document.getElementById("welcomeModal");
+const welcomeMessage = document.getElementById("welcomeMessage");
+const howToPlayMessage = document.getElementById("howToPlayMessage");
+const startGameButton = document.getElementById("startGameButton");
+
+// Function to show the welcome modal
+function showWelcomeModal(name) {
+    welcomeMessage.textContent = `How are you doing, ${name}? Let's have some fun together and fight some aliens!`;
+    howToPlayMessage.textContent = "How to Play:\n1. Use Arrow Keys or WASD to move.\n2. Press Space to jump.\n3. Press F or J to shoot.\n4. Avoid enemies and spikes.\n5. Collect power-ups for shields.\n6. Reach the highest score!";
+    welcomeModal.style.display = "flex"; // Show the modal
+}
+
+// Function to hide the welcome modal
+function hideWelcomeModal() {
+    welcomeModal.style.display = "none"; // Hide the modal
+}
+
+// Event listener for the "Let's Play!" button
+startGameButton.addEventListener("click", () => {
+    hideWelcomeModal();
+    setGameState("playing"); // Start the game
+});
+
+// Prompt the user for their name and show the modal
+let playerName = localStorage.getItem("playerName");
+
+if (!playerName) {
+    playerName = prompt("Hello! What is your name?");
+    if (playerName) {
+        localStorage.setItem("playerName", playerName);
+        showWelcomeModal(playerName); // Show the welcome modal
+    }
+}
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
@@ -756,11 +790,11 @@ function drawGameOverScreen() {
 
     ctx.fillStyle = "white";
     ctx.font = "30px Arial";
-    ctx.fillText(`Your Score: ${player.score}`, canvas.width / 2, canvas.height / 2);
+    ctx.fillText(`${playerName}'s Score: ${player.score}`, canvas.width / 2, canvas.height / 2);
 
-    ctx.fillStyle = "gold";
+    ctx.fillStyle = "gold"; // High score color matches the gameplay screen
     ctx.font = "30px Arial";
-    ctx.fillText(`High Score: ${highScore}`, canvas.width / 2, canvas.height / 2 + 40);
+    ctx.fillText(`${playerName}'s High Score: ${highScore}`, canvas.width / 2, canvas.height / 2 + 40);
 
     ctx.fillStyle = "white";
     ctx.font = "20px Arial";
@@ -791,6 +825,10 @@ function drawMainMenu() {
     ctx.font = "80px Arial";
     ctx.textAlign = "left";
     ctx.fillText("Cyber Ninja Astronaut", 100, 80);
+
+    // Draw the player's name
+    ctx.font = "30px Arial";
+    ctx.fillText(`Welcome, ${playerName}!`, 100, 130);
 
     // Move menu slightly to the left to keep it on-screen
     let centerX = canvas.width - 350;
@@ -1025,10 +1063,10 @@ function drawScore() {
     ctx.font = "20px Arial";
     
     // Draw the score on the left side
-    ctx.fillText(`Score: ${player.score}`, 20, 30);
+    ctx.fillText(`${playerName}'your current score is: ${player.score}`, 20, 30);
     
     // Draw the high score on the right side
-    const highScoreText = `High Score: ${highScore}`;
+    const highScoreText = `${playerName}'s Highest Score: ${highScore}`;
     const textWidth = ctx.measureText(highScoreText).width;
     
     ctx.fillStyle = "gold"; // Change high score color to yellow
