@@ -801,14 +801,14 @@ function drawMainMenu() {
         let angle = (-Math.PI / 3.5) + (i * (Math.PI / 5));
         let x = centerX + radius * Math.cos(angle);
         let y = centerY + radius * Math.sin(angle);
-    
+
         // Store menu item positions for hover and click detection
         ctx.font = "30px Arial";
         let textWidth = ctx.measureText(menuItems[i]).width;
         let padding = 10;
         let boxWidth = textWidth + padding * 2;
         let boxHeight = 40;
-    
+
         // Update menuPositions with the new button positions
         menuPositions[i] = {
             x: x - boxWidth / 2, // Left edge of the button
@@ -816,10 +816,13 @@ function drawMainMenu() {
             width: boxWidth, // Width of the button
             height: boxHeight, // Height of the button
         };
-    
+
+        // Log the button positions for debugging
+        console.log(`Button ${i}:`, menuPositions[i]);
+
         // Save the current canvas state
         ctx.save();
-    
+
         // Check if the mouse is hovering over this item
         if (hoveredIndex === i) {
             // Apply hover animation (scale and opacity)
@@ -828,23 +831,23 @@ function drawMainMenu() {
             ctx.scale(hoverAnimation.scale, hoverAnimation.scale);
             ctx.translate(-x, -y);
         }
-    
+
         // Draw dark semi-transparent background behind text
         ctx.fillStyle = "rgba(0, 0, 0, 0.7)"; // Dark semi-transparent layer
         ctx.fillRect(x - boxWidth / 2, y - 30, boxWidth, boxHeight);
-    
+
         // Draw white border around the menu option
         ctx.strokeStyle = "white";
         ctx.lineWidth = 3;
         ctx.strokeRect(x - boxWidth / 2, y - 30, boxWidth, boxHeight);
-    
+
         // Draw menu text
         ctx.fillStyle = hoveredIndex === i ? "rgba(255, 255, 0, 1)" : "rgba(0, 255, 255, 1)"; // Change color on hover
         ctx.shadowColor = hoveredIndex === i ? "yellow" : "cyan"; // Change shadow color on hover
         ctx.shadowBlur = 10;
         ctx.textAlign = "center";
         ctx.fillText(menuItems[i], x, y);
-    
+
         // Restore the canvas state to isolate hover effects
         ctx.restore();
     }
@@ -1154,8 +1157,8 @@ function gameLoop() {
 // Handle mouse clicks on the menu
 canvas.addEventListener("click", (event) => {
     const rect = canvas.getBoundingClientRect();
-    const mouseX = event.clientX - rect.left;
-    const mouseY = event.clientY - rect.top;
+    const mouseX = event.clientX - rect.left; // Mouse X coordinate relative to canvas
+    const mouseY = event.clientY - rect.top; // Mouse Y coordinate relative to canvas
 
     if (gameState === "menu") {
         // Check if the user clicked on a menu option
