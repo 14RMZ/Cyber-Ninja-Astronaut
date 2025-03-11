@@ -883,11 +883,16 @@ canvas.addEventListener("mouseleave", () => {
 });
 
 function drawSettingsMenu() {
-    // Clear the canvas
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // Draw the menu background image
+    if (menuImage.complete && menuImage.naturalWidth !== 0) {
+        ctx.drawImage(menuImage, 0, 0, canvas.width, canvas.height);
+    } else {
+        ctx.fillStyle = "black";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
 
-    // Draw the background
-    ctx.fillStyle = "rgba(0, 0, 0, 0.9)";
+    // Draw semi-transparent overlay
+    ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // Draw the title
@@ -907,11 +912,16 @@ function drawSettingsMenu() {
 }
 
 function drawHowToPlayScreen() {
-    // Clear the canvas
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // Draw the menu background image
+    if (menuImage.complete && menuImage.naturalWidth !== 0) {
+        ctx.drawImage(menuImage, 0, 0, canvas.width, canvas.height);
+    } else {
+        ctx.fillStyle = "black";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
 
-    // Draw the background
-    ctx.fillStyle = "rgba(0, 0, 0, 0.9)";
+    // Draw semi-transparent overlay
+    ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // Draw the title
