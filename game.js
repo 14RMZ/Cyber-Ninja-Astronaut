@@ -590,7 +590,7 @@ window.addEventListener('keydown', (event) => {
     if (event.code === "KeyM" && gameOver) {
         setGameState("menu");
     }
-    if (event.code === "KeyF") {
+    if (event.code === "KeyF" || event.code === "KeyJ") {
         bullets.push(new Bullet(player.x + player.width / 2, player.y + player.height / 2, player.direction));
         shootSound.play(); // Play shoot sound
     }
@@ -936,7 +936,7 @@ function drawHowToPlayScreen() {
     const instructions = [
         "1. Use Arrow Keys or WASD to move.",
         "2. Press Space to jump.",
-        "3. Press F to shoot.",
+        "3. Press F or J to shoot.",
         "4. Avoid enemies and spikes.",
         "5. Collect power-ups for shields.",
         "6. Reach the highest score!"
@@ -1021,7 +1021,7 @@ function update() {
 }
 
 function drawScore() {
-    ctx.fillStyle = "white";
+    ctx.fillStyle = "white"; // Default color for the score
     ctx.font = "20px Arial";
     
     // Draw the score on the left side
@@ -1030,6 +1030,8 @@ function drawScore() {
     // Draw the high score on the right side
     const highScoreText = `High Score: ${highScore}`;
     const textWidth = ctx.measureText(highScoreText).width;
+    
+    ctx.fillStyle = "gold"; // Change high score color to yellow
     ctx.fillText(highScoreText, canvas.width - textWidth - 20, 30);
 }
 
@@ -1208,9 +1210,9 @@ window.addEventListener('keydown', (event) => {
                 gameMusic.volume = Math.min(1, gameMusic.volume + 0.1);
                 menuMusic.volume = Math.min(1, menuMusic.volume + 0.1);
             } else if (event.code === "ArrowDown") {
-                // Decrease volume by 10%
-                gameMusic.volume = Math.max(0, gameMusic.volume - 0.1);
-                menuMusic.volume = Math.max(0, menuMusic.volume - 0.1);
+                // Decrease volume by 5%
+                gameMusic.volume = Math.max(0, gameMusic.volume - 0.5);
+                menuMusic.volume = Math.max(0, menuMusic.volume - 0.5);
             } else if (event.code === "Enter") {
                 // Go back to the main menu
                 settingsState = false;
