@@ -1207,8 +1207,8 @@ window.addEventListener('keydown', (event) => {
         if (settingsState) {
             if (event.code === "ArrowUp") {
                 // Increase volume by 10%
-                gameMusic.volume = Math.min(1, gameMusic.volume + 0.1);
-                menuMusic.volume = Math.min(1, menuMusic.volume + 0.1);
+                gameMusic.volume = Math.min(1, gameMusic.volume + 0.5);
+                menuMusic.volume = Math.min(1, menuMusic.volume + 0.5);
             } else if (event.code === "ArrowDown") {
                 // Decrease volume by 5%
                 gameMusic.volume = Math.max(0, gameMusic.volume - 0.5);
