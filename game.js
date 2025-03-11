@@ -903,7 +903,7 @@ function drawSettingsMenu() {
 
     // Draw settings options
     ctx.font = "30px Arial";
-    ctx.fillText("1. Sound Volume: " + gameMusic.volume.toFixed(2), canvas.width / 2, canvas.height / 2 - 50);
+    ctx.fillText("1. Sound Volume: " + Math.round(gameMusic.volume * 100) + "%", canvas.width / 2, canvas.height / 2 - 50); // Display volume as percentage
     ctx.fillText("2. Back to Main Menu", canvas.width / 2, canvas.height / 2);
 
     // Draw instructions
@@ -1179,7 +1179,7 @@ canvas.addEventListener("click", (event) => {
                         howToPlayState = true; // Show the "How to Play" screen
                         break;
                     case 3: // Highest Score
-                        alert(`Highest Score: ${highScore}`);
+                        alert(`Your Highest Score is: ${highScore}`);
                         break;
                 }
                 break; // Exit the loop after handling the click
@@ -1204,11 +1204,11 @@ window.addEventListener('keydown', (event) => {
     if (gameState === "menu") {
         if (settingsState) {
             if (event.code === "ArrowUp") {
-                // Increase volume
+                // Increase volume by 10%
                 gameMusic.volume = Math.min(1, gameMusic.volume + 0.1);
                 menuMusic.volume = Math.min(1, menuMusic.volume + 0.1);
             } else if (event.code === "ArrowDown") {
-                // Decrease volume
+                // Decrease volume by 10%
                 gameMusic.volume = Math.max(0, gameMusic.volume - 0.1);
                 menuMusic.volume = Math.max(0, menuMusic.volume - 0.1);
             } else if (event.code === "Enter") {
