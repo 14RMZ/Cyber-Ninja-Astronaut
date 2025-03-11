@@ -817,9 +817,6 @@ function drawMainMenu() {
             height: boxHeight, // Height of the button
         };
 
-        // Log the button positions for debugging
-        console.log(`Button ${i}:`, menuPositions[i]);
-
         // Save the current canvas state
         ctx.save();
 
@@ -883,27 +880,6 @@ canvas.addEventListener("mousemove", (e) => {
 canvas.addEventListener("mouseleave", () => {
     hoveredIndex = -1; // Reset hover state when mouse leaves canvas
 });
-
-// Smoothly animate hover effects
-function animateHover() {
-    if (hoveredIndex !== -1) {
-        // Fade in and scale up when hovered
-        hoverAnimation.opacity = Math.min(hoverAnimation.opacity + 0.05, 1); // Fade in to 1
-        hoverAnimation.scale = Math.min(hoverAnimation.scale + 0.01, 1.1); // Scale up to 1.1
-    } else {
-        // Fade out and scale down when not hovered
-        hoverAnimation.opacity = Math.max(hoverAnimation.opacity - 0.05, 0.8); // Fade out to 0.8
-        hoverAnimation.scale = Math.max(hoverAnimation.scale - 0.01, 1); // Scale down to 1
-    }
-
-    // Redraw the menu to reflect hover changes
-    drawMainMenu();
-
-    // Continue the animation loop
-    requestAnimationFrame(animateHover);
-}
-
-animateHover(); // Start the hover animation loop
 
 function drawSettingsMenu() {
     // Clear the canvas
@@ -1133,6 +1109,17 @@ function render() {
 
 function gameLoop() {
     if (gameState === "menu") {
+        // Update hover animation
+        if (hoveredIndex !== -1) {
+            // Fade in and scale up when hovered
+            hoverAnimation.opacity = Math.min(hoverAnimation.opacity + 0.05, 1); // Fade in to 1
+            hoverAnimation.scale = Math.min(hoverAnimation.scale + 0.01, 1.1); // Scale up to 1.1
+        } else {
+            // Fade out and scale down when not hovered
+            hoverAnimation.opacity = Math.max(hoverAnimation.opacity - 0.05, 0.8); // Fade out to 0.8
+            hoverAnimation.scale = Math.max(hoverAnimation.scale - 0.01, 1); // Scale down to 1
+        }
+
         if (settingsState) {
             drawSettingsMenu(); // Draw the settings menu
         } else {
@@ -1144,11 +1131,7 @@ function gameLoop() {
         render(); // Render the game
         playGameMusic(); // Ensure game music is playing
     } else if (gameState === "gameOver") {
-        if (!gameOver) {
-            gameOver = true; // Ensure gameOver is set to true
-        }
         drawGameOverScreen(); // Draw the game over screen
-        // No music plays during game over, only sound effects
     }
 
     requestAnimationFrame(gameLoop);
