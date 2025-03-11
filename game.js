@@ -778,19 +778,10 @@ function updateMenuPositions() {
         let x = centerX + radius * Math.cos(angle); // X position of the button
         let y = centerY + radius * Math.sin(angle); // Y position of the button
 
-        // Calculate the bounding box for the button
-        ctx.font = "30px Arial";
-        let textWidth = ctx.measureText(menuItems[i]).width;
-        let padding = 10;
-        let boxWidth = textWidth + padding * 2;
-        let boxHeight = 40;
-
         // Store the bounding box in menuPositions
         menuPositions[i] = {
-            x: x - boxWidth / 2, // Left edge of the button
-            y: y - 30, // Top edge of the button
-            width: boxWidth, // Width of the button
-            height: boxHeight, // Height of the button
+            x: x, // Center X of the button
+            y: y, // Center Y of the button
         };
     }
 }
@@ -832,6 +823,13 @@ function drawMainMenu() {
         let angle = (-Math.PI / 3.5) + (i * (Math.PI / 5));
         let x = centerX + radius * Math.cos(angle);
         let y = centerY + radius * Math.sin(angle);
+
+        // Calculate the bounding box for the button
+        ctx.font = "30px Arial";
+        let textWidth = ctx.measureText(menuItems[i]).width;
+        let padding = 10;
+        let boxWidth = textWidth + padding * 2; // Define boxWidth
+        let boxHeight = 40; // Define boxHeight
 
         // Save the current canvas state
         ctx.save();
