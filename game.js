@@ -90,7 +90,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Declare and initialize gameState before using it
     let gameState = "menu"; // Possible values: "menu", "playing", "gameOver"
-
+    let settingsState = false; // Tracks whether the settings menu is open
+    let howToPlayState = false; // Tracks whether the "How to Play" screen is open
+    
     // Function to set the game state
     function setGameState(newState) {
         gameState = newState;
