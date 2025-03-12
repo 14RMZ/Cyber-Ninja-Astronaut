@@ -4,6 +4,20 @@ document.addEventListener("DOMContentLoaded", () => {
     const welcomeMessage = document.getElementById("welcomeMessage");
     const howToPlayMessage = document.getElementById("howToPlayMessage");
     const startGameButton = document.getElementById("startGameButton");
+
+    // Prompt the user for their name **before** using it
+    let playerName = localStorage.getItem("playerName");
+
+    if (!playerName) {
+        playerName = prompt("Hello! What is your name?");
+        if (playerName) {
+            localStorage.setItem("playerName", playerName);
+        } else {
+            playerName = "Player"; // Default name if user cancels
+        }
+    }
+
+    // Now that playerName is defined, we can use it in gameOverMessages
     const gameOverMessages = [ 
         `${playerName}, your highest score is ${highScore}... but I know you can do better!`,
         `${playerName}, you scored ${player.score}! I know you can make it higher!`,
@@ -25,8 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
         `Almost there, ${playerName}! You got ${player.score}, just a little more practice and you'll be unstoppable!`,
         `Even the greatest warriors fall, ${playerName}. You reached ${player.score}, now rise again!`,
         `Your reflexes are improving, ${playerName}! You scored ${player.score}, keep going!`
-];
-
+    ];
 
     // Check if elements exist
     if (!welcomeModal || !welcomeMessage || !howToPlayMessage || !startGameButton) {
@@ -52,18 +65,9 @@ document.addEventListener("DOMContentLoaded", () => {
         setGameState("playing"); // Start the game
     });
 
-    // Prompt the user for their name and show the modal
-    let playerName = localStorage.getItem("playerName");
-
-    if (!playerName) {
-        playerName = prompt("Hello! What is your name?");
-        if (playerName) {
-            localStorage.setItem("playerName", playerName);
-            showWelcomeModal(playerName); // Show the welcome modal
-        }
-    } else {
-        showWelcomeModal(playerName); // Show the welcome modal if the name is already stored
-    }
+    // Show the welcome modal if player name is set
+    showWelcomeModal(playerName);
+});
 
     // Rest of your game code...
     const canvas = document.getElementById('gameCanvas');
