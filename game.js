@@ -801,11 +801,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
         ctx.fillStyle = "white";
         ctx.font = "30px Arial";
-        ctx.fillText(`${playerName}'s Score: ${player.score}`, canvas.width / 2, canvas.height / 2);
+        ctx.fillText(`Total Score: ${player.score}`, canvas.width / 2, canvas.height / 2);
 
         ctx.fillStyle = "gold"; // High score color matches the gameplay screen
         ctx.font = "30px Arial";
-        ctx.fillText(`${playerName}'s High Score: ${highScore}`, canvas.width / 2, canvas.height / 2 + 40);
+        ctx.fillText(`${playerName}! Your Highest Score is ${highScore} Try to Beat It`, canvas.width / 2, canvas.height / 2 + 40);
 
         ctx.fillStyle = "white";
         ctx.font = "20px Arial";
@@ -1074,11 +1074,15 @@ document.addEventListener("DOMContentLoaded", () => {
         ctx.font = "20px Arial";
         
         // Draw the score on the left side
-        ctx.fillText(`${playerName}'your current score is: ${player.score}`, 20, 30);
+        ctx.fillText(`${playerName} your current score is: ${player.score}`, 20, 30);
+        ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
         
         // Draw the high score on the right side
-        const highScoreText = `${playerName}'s Highest Score: ${highScore}`;
+        const highScoreText = `Highest Score: ${highScore}`;
         const textWidth = ctx.measureText(highScoreText).width;
+        ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
         
         ctx.fillStyle = "gold"; // Change high score color to yellow
         ctx.fillText(highScoreText, canvas.width - textWidth - 20, 30);
