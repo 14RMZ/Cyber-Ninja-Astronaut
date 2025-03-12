@@ -4,6 +4,29 @@ document.addEventListener("DOMContentLoaded", () => {
     const welcomeMessage = document.getElementById("welcomeMessage");
     const howToPlayMessage = document.getElementById("howToPlayMessage");
     const startGameButton = document.getElementById("startGameButton");
+    const gameOverMessages = [ 
+        `${playerName}, your highest score is ${highScore}... but I know you can do better!`,
+        `${playerName}, you scored ${player.score}! I know you can make it higher!`,
+        `Don't give up, ${playerName}! You reached ${player.score}, try again!`,
+        `${playerName}, you're getting better with every try! Your score: ${player.score}.`,
+        `Keep going, ${playerName}! ${player.score} points this time, but the next run will be even better!`,
+        `${playerName}, you're so close to beating your high score of ${highScore}! You got ${player.score} this time!`,
+        `Practice makes perfect, ${playerName}! You scored ${player.score}, give it another shot!`,
+        `${playerName}, you're a star! Scored ${player.score}—just one more try!`,
+        `${playerName}, you're unstoppable! Keep pushing past ${player.score} points!`,
+        `Every failure is a step closer to success, ${playerName}! You reached ${player.score}, now aim higher!`,
+        `The AI got lucky this time, ${playerName}… but not next time! ${player.score} is just a warm-up!`,
+        `You're learning the patterns, ${playerName}. Victory is near! Your score: ${player.score}.`,
+        `Even legends have setbacks, ${playerName}. Get back in there! ${player.score} isn’t your limit!`,
+        `${playerName}, your cyber-ninja training isn’t over yet! You reached ${player.score}, now go further!`,
+        `Every attempt makes you stronger, ${playerName}. You scored ${player.score}, try again!`,
+        `${playerName}, you dodged lasers, jumped spikes… and scored ${player.score}! Now do it again!`,
+        `${playerName}, the cyber-ninjas believe in you! ${player.score} is great, but you can do better!`,
+        `Almost there, ${playerName}! You got ${player.score}, just a little more practice and you'll be unstoppable!`,
+        `Even the greatest warriors fall, ${playerName}. You reached ${player.score}, now rise again!`,
+        `Your reflexes are improving, ${playerName}! You scored ${player.score}, keep going!`
+];
+
 
     // Check if elements exist
     if (!welcomeModal || !welcomeMessage || !howToPlayMessage || !startGameButton) {
@@ -790,27 +813,51 @@ document.addEventListener("DOMContentLoaded", () => {
         playGameMusic();
     }
 
+    function getRandomGameOverMessage() {
+        const randomIndex = Math.floor(Math.random() * gameOverMessages.length);
+        return gameOverMessages[randomIndex].replace("${playerName}", playerName);
+    }
+    
     function drawGameOverScreen() {
+        // Draw the background image
+        if (menuImage.complete && menuImage.naturalWidth !== 0) {
+            ctx.drawImage(menuImage, 0, 0, canvas.width, canvas.height);
+        } else {
+            ctx.fillStyle = "black";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+    
+        // Draw semi-transparent overlay
         ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-
+    
+        // Draw the title
         ctx.fillStyle = "red";
         ctx.font = "60px Arial";
         ctx.textAlign = "center";
-        ctx.fillText("Game Over", canvas.width / 2, canvas.height / 2 - 60);
-
+        ctx.fillText("Game Over", canvas.width / 2, canvas.height / 2 - 150);
+    
+        // Draw the player's score
         ctx.fillStyle = "white";
         ctx.font = "30px Arial";
-        ctx.fillText(`Total Score: ${player.score}`, canvas.width / 2, canvas.height / 2);
-
-        ctx.fillStyle = "gold"; // High score color matches the gameplay screen
+        ctx.fillText(`${playerName}, your score is: ${player.score}`, canvas.width / 2, canvas.height / 2 - 50);
+    
+        // Draw the high score
+        ctx.fillStyle = "gold";
         ctx.font = "30px Arial";
-        ctx.fillText(`${playerName}! Your Highest Score is ${highScore} Try to Beat It`, canvas.width / 2, canvas.height / 2 + 40);
-
+        ctx.fillText(`Your High Score: ${highScore}`, canvas.width / 2, canvas.height / 2);
+    
+        // Draw a random motivational message
+        const randomMessage = getRandomGameOverMessage();
+        ctx.fillStyle = "cyan"; // Use a different color for the message
+        ctx.font = "25px Arial";
+        ctx.fillText(randomMessage, canvas.width / 2, canvas.height / 2 + 80);
+    
+        // Draw instructions
         ctx.fillStyle = "white";
         ctx.font = "20px Arial";
-        ctx.fillText("Press R to Restart", canvas.width / 2, canvas.height / 2 + 100);
-        ctx.fillText("Press M to Return to Menu", canvas.width / 2, canvas.height / 2 + 140);
+        ctx.fillText("Press R to Restart", canvas.width / 2, canvas.height / 2 + 140);
+        ctx.fillText("Press M to Return to Menu", canvas.width / 2, canvas.height / 2 + 180);
     }
 
     // Store menu items and positions
