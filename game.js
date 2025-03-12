@@ -5,42 +5,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const howToPlayMessage = document.getElementById("howToPlayMessage");
     const startGameButton = document.getElementById("startGameButton");
 
-    // Prompt the user for their name **before** using it
-    let playerName = localStorage.getItem("playerName");
-
-    if (!playerName) {
-        playerName = prompt("Hello! What is your name?");
-        if (playerName) {
-            localStorage.setItem("playerName", playerName);
-        } else {
-            playerName = "Player"; // Default name if user cancels
-        }
-    }
-
-    // Now that playerName is defined, we can use it in gameOverMessages
-    const gameOverMessages = [ 
-        `${playerName}, your highest score is ${highScore}... but I know you can do better!`,
-        `${playerName}, you scored ${player.score}! I know you can make it higher!`,
-        `Don't give up, ${playerName}! You reached ${player.score}, try again!`,
-        `${playerName}, you're getting better with every try! Your score: ${player.score}.`,
-        `Keep going, ${playerName}! ${player.score} points this time, but the next run will be even better!`,
-        `${playerName}, you're so close to beating your high score of ${highScore}! You got ${player.score} this time!`,
-        `Practice makes perfect, ${playerName}! You scored ${player.score}, give it another shot!`,
-        `${playerName}, you're a star! Scored ${player.score}—just one more try!`,
-        `${playerName}, you're unstoppable! Keep pushing past ${player.score} points!`,
-        `Every failure is a step closer to success, ${playerName}! You reached ${player.score}, now aim higher!`,
-        `The AI got lucky this time, ${playerName}… but not next time! ${player.score} is just a warm-up!`,
-        `You're learning the patterns, ${playerName}. Victory is near! Your score: ${player.score}.`,
-        `Even legends have setbacks, ${playerName}. Get back in there! ${player.score} isn’t your limit!`,
-        `${playerName}, your cyber-ninja training isn’t over yet! You reached ${player.score}, now go further!`,
-        `Every attempt makes you stronger, ${playerName}. You scored ${player.score}, try again!`,
-        `${playerName}, you dodged lasers, jumped spikes… and scored ${player.score}! Now do it again!`,
-        `${playerName}, the cyber-ninjas believe in you! ${player.score} is great, but you can do better!`,
-        `Almost there, ${playerName}! You got ${player.score}, just a little more practice and you'll be unstoppable!`,
-        `Even the greatest warriors fall, ${playerName}. You reached ${player.score}, now rise again!`,
-        `Your reflexes are improving, ${playerName}! You scored ${player.score}, keep going!`
-    ];
-
     // Check if elements exist
     if (!welcomeModal || !welcomeMessage || !howToPlayMessage || !startGameButton) {
         console.error("One or more modal elements are missing in the DOM.");
@@ -65,9 +29,42 @@ document.addEventListener("DOMContentLoaded", () => {
         setGameState("playing"); // Start the game
     });
 
-    // Show the welcome modal if player name is set
-    showWelcomeModal(playerName);
-    });
+    // Prompt the user for their name and show the modal
+    let playerName = localStorage.getItem("playerName");
+
+    if (!playerName) {
+        playerName = prompt("Hello! What is your name?");
+        if (playerName) {
+            localStorage.setItem("playerName", playerName);
+            showWelcomeModal(playerName); // Show the welcome modal
+        }
+    } else {
+        showWelcomeModal(playerName); // Show the welcome modal if the name is already stored
+    }
+
+    // Define the game over messages array AFTER playerName is initialized
+    const gameOverMessages = [
+        `${playerName}, your highest score is ${highScore}... but I know you can do better!`,
+        `${playerName}, you scored ${player.score}! I know you can make it higher!`,
+        `Don't give up, ${playerName}! You reached ${player.score}, try again!`,
+        `${playerName}, you're getting better with every try! Your score: ${player.score}.`,
+        `Keep going, ${playerName}! ${player.score} points this time, but the next run will be even better!`,
+        `${playerName}, you're so close to beating your high score of ${highScore}! You got ${player.score} this time!`,
+        `Practice makes perfect, ${playerName}! You scored ${player.score}, give it another shot!`,
+        `${playerName}, you're a star! Scored ${player.score}—just one more try!`,
+        `${playerName}, you're unstoppable! Keep pushing past ${player.score} points!`,
+        `Every failure is a step closer to success, ${playerName}! You reached ${player.score}, now aim higher!`,
+        `The AI got lucky this time, ${playerName}… but not next time! ${player.score} is just a warm-up!`,
+        `You're learning the patterns, ${playerName}. Victory is near! Your score: ${player.score}.`,
+        `Even legends have setbacks, ${playerName}. Get back in there! ${player.score} isn’t your limit!`,
+        `${playerName}, your cyber-ninja training isn’t over yet! You reached ${player.score}, now go further!`,
+        `Every attempt makes you stronger, ${playerName}. You scored ${player.score}, try again!`,
+        `${playerName}, you dodged lasers, jumped spikes… and scored ${player.score}! Now do it again!`,
+        `${playerName}, the cyber-ninjas believe in you! ${player.score} is great, but you can do better!`,
+        `Almost there, ${playerName}! You got ${player.score}, just a little more practice and you'll be unstoppable!`,
+        `Even the greatest warriors fall, ${playerName}. You reached ${player.score}, now rise again!`,
+        `Your reflexes are improving, ${playerName}! You scored ${player.score}, keep going!`
+    ];
 
     // Rest of your game code...
     const canvas = document.getElementById('gameCanvas');
@@ -830,33 +827,44 @@ document.addEventListener("DOMContentLoaded", () => {
             ctx.fillStyle = "black";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
         }
-    
+
         // Draw semi-transparent overlay
         ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
+
         // Draw the title
         ctx.fillStyle = "red";
         ctx.font = "60px Arial";
         ctx.textAlign = "center";
         ctx.fillText("Game Over", canvas.width / 2, canvas.height / 2 - 150);
-    
+
         // Draw the player's score
         ctx.fillStyle = "white";
         ctx.font = "30px Arial";
         ctx.fillText(`${playerName}, your score is: ${player.score}`, canvas.width / 2, canvas.height / 2 - 50);
-    
+
         // Draw the high score
         ctx.fillStyle = "gold";
         ctx.font = "30px Arial";
         ctx.fillText(`Your High Score: ${highScore}`, canvas.width / 2, canvas.height / 2);
-    
+
         // Draw a random motivational message
         const randomMessage = getRandomGameOverMessage();
         ctx.fillStyle = "cyan"; // Use a different color for the message
         ctx.font = "25px Arial";
-        ctx.fillText(randomMessage, canvas.width / 2, canvas.height / 2 + 80);
-    
+        ctx.textAlign = "center";
+
+        // Randomize the message position
+        const randomX = Math.random() * canvas.width; // Random X coordinate
+        const randomY = Math.random() * canvas.height; // Random Y coordinate
+
+        // Ensure the message stays within the canvas bounds
+        const padding = 20; // Add some padding to keep the message away from the edges
+        const clampedX = Math.max(padding, Math.min(canvas.width - padding, randomX));
+        const clampedY = Math.max(padding, Math.min(canvas.height - padding, randomY));
+
+        ctx.fillText(randomMessage, clampedX, clampedY);
+
         // Draw instructions
         ctx.fillStyle = "white";
         ctx.font = "20px Arial";
