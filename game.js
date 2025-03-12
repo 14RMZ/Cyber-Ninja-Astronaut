@@ -1381,4 +1381,5 @@ function drawScore() {
         gameLoop(); // Start the game loop
     }).catch((error) => {
         console.error("Error loading assets:", error);
+    });
 });
