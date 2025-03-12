@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Declare and initialize the player object
     const player = {
         x: 100,
-        y: canvas.height - 150,
+        y: 0, // Will be set after canvas initialization
         width: 32,
         height: 48,
         velocityX: 0,
@@ -62,14 +62,6 @@ document.addEventListener("DOMContentLoaded", () => {
         lastPlatform: null,
         isShieldActive: false,
         shieldTimer: 0
-    };
-
-    const camera = {
-        x: 0,
-        update: function() {
-            this.x = player.x - canvas.width / 3;
-            if (this.x < 0) this.x = 0;
-        }
     };
 
     // Define the game over messages array AFTER player and highScore are initialized
@@ -121,6 +113,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function resizeCanvas() {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
+        player.y = canvas.height - 150; // Set player's initial Y position after canvas resize
     }
     window.addEventListener('resize', resizeCanvas);
     resizeCanvas(); // Initial resize to fit the window
@@ -346,6 +339,14 @@ document.addEventListener("DOMContentLoaded", () => {
     let isJumping = false;
     let isJumpStarting = false;
     let isJumpLanding = false;
+
+    const camera = {
+        x: 0,
+        update: function() {
+            this.x = player.x - canvas.width / 3;
+            if (this.x < 0) this.x = 0;
+        }
+    };
 
     class Platform {
         constructor(x, y, width, height, isMoving = false, hasSpikes = false) {
