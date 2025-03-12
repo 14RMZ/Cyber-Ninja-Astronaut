@@ -67,7 +67,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Show the welcome modal if player name is set
     showWelcomeModal(playerName);
-};
+    });
 
     // Rest of your game code...
     const canvas = document.getElementById('gameCanvas');
