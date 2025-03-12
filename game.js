@@ -1068,29 +1068,32 @@ document.addEventListener("DOMContentLoaded", () => {
 function drawScore() {
     ctx.font = "20px Arial";
 
-    // Measure the text width for both score and high score
+    // Measure the text width and height
     const scoreText = `${playerName} your current score is: ${player.score}`;
     const highScoreText = `Highest Score: ${highScore}`;
     const scoreWidth = ctx.measureText(scoreText).width;
     const highScoreWidth = ctx.measureText(highScoreText).width;
+    const textHeight = 20; // Approximate text height for font size 20px
 
-    // Background box dimensions
-    const padding = 10;
-    const boxHeight = 40;
-    const boxWidth = Math.max(scoreWidth, highScoreWidth) + padding * 2;
+    // Background box padding
+    const paddingX = 10; // Horizontal padding
+    const paddingY = 5;  // Vertical padding
 
-    // Draw semi-transparent background box behind scores
+    // Calculate box height based on text height with slight padding
+    const boxHeight = textHeight + paddingY * 2;
+
+    // Draw semi-transparent background behind the scores
     ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
-    ctx.fillRect(10, 10, boxWidth, boxHeight); // Left side (player score)
-    ctx.fillRect(canvas.width - highScoreWidth - 30, 10, highScoreWidth + 20, boxHeight); // Right side (high score)
+    ctx.fillRect(10, 10, scoreWidth + paddingX * 2, boxHeight); // Player score box
+    ctx.fillRect(canvas.width - highScoreWidth - 20, 10, highScoreWidth + paddingX * 2, boxHeight); // High score box
 
     // Draw the score text
     ctx.fillStyle = "white";
-    ctx.fillText(scoreText, 20, 30);
+    ctx.fillText(scoreText, 20, 10 + textHeight);
 
     // Draw the high score text
     ctx.fillStyle = "gold";
-    ctx.fillText(highScoreText, canvas.width - highScoreWidth - 20, 30);
+    ctx.fillText(highScoreText, canvas.width - highScoreWidth - 10, 10 + textHeight);
 }
 
     function drawPlayer() {
