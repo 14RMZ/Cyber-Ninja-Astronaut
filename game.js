@@ -42,7 +42,11 @@ document.addEventListener("DOMContentLoaded", () => {
         showWelcomeModal(playerName); // Show the welcome modal if the name is already stored
     }
 
-    // Define the game over messages array AFTER playerName is initialized
+    // Initialize highScore before using it in gameOverMessages
+    let highScore = localStorage.getItem("highScore") || 0;
+    highScore = parseInt(highScore);
+
+    // Define the game over messages array AFTER highScore is initialized
     const gameOverMessages = [
         `${playerName}, your highest score is ${highScore}... but I know you can do better!`,
         `${playerName}, you scored ${player.score}! I know you can make it higher!`,
@@ -66,6 +70,23 @@ document.addEventListener("DOMContentLoaded", () => {
         `Your reflexes are improving, ${playerName}! You scored ${player.score}, keep going!`
     ];
 
+    // Declare and initialize gameState before using it
+    let gameState = "menu"; // Possible values: "menu", "playing", "gameOver"
+
+    // Function to set the game state
+    function setGameState(newState) {
+        gameState = newState;
+        if (newState === "playing") {
+            resetGame();
+            playGameMusic(); // Play game music when starting the game
+        } else if (newState === "menu") {
+            gameOver = false;
+            playMenuMusic(); // Play menu music when returning to the menu
+        } else if (newState === "gameOver") {
+            stopAllMusic(); // Stop all music during game over
+        }
+    }
+
     // Rest of your game code...
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
@@ -79,13 +100,6 @@ document.addEventListener("DOMContentLoaded", () => {
     resizeCanvas(); // Initial resize to fit the window
 
     let gameOver = false;
-    let highScore = localStorage.getItem("highScore") || 0;
-    highScore = parseInt(highScore);
-
-    // Game state
-    let gameState = "menu"; // Possible values: "menu", "playing", "gameOver"
-    let settingsState = false; // Tracks if the settings menu is open
-    let howToPlayState = false; // Tracks if the "How to Play" screen is active
 
     // Load the background image
     const backgroundImage = new Image();
@@ -231,20 +245,6 @@ document.addEventListener("DOMContentLoaded", () => {
     function stopAllMusic() {
         menuMusic.pause();
         gameMusic.pause();
-    }
-
-    // Game state management
-    function setGameState(newState) {
-        gameState = newState;
-        if (newState === "playing") {
-            resetGame();
-            playGameMusic(); // Play game music when starting the game
-        } else if (newState === "menu") {
-            gameOver = false;
-            playMenuMusic(); // Play menu music when returning to the menu
-        } else if (newState === "gameOver") {
-            stopAllMusic(); // Stop all music during game over
-        }
     }
 
     // Animation class to handle animations
