@@ -1065,22 +1065,33 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    function drawScore() {
-        ctx.fillStyle = "white"; // Default color for the score
-        ctx.font = "20px Arial";
-        ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        
-        // Draw the score on the left side
-        ctx.fillText(`${playerName} your current score is: ${player.score}`, 20, 30);
-        
-        // Draw the high score on the right side
-        const highScoreText = `Highest Score: ${highScore}`;
-        const textWidth = ctx.measureText(highScoreText).width;
-        
-        ctx.fillStyle = "gold"; // Change high score color to yellow
-        ctx.fillText(highScoreText, canvas.width - textWidth - 20, 30);
-    }
+function drawScore() {
+    ctx.font = "20px Arial";
+
+    // Measure the text width for both score and high score
+    const scoreText = `${playerName} your current score is: ${player.score}`;
+    const highScoreText = `Highest Score: ${highScore}`;
+    const scoreWidth = ctx.measureText(scoreText).width;
+    const highScoreWidth = ctx.measureText(highScoreText).width;
+
+    // Background box dimensions
+    const padding = 10;
+    const boxHeight = 40;
+    const boxWidth = Math.max(scoreWidth, highScoreWidth) + padding * 2;
+
+    // Draw semi-transparent background box behind scores
+    ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+    ctx.fillRect(10, 10, boxWidth, boxHeight); // Left side (player score)
+    ctx.fillRect(canvas.width - highScoreWidth - 30, 10, highScoreWidth + 20, boxHeight); // Right side (high score)
+
+    // Draw the score text
+    ctx.fillStyle = "white";
+    ctx.fillText(scoreText, 20, 30);
+
+    // Draw the high score text
+    ctx.fillStyle = "gold";
+    ctx.fillText(highScoreText, canvas.width - highScoreWidth - 20, 30);
+}
 
     function drawPlayer() {
         if (gameOver) {
