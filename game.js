@@ -837,10 +837,6 @@ document.addEventListener("DOMContentLoaded", () => {
         ctx.textAlign = "left";
         ctx.fillText("Cyber Ninja Astronaut", 100, 80);
 
-        // Draw the player's name
-        ctx.font = "30px Arial";
-        ctx.fillText(`Welcome, ${playerName}!`, 100, 130);
-
         // Move menu slightly to the left to keep it on-screen
         let centerX = canvas.width - 350;
         let centerY = canvas.height / 2;
@@ -1072,17 +1068,15 @@ document.addEventListener("DOMContentLoaded", () => {
     function drawScore() {
         ctx.fillStyle = "white"; // Default color for the score
         ctx.font = "20px Arial";
+        ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
         
         // Draw the score on the left side
         ctx.fillText(`${playerName} your current score is: ${player.score}`, 20, 30);
-        ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
         
         // Draw the high score on the right side
         const highScoreText = `Highest Score: ${highScore}`;
         const textWidth = ctx.measureText(highScoreText).width;
-        ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
         
         ctx.fillStyle = "gold"; // Change high score color to yellow
         ctx.fillText(highScoreText, canvas.width - textWidth - 20, 30);
