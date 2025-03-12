@@ -46,7 +46,25 @@ document.addEventListener("DOMContentLoaded", () => {
     let highScore = localStorage.getItem("highScore") || 0;
     highScore = parseInt(highScore);
 
-    // Define the game over messages array AFTER highScore is initialized
+    // Declare and initialize the player object
+    const player = {
+        x: 100,
+        y: canvas.height - 150,
+        width: 32,
+        height: 48,
+        velocityX: 0,
+        velocityY: 0,
+        speed: 6,
+        jumpHeight: 14,
+        isJumping: false,
+        direction: 1,
+        score: 0,
+        lastPlatform: null,
+        isShieldActive: false,
+        shieldTimer: 0
+    };
+
+    // Define the game over messages array AFTER player and highScore are initialized
     const gameOverMessages = [
         `${playerName}, your highest score is ${highScore}... but I know you can do better!`,
         `${playerName}, you scored ${player.score}! I know you can make it higher!`,
