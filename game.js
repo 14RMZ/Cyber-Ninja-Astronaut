@@ -1073,24 +1073,27 @@ function drawScore() {
     const highScoreText = `Highest Score: ${highScore}`;
     const scoreWidth = ctx.measureText(scoreText).width;
     const highScoreWidth = ctx.measureText(highScoreText).width;
-    
-    // Define minimal padding
-    const paddingX = 6; // Horizontal padding
-    const paddingY = 3; // Vertical padding
-    const textHeight = 20; // Approximate text height for 20px font
+    const textHeight = 20; // Approximate height of the text in pixels
+
+    // Background box padding
+    const paddingX = 8;  // Horizontal padding
+    const paddingY = 3;  // Reduced vertical padding for a tighter fit
+
+    // Box height is now very close to the text size
+    const boxHeight = textHeight + paddingY * 2 - 4; // Reduced further from the bottom
 
     // Draw semi-transparent background behind the scores
     ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
-    ctx.fillRect(14, 12, scoreWidth + paddingX * 2, textHeight + paddingY * 2); // Player score box
-    ctx.fillRect(canvas.width - highScoreWidth - 16, 12, highScoreWidth + paddingX * 2, textHeight + paddingY * 2); // High score box
+    ctx.fillRect(10, 10, scoreWidth + paddingX * 2, boxHeight); // Player score box
+    ctx.fillRect(canvas.width - highScoreWidth - 20, 10, highScoreWidth + paddingX * 2, boxHeight); // High score box
 
     // Draw the score text
     ctx.fillStyle = "white";
-    ctx.fillText(scoreText, 20, 28);
+    ctx.fillText(scoreText, 20, 10 + textHeight - 3); // Moved text slightly up for a better fit
 
     // Draw the high score text
     ctx.fillStyle = "gold";
-    ctx.fillText(highScoreText, canvas.width - highScoreWidth - 10, 28);
+    ctx.fillText(highScoreText, canvas.width - highScoreWidth - 10, 10 + textHeight - 3);
 }
 
     function drawPlayer() {
