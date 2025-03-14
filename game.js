@@ -93,7 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let settingsState = false; // Tracks whether the settings menu is open
     let howToPlayState = false; // Tracks whether the "How to Play" screen is open
     let gameOverMessagePosition = { x: 0, y: 0 }; // Stores the random position of the game over message
-    
+
     // Function to set the game state
     function setGameState(newState) {
         gameState = newState;
@@ -252,13 +252,17 @@ document.addEventListener("DOMContentLoaded", () => {
     function playMenuMusic() {
         gameMusic.pause();
         gameMusic.currentTime = 0; // Reset game music
-        menuMusic.play();
+        menuMusic.play().catch((error) => {
+            console.error("Failed to play menu music:", error);
+        });
     }
 
     function playGameMusic() {
         menuMusic.pause();
         menuMusic.currentTime = 0; // Reset menu music
-        gameMusic.play();
+        gameMusic.play().catch((error) => {
+            console.error("Failed to play game music:", error);
+        });
     }
 
     function stopAllMusic() {
@@ -470,7 +474,9 @@ document.addEventListener("DOMContentLoaded", () => {
         explode() {
             this.isExploding = true;
             this.currentAnimation = nonShootingEnemyAnimations.explode; // Switch to explosion animation
-            enemyDeathSound.play(); // Play enemy death sound
+            enemyDeathSound.play().catch((error) => {
+                console.error("Failed to play enemy death sound:", error);
+            });
         }
     }
 
@@ -552,13 +558,17 @@ document.addEventListener("DOMContentLoaded", () => {
             const bulletX = this.x + this.width / 2;
             const bulletY = this.y + this.height / 2;
             enemyBullets.push(new Bullet(bulletX, bulletY, direction));
-            enemyShootSound.play(); // Play enemy shoot sound
+            enemyShootSound.play().catch((error) => {
+                console.error("Failed to play enemy shoot sound:", error);
+            });
         }
 
         explode() {
             this.isExploding = true;
             this.currentAnimation = shootingEnemyAnimations.explode; // Switch to explosion animation
-            enemyDeathSound.play(); // Play enemy death sound
+            enemyDeathSound.play().catch((error) => {
+                console.error("Failed to play enemy death sound:", error);
+            });
         }
     }
 
@@ -663,7 +673,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         if (event.code === "KeyF" || event.code === "KeyJ") {
             bullets.push(new Bullet(player.x + player.width / 2, player.y + player.height / 2, player.direction));
-            shootSound.play(); // Play shoot sound
+            shootSound.play().catch((error) => {
+                console.error("Failed to play shoot sound:", error);
+            });
         }
     });
     window.addEventListener('keyup', (event) => keys[event.code] = false);
@@ -694,7 +706,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (platform.hasSpikes && player.x + player.width > platform.spikeX && player.x < platform.spikeX + platform.spikeWidth) {
                     if (!player.isShieldActive) {
                         gameOver = true;
-                        spikeDeathSound.play(); // Play spike death sound
+                        spikeDeathSound.play().catch((error) => {
+                            console.error("Failed to play spike death sound:", error);
+                        });
                         updateHighScore(); // Update high score when the player dies
                     } else {
                         player.y = platform.y - player.height;
@@ -740,12 +754,16 @@ document.addEventListener("DOMContentLoaded", () => {
             }, 100);
             player.velocityY = -player.jumpHeight;
             player.isJumping = true;
-            jumpSound.play(); // Play jump sound
+            jumpSound.play().catch((error) => {
+                console.error("Failed to play jump sound:", error);
+            });
         }
 
         if (player.y > canvas.height) {
             gameOver = true;
-            fallSound.play(); // Play fall sound
+            fallSound.play().catch((error) => {
+                console.error("Failed to play fall sound:", error);
+            });
             updateHighScore(); // Update high score when the player falls
         }
     }
@@ -754,7 +772,9 @@ document.addEventListener("DOMContentLoaded", () => {
         if (player.score > highScore) {
             highScore = player.score; // Update the high score
             localStorage.setItem("highScore", highScore); // Save the new high score to localStorage
-            newHighScoreSound.play(); // Play new high score sound
+            newHighScoreSound.play().catch((error) => {
+                console.error("Failed to play new high score sound:", error);
+            });
         }
     }
 
@@ -820,51 +840,51 @@ document.addEventListener("DOMContentLoaded", () => {
         const randomIndex = Math.floor(Math.random() * gameOverMessages.length);
         return gameOverMessages[randomIndex].replace("${playerName}", playerName);
     }
-    
+
     function drawGameOverScreen() {
-    // Draw the background image
-    if (menuImage.complete && menuImage.naturalWidth !== 0) {
-        ctx.drawImage(menuImage, 0, 0, canvas.width, canvas.height);
-    } else {
-        ctx.fillStyle = "black";
+        // Draw the background image
+        if (menuImage.complete && menuImage.naturalWidth !== 0) {
+            ctx.drawImage(menuImage, 0, 0, canvas.width, canvas.height);
+        } else {
+            ctx.fillStyle = "black";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+
+        // Draw semi-transparent overlay
+        ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Draw the title
+        ctx.fillStyle = "red";
+        ctx.font = "60px Arial";
+        ctx.textAlign = "center";
+        ctx.fillText("Game Over", canvas.width / 2, canvas.height / 2 - 150);
+
+        // Draw the player's score
+        ctx.fillStyle = "white";
+        ctx.font = "30px Arial";
+        ctx.fillText(`${playerName}, your score is: ${player.score}`, canvas.width / 2, canvas.height / 2 - 50);
+
+        // Draw the high score
+        ctx.fillStyle = "gold";
+        ctx.font = "30px Arial";
+        ctx.fillText(`Your High Score: ${highScore}`, canvas.width / 2, canvas.height / 2);
+
+        // Draw a random motivational message
+        const randomMessage = getRandomGameOverMessage();
+        ctx.fillStyle = "cyan"; // Use a different color for the message
+        ctx.font = "25px Arial";
+        ctx.textAlign = "center";
+
+        // Use the stored random position
+        ctx.fillText(randomMessage, gameOverMessagePosition.x, gameOverMessagePosition.y);
+
+        // Draw instructions
+        ctx.fillStyle = "white";
+        ctx.font = "20px Arial";
+        ctx.fillText("Press R to Restart", canvas.width / 2, canvas.height / 2 + 140);
+        ctx.fillText("Press M to Return to Menu", canvas.width / 2, canvas.height / 2 + 180);
     }
-
-    // Draw semi-transparent overlay
-    ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    // Draw the title
-    ctx.fillStyle = "red";
-    ctx.font = "60px Arial";
-    ctx.textAlign = "center";
-    ctx.fillText("Game Over", canvas.width / 2, canvas.height / 2 - 150);
-
-    // Draw the player's score
-    ctx.fillStyle = "white";
-    ctx.font = "30px Arial";
-    ctx.fillText(`${playerName}, your score is: ${player.score}`, canvas.width / 2, canvas.height / 2 - 50);
-
-    // Draw the high score
-    ctx.fillStyle = "gold";
-    ctx.font = "30px Arial";
-    ctx.fillText(`Your High Score: ${highScore}`, canvas.width / 2, canvas.height / 2);
-
-    // Draw a random motivational message
-    const randomMessage = getRandomGameOverMessage();
-    ctx.fillStyle = "cyan"; // Use a different color for the message
-    ctx.font = "25px Arial";
-    ctx.textAlign = "center";
-
-    // Use the stored random position
-    ctx.fillText(randomMessage, gameOverMessagePosition.x, gameOverMessagePosition.y);
-
-    // Draw instructions
-    ctx.fillStyle = "white";
-    ctx.font = "20px Arial";
-    ctx.fillText("Press R to Restart", canvas.width / 2, canvas.height / 2 + 140);
-    ctx.fillText("Press M to Return to Menu", canvas.width / 2, canvas.height / 2 + 180);
-}
 
     // Store menu items and positions
     let menuItems = ["Start Game", "Settings", "How To Play", "Highest Score"];
@@ -1082,7 +1102,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 ) {
                     if (!player.isShieldActive) {
                         gameOver = true;
-                        playerDeathSound.play(); // Play player death sound
+                        playerDeathSound.play().catch((error) => {
+                            console.error("Failed to play player death sound:", error);
+                        });
                         updateHighScore(); // Update high score when the player dies
                     }
                 }
@@ -1098,7 +1120,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 ) {
                     if (!player.isShieldActive) {
                         gameOver = true;
-                        playerDeathSound.play(); // Play player death sound
+                        playerDeathSound.play().catch((error) => {
+                            console.error("Failed to play player death sound:", error);
+                        });
                         updateHighScore(); // Update high score when the player dies
                     }
                 }
@@ -1112,42 +1136,44 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (powerUp.isCollected()) {
                     activateShield(powerUp.duration);
                     shieldPowerUps.splice(index, 1);
-                    powerUpSound.play(); // Play power-up sound
+                    powerUpSound.play().catch((error) => {
+                        console.error("Failed to play power-up sound:", error);
+                    });
                 }
             });
         }
     }
 
-function drawScore() {
-    ctx.font = "20px Arial";
+    function drawScore() {
+        ctx.font = "20px Arial";
 
-    // Measure text width
-    const scoreText = `${playerName} your current score is: ${player.score}`;
-    const highScoreText = `Highest Score: ${highScore}`;
-    const scoreWidth = ctx.measureText(scoreText).width;
-    const highScoreWidth = ctx.measureText(highScoreText).width;
-    const textHeight = 20; // Approximate height of the text in pixels
+        // Measure text width
+        const scoreText = `${playerName} your current score is: ${player.score}`;
+        const highScoreText = `Highest Score: ${highScore}`;
+        const scoreWidth = ctx.measureText(scoreText).width;
+        const highScoreWidth = ctx.measureText(highScoreText).width;
+        const textHeight = 20; // Approximate height of the text in pixels
 
-    // Background box padding
-    const paddingX = 8;  // Horizontal padding
-    const paddingY = 3;  // Reduced vertical padding for a tighter fit
+        // Background box padding
+        const paddingX = 8;  // Horizontal padding
+        const paddingY = 3;  // Reduced vertical padding for a tighter fit
 
-    // Box height is now very close to the text size
-    const boxHeight = textHeight + paddingY * 2 - 4; // Reduced further from the bottom
+        // Box height is now very close to the text size
+        const boxHeight = textHeight + paddingY * 2 - 4; // Reduced further from the bottom
 
-    // Draw semi-transparent background behind the scores
-    ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
-    ctx.fillRect(10, 10, scoreWidth + paddingX * 2, boxHeight); // Player score box
-    ctx.fillRect(canvas.width - highScoreWidth - 20, 10, highScoreWidth + paddingX * 2, boxHeight); // High score box
+        // Draw semi-transparent background behind the scores
+        ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+        ctx.fillRect(10, 10, scoreWidth + paddingX * 2, boxHeight); // Player score box
+        ctx.fillRect(canvas.width - highScoreWidth - 20, 10, highScoreWidth + paddingX * 2, boxHeight); // High score box
 
-    // Draw the score text
-    ctx.fillStyle = "white";
-    ctx.fillText(scoreText, 20, 10 + textHeight - 3); // Moved text slightly up for a better fit
+        // Draw the score text
+        ctx.fillStyle = "white";
+        ctx.fillText(scoreText, 20, 10 + textHeight - 3); // Moved text slightly up for a better fit
 
-    // Draw the high score text
-    ctx.fillStyle = "gold";
-    ctx.fillText(highScoreText, canvas.width - highScoreWidth - 10, 10 + textHeight - 3);
-}
+        // Draw the high score text
+        ctx.fillStyle = "gold";
+        ctx.fillText(highScoreText, canvas.width - highScoreWidth - 10, 10 + textHeight - 3);
+    }
 
     function drawPlayer() {
         if (gameOver) {
