@@ -92,18 +92,16 @@ document.addEventListener("DOMContentLoaded", () => {
     let gameState = "menu"; // Possible values: "menu", "playing", "gameOver"
     let settingsState = false; // Tracks whether the settings menu is open
     let howToPlayState = false; // Tracks whether the "How to Play" screen is open
+    let gameOverMessagePosition = { x: 0, y: 0 }; // Stores the random position of the game over message
     
     // Function to set the game state
     function setGameState(newState) {
         gameState = newState;
-        if (newState === "playing") {
-            resetGame();
-            playGameMusic(); // Play game music when starting the game
-        } else if (newState === "menu") {
-            gameOver = false;
-            playMenuMusic(); // Play menu music when returning to the menu
-        } else if (newState === "gameOver") {
-            stopAllMusic(); // Stop all music during game over
+        if (newState === "gameOver") {
+            // Calculate random position for the game over message
+            const padding = 20; // Add some padding to keep the message away from the edges
+            gameOverMessagePosition.x = Math.max(padding, Math.min(canvas.width - padding, Math.random() * canvas.width));
+            gameOverMessagePosition.y = Math.max(padding, Math.min(canvas.height - padding, Math.random() * canvas.height));
         }
     }
 
@@ -823,7 +821,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return gameOverMessages[randomIndex].replace("${playerName}", playerName);
     }
     
-function drawGameOverScreen() {
+    function drawGameOverScreen() {
     // Draw the background image
     if (menuImage.complete && menuImage.naturalWidth !== 0) {
         ctx.drawImage(menuImage, 0, 0, canvas.width, canvas.height);
