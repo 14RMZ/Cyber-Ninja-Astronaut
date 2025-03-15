@@ -92,7 +92,6 @@ document.addEventListener("DOMContentLoaded", () => {
     let gameState = "menu"; // Possible values: "menu", "playing", "gameOver"
     let settingsState = false; // Tracks whether the settings menu is open
     let howToPlayState = false; // Tracks whether the "How to Play" screen is open
-    let gameOverMessagePosition = { x: 0, y: 0 }; // Stores the random position of the game over message
     let currentGameOverMessage = "";
 
     // Function to set the game state
@@ -100,10 +99,15 @@ document.addEventListener("DOMContentLoaded", () => {
         if (newState === "playing") {
             resetGame(); // Reset the game before starting
         } else if (newState === "gameOver") {
-            // Select a new random message when the game over state is set
-            currentGameOverMessage = getRandomGameOverMessage();
+            currentGameOverMessage = getRandomGameOverMessage(); // Set a random game over message
         }
         gameState = newState;
+    }
+
+    // Function to get a random game over message
+    function getRandomGameOverMessage() {
+        const randomIndex = Math.floor(Math.random() * gameOverMessages.length);
+        return gameOverMessages[randomIndex].replace("${playerName}", playerName);
     }
 
     // Rest of your game code...
@@ -839,52 +843,47 @@ document.addEventListener("DOMContentLoaded", () => {
         playGameMusic();
     }
 
-    function getRandomGameOverMessage() {
-        const randomIndex = Math.floor(Math.random() * gameOverMessages.length);
-        return gameOverMessages[randomIndex].replace("${playerName}", playerName);
-    }
+    function drawGameOverScreen() {
+        // Draw the background image
+        if (menuImage.complete && menuImage.naturalWidth !== 0) {
+            ctx.drawImage(menuImage, 0, 0, canvas.width, canvas.height);
+        } else {
+            ctx.fillStyle = "black";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
 
-function drawGameOverScreen() {
-    // Draw the background image
-    if (menuImage.complete && menuImage.naturalWidth !== 0) {
-        ctx.drawImage(menuImage, 0, 0, canvas.width, canvas.height);
-    } else {
-        ctx.fillStyle = "black";
+        // Draw semi-transparent overlay
+        ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Draw the title
+        ctx.fillStyle = "red";
+        ctx.font = "60px Arial";
+        ctx.textAlign = "center";
+        ctx.fillText("Game Over", canvas.width / 2, canvas.height / 2 - 150);
+
+        // Draw the player's score
+        ctx.fillStyle = "white";
+        ctx.font = "30px Arial";
+        ctx.fillText(`${playerName}, your score is: ${player.score}`, canvas.width / 2, canvas.height / 2 - 50);
+
+        // Draw the high score
+        ctx.fillStyle = "gold";
+        ctx.font = "30px Arial";
+        ctx.fillText(`Your High Score: ${highScore}`, canvas.width / 2, canvas.height / 2);
+
+        // Draw the current game over message below the high score
+        ctx.fillStyle = "cyan"; // Use a different color for the message
+        ctx.font = "25px Arial";
+        ctx.textAlign = "center";
+        ctx.fillText(currentGameOverMessage, canvas.width / 2, canvas.height / 2 + 50); // Positioned below the high score
+
+        // Draw instructions
+        ctx.fillStyle = "white";
+        ctx.font = "20px Arial";
+        ctx.fillText("Press R to Restart", canvas.width / 2, canvas.height / 2 + 140);
+        ctx.fillText("Press M to Return to Menu", canvas.width / 2, canvas.height / 2 + 180);
     }
-
-    // Draw semi-transparent overlay
-    ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    // Draw the title
-    ctx.fillStyle = "red";
-    ctx.font = "60px Arial";
-    ctx.textAlign = "center";
-    ctx.fillText("Game Over", canvas.width / 2, canvas.height / 2 - 150);
-
-    // Draw the player's score
-    ctx.fillStyle = "white";
-    ctx.font = "30px Arial";
-    ctx.fillText(`${playerName}, your score is: ${player.score}`, canvas.width / 2, canvas.height / 2 - 50);
-
-    // Draw the high score
-    ctx.fillStyle = "gold";
-    ctx.font = "30px Arial";
-    ctx.fillText(`Your High Score: ${highScore}`, canvas.width / 2, canvas.height / 2);
-
-    // Draw the current game over message below the high score
-    ctx.fillStyle = "cyan"; // Use a different color for the message
-    ctx.font = "25px Arial";
-    ctx.textAlign = "center";
-    ctx.fillText(currentGameOverMessage, canvas.width / 2, canvas.height / 2 + 50); // Positioned below the high score
-
-    // Draw instructions
-    ctx.fillStyle = "white";
-    ctx.font = "20px Arial";
-    ctx.fillText("Press R to Restart", canvas.width / 2, canvas.height / 2 + 140);
-    ctx.fillText("Press M to Return to Menu", canvas.width / 2, canvas.height / 2 + 180);
-}
 
     // Store menu items and positions
     let menuItems = ["Start Game", "Settings", "How To Play", "Highest Score"];
