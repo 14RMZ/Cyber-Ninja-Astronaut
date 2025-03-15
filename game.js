@@ -769,6 +769,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (player.y > canvas.height) {
             gameOver = true;
+            setGameState("gameOver"); // Ensure this is called
             fallSound.play().catch((error) => {
                 console.error("Failed to play fall sound:", error);
             });
@@ -853,33 +854,33 @@ document.addEventListener("DOMContentLoaded", () => {
             ctx.fillStyle = "black";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
         }
-
+    
         // Draw semi-transparent overlay
         ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-
+    
         // Draw the title
         ctx.fillStyle = "red";
         ctx.font = "60px Arial";
         ctx.textAlign = "center";
         ctx.fillText("Game Over", canvas.width / 2, canvas.height / 2 - 150);
-
+    
         // Draw the player's score
         ctx.fillStyle = "white";
         ctx.font = "30px Arial";
         ctx.fillText(`${playerName}, your score is: ${player.score}`, canvas.width / 2, canvas.height / 2 - 50);
-
+    
         // Draw the high score
         ctx.fillStyle = "gold";
         ctx.font = "30px Arial";
         ctx.fillText(`Your High Score: ${highScore}`, canvas.width / 2, canvas.height / 2);
-
+    
         // Draw the current game over message below the high score
         ctx.fillStyle = "cyan"; // Use a different color for the message
         ctx.font = "25px Arial";
         ctx.textAlign = "center";
         ctx.fillText(currentGameOverMessage, canvas.width / 2, canvas.height / 2 + 50); // Positioned below the high score
-
+    
         // Draw instructions
         ctx.fillStyle = "white";
         ctx.font = "20px Arial";
