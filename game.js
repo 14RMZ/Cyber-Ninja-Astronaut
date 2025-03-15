@@ -96,18 +96,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Function to set the game state
     function setGameState(newState) {
-    if (newState === "playing" && gameState === "gameOver") {
-        resetGame(); // Reset the game before starting
-    }
-    gameState = newState;
+        if (newState === "playing") {
+            resetGame(); // Reset the game before starting
+        }
+        gameState = newState;
 
-    if (newState === "gameOver") {
-        // Calculate random position for the game over message
-        const padding = 20; // Add some padding to keep the message away from the edges
-        gameOverMessagePosition.x = Math.max(padding, Math.min(canvas.width - padding, Math.random() * canvas.width));
-        gameOverMessagePosition.y = Math.max(padding, Math.min(canvas.height - padding, Math.random() * canvas.height));
+        if (newState === "gameOver") {
+            // Calculate random position for the game over message
+            const padding = 20; // Add some padding to keep the message away from the edges
+            gameOverMessagePosition.x = Math.max(padding, Math.min(canvas.width - padding, Math.random() * canvas.width));
+            gameOverMessagePosition.y = Math.max(padding, Math.min(canvas.height - padding, Math.random() * canvas.height));
+        }
     }
-}
 
     // Rest of your game code...
     const canvas = document.getElementById('gameCanvas');
@@ -797,51 +797,50 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-// Add this function to reset the game state
     function resetGame() {
-    stopAllMusic(); // Stop all music
+        stopAllMusic(); // Stop all music
 
-    // Resize the canvas to fit the window
-    resizeCanvas();
+        // Resize the canvas to fit the window
+        resizeCanvas();
 
-    // Reset game state variables
-    gameOver = false;
-    isDying = false;
-    isJumping = false;
-    isJumpStarting = false;
-    isJumpLanding = false;
+        // Reset game state variables
+        gameOver = false; // Ensure gameOver is reset
+        isDying = false;
+        isJumping = false;
+        isJumpStarting = false;
+        isJumpLanding = false;
 
-    // Reset player position and state
-    player.x = 100;
-    player.y = canvas.height - 150;
-    player.velocityX = 0;
-    player.velocityY = 0;
-    player.score = 0;
-    player.lastPlatform = null;
-    player.isShieldActive = false;
-    player.shieldTimer = 0;
+        // Reset player position and state
+        player.x = 100;
+        player.y = canvas.height - 150;
+        player.velocityX = 0;
+        player.velocityY = 0;
+        player.score = 0;
+        player.lastPlatform = null;
+        player.isShieldActive = false;
+        player.shieldTimer = 0;
 
-    // Reset camera
-    camera.x = 0;
+        // Reset camera
+        camera.x = 0;
 
-    // Reset platforms, enemies, bullets, and power-ups
-    platforms.length = 1; // Keep the initial platform
-    enemies.length = 0;
-    bullets.length = 0;
-    enemyBullets.length = 0;
-    shieldPowerUps.length = 0;
+        // Reset platforms, enemies, bullets, and power-ups
+        platforms.length = 1; // Keep the initial platform
+        enemies.length = 0;
+        bullets.length = 0;
+        enemyBullets.length = 0;
+        shieldPowerUps.length = 0;
 
-    // Regenerate platforms
-    generatePlatforms();
+        // Regenerate platforms
+        generatePlatforms();
 
-    // Reset sound volumes
-    playerDeathSound.volume = 0.5;
-    spikeDeathSound.volume = 0.5;
-    fallSound.volume = 0.5;
+        // Reset sound volumes
+        playerDeathSound.volume = 0.5;
+        spikeDeathSound.volume = 0.5;
+        fallSound.volume = 0.5;
 
-    // Start the game music
-    playGameMusic();
-}
+        // Start the game music
+        playGameMusic();
+    }
 
     function getRandomGameOverMessage() {
         const randomIndex = Math.floor(Math.random() * gameOverMessages.length);
