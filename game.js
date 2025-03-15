@@ -103,9 +103,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (newState === "gameOver") {
             // Calculate random position for the game over message
-            const padding = 20; // Add some padding to keep the message away from the edges
-            gameOverMessagePosition.x = Math.max(padding, Math.min(canvas.width - padding, Math.random() * canvas.width));
-            gameOverMessagePosition.y = Math.max(padding, Math.min(canvas.height - padding, Math.random() * canvas.height));
+            const randomMessageY = highScoreY + 50; // Place it just below the high score
+
         }
     }
 
