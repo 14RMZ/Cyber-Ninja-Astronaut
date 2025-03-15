@@ -93,19 +93,17 @@ document.addEventListener("DOMContentLoaded", () => {
     let settingsState = false; // Tracks whether the settings menu is open
     let howToPlayState = false; // Tracks whether the "How to Play" screen is open
     let gameOverMessagePosition = { x: 0, y: 0 }; // Stores the random position of the game over message
+    let currentGameOverMessage = "";
 
     // Function to set the game state
     function setGameState(newState) {
         if (newState === "playing") {
             resetGame(); // Reset the game before starting
+        } else if (newState === "gameOver") {
+            // Select a new random message when the game over state is set
+            currentGameOverMessage = getRandomGameOverMessage();
         }
         gameState = newState;
-
-        if (newState === "gameOver") {
-            // Calculate random position for the game over message
-            const randomMessageY = highScoreY + 50; // Place it just below the high score
-
-        }
     }
 
     // Rest of your game code...
@@ -875,12 +873,11 @@ function drawGameOverScreen() {
     ctx.font = "30px Arial";
     ctx.fillText(`Your High Score: ${highScore}`, canvas.width / 2, canvas.height / 2);
 
-    // Draw the game over message below the high score
-    const randomMessage = getRandomGameOverMessage();
+    // Draw the current game over message below the high score
     ctx.fillStyle = "cyan"; // Use a different color for the message
     ctx.font = "25px Arial";
     ctx.textAlign = "center";
-    ctx.fillText(randomMessage, canvas.width / 2, canvas.height / 2 + 50); // Positioned below the high score
+    ctx.fillText(currentGameOverMessage, canvas.width / 2, canvas.height / 2 + 50); // Positioned below the high score
 
     // Draw instructions
     ctx.fillStyle = "white";
