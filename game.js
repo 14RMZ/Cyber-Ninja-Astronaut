@@ -1,5 +1,17 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // Step 1: Get or prompt for the player's name
+    // Step 1: Get modal elements
+    const welcomeModal = document.getElementById("welcomeModal");
+    const welcomeMessage = document.getElementById("welcomeMessage");
+    const howToPlayMessage = document.getElementById("howToPlayMessage");
+    const startGameButton = document.getElementById("startGameButton");
+
+    // Step 2: Check if elements exist
+    if (!welcomeModal || !welcomeMessage || !howToPlayMessage || !startGameButton) {
+        console.error("One or more modal elements are missing in the DOM.");
+        return;
+    }
+
+    // Step 3: Get or prompt for the player's name
     let playerName = localStorage.getItem("playerName");
 
     if (!playerName) {
@@ -11,28 +23,16 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Step 2: Initialize highScore
+    // Step 4: Initialize highScore
     let highScore = localStorage.getItem("highScore") || 0;
     highScore = parseInt(highScore);
 
-    // Step 3: Check if the player is new (highScore is 0 or doesn't exist)
+    // Step 5: Check if the player is new (highScore is 0 or doesn't exist)
     const isNewPlayer = highScore === 0;
 
-    // Step 4: Show the "How to Play" message only for new players
+    // Step 6: Show the "How to Play" message only for new players
     if (isNewPlayer) {
         showWelcomeModal(playerName); // Show the welcome modal with "How to Play" message
-    }
-
-    // Get modal elements
-    const welcomeModal = document.getElementById("welcomeModal");
-    const welcomeMessage = document.getElementById("welcomeMessage");
-    const howToPlayMessage = document.getElementById("howToPlayMessage");
-    const startGameButton = document.getElementById("startGameButton");
-
-    // Check if elements exist
-    if (!welcomeModal || !welcomeMessage || !howToPlayMessage || !startGameButton) {
-        console.error("One or more modal elements are missing in the DOM.");
-        return;
     }
 
     // Function to show the welcome modal
