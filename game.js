@@ -57,10 +57,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Initialize highScore before using it in gameOverMessages
-    let highScore = localStorage.getItem("highScore") || 0;
-    highScore = parseInt(highScore);
-
     // Declare and initialize the player object
     const player = {
         x: 100,
