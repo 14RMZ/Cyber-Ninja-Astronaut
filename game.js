@@ -1,5 +1,16 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // Get modal elements
+    // Initialize highScore before using it
+    let highScore = localStorage.getItem("highScore") || 0;
+    highScore = parseInt(highScore);
+
+    // Check if the player is new (highScore is 0 or doesn't exist)
+    const isNewPlayer = highScore === 0;
+
+    // Show the "How to Play" message only for new players
+    if (isNewPlayer) {
+        showWelcomeModal(playerName); // Show the welcome modal with "How to Play" message
+    }    // Get modal elements
+    
     const welcomeModal = document.getElementById("welcomeModal");
     const welcomeMessage = document.getElementById("welcomeMessage");
     const howToPlayMessage = document.getElementById("howToPlayMessage");
@@ -36,10 +47,14 @@ document.addEventListener("DOMContentLoaded", () => {
         playerName = prompt("Hello! What is your name?");
         if (playerName) {
             localStorage.setItem("playerName", playerName);
-            showWelcomeModal(playerName); // Show the welcome modal
+            if (isNewPlayer) {
+                showWelcomeModal(playerName); // Show the welcome modal with "How to Play" message
+            }
         }
     } else {
-        showWelcomeModal(playerName); // Show the welcome modal if the name is already stored
+        if (isNewPlayer) {
+            showWelcomeModal(playerName); // Show the welcome modal with "How to Play" message
+        }
     }
 
     // Initialize highScore before using it in gameOverMessages
