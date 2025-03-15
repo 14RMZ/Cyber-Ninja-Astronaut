@@ -1,16 +1,29 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // Initialize highScore before using it
+    // Step 1: Get or prompt for the player's name
+    let playerName = localStorage.getItem("playerName");
+
+    if (!playerName) {
+        playerName = prompt("Hello! What is your name?");
+        if (playerName) {
+            localStorage.setItem("playerName", playerName);
+        } else {
+            playerName = "Player"; // Default name if the user cancels the prompt
+        }
+    }
+
+    // Step 2: Initialize highScore
     let highScore = localStorage.getItem("highScore") || 0;
     highScore = parseInt(highScore);
 
-    // Check if the player is new (highScore is 0 or doesn't exist)
+    // Step 3: Check if the player is new (highScore is 0 or doesn't exist)
     const isNewPlayer = highScore === 0;
 
-    // Show the "How to Play" message only for new players
+    // Step 4: Show the "How to Play" message only for new players
     if (isNewPlayer) {
         showWelcomeModal(playerName); // Show the welcome modal with "How to Play" message
-    }    // Get modal elements
-    
+    }
+
+    // Get modal elements
     const welcomeModal = document.getElementById("welcomeModal");
     const welcomeMessage = document.getElementById("welcomeMessage");
     const howToPlayMessage = document.getElementById("howToPlayMessage");
@@ -39,23 +52,6 @@ document.addEventListener("DOMContentLoaded", () => {
         hideWelcomeModal();
         setGameState("playing"); // Start the game
     });
-
-    // Prompt the user for their name and show the modal
-    let playerName = localStorage.getItem("playerName");
-
-    if (!playerName) {
-        playerName = prompt("Hello! What is your name?");
-        if (playerName) {
-            localStorage.setItem("playerName", playerName);
-            if (isNewPlayer) {
-                showWelcomeModal(playerName); // Show the welcome modal with "How to Play" message
-            }
-        }
-    } else {
-        if (isNewPlayer) {
-            showWelcomeModal(playerName); // Show the welcome modal with "How to Play" message
-        }
-    }
 
     // Declare and initialize the player object
     const player = {
