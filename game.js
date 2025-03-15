@@ -112,6 +112,12 @@ document.addEventListener("DOMContentLoaded", () => {
         return gameOverMessages[randomIndex].replace("${playerName}", playerName);
     }
 
+    // Function to get a random game over message
+    function getRandomGameOverMessage() {
+        const randomIndex = Math.floor(Math.random() * gameOverMessages.length);
+        return gameOverMessages[randomIndex].replace("${playerName}", playerName);
+    }
+    
     // Rest of your game code...
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
