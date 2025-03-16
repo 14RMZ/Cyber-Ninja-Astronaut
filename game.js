@@ -91,17 +91,17 @@ document.addEventListener("DOMContentLoaded", () => {
         `Practice makes perfect, ${playerName}!, give it another shot!`,
         `${playerName}, you're a star! —Just one more try!`,
         `${playerName}, you're unstoppable! Keep pushing fast points!`,
-        `Every failure is a step closer to success, ${playerName}! You reached ${player.score}, now aim higher!`,
-        `The AI got lucky this time, ${playerName}… but not next time! ${player.score} is just a warm-up!`,
-        `You're learning the patterns, ${playerName}. Victory is near! Your score: ${player.score}.`,
-        `Even legends have setbacks, ${playerName}. Get back in there! ${player.score} isn’t your limit!`,
-        `${playerName}, your cyber-ninja training isn’t over yet! You reached ${player.score}, now go further!`,
-        `Every attempt makes you stronger, ${playerName}. You scored ${player.score}, try again!`,
-        `${playerName}, you dodged lasers, jumped spikes… and scored ${player.score}! Now do it again!`,
-        `${playerName}, the cyber-ninjas believe in you! ${player.score} is great, but you can do better!`,
-        `Almost there, ${playerName}! You got ${player.score}, just a little more practice and you'll be unstoppable!`,
-        `Even the greatest warriors fall, ${playerName}. You reached ${player.score}, now rise again!`,
-        `Your reflexes are improving, ${playerName}! You scored ${player.score}, keep going!`
+        `Every failure is a step closer to success, ${playerName}! You reached ${highScore}, now aim higher!`,
+        `The AI got lucky this time, ${playerName}… but not next time! is just a warm-up!`,
+        `You're learning the patterns, ${playerName}. Victory is near!`,
+        `Even legends have setbacks, ${playerName}. Get back in there! ${highScore} isn’t your limit!`,
+        `${playerName}, your cyber-ninja training isn’t over yet! You reached ${highScore}, now go further!`,
+        `Every attempt makes you stronger, ${playerName}. Try again!`,
+        `${playerName}, you dodged lasers, jumped spikes… and scored ${highScore}! Now do it again!`,
+        `${playerName}, the cyber-ninjas believe in you! ${highScore} is great, but you can do better!`,
+        `Almost there, ${playerName}! You are getting it! Just a little more practice and you'll be unstoppable!`,
+        `Even the greatest warriors fall, ${playerName}. You reached ${highScore}, now rise again!`,
+        `Your reflexes are improving, ${playerName}! Keep going!`
     ];
 
     // Function to get a random game over message
