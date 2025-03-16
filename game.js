@@ -1,43 +1,34 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // Step 1: Get modal elements
     const welcomeModal = document.getElementById("welcomeModal");
     const welcomeMessage = document.getElementById("welcomeMessage");
     const howToPlayMessage = document.getElementById("howToPlayMessage");
     const startGameButton = document.getElementById("startGameButton");
 
-    // Step 2: Check if elements exist
     if (!welcomeModal || !welcomeMessage || !howToPlayMessage || !startGameButton) {
-        console.error("One or more modal elements are missing in the DOM.");
         return;
     }
 
-    // Step 3: Get or prompt for the player's name
     let playerName = localStorage.getItem("playerName");
 
     if (!playerName) {
         playerName = prompt("Hello! What is your name?");
         if (playerName) {
-            // Capitalize the first letter of the player's name
             playerName = playerName.charAt(0).toUpperCase() + playerName.slice(1).toLowerCase();
             localStorage.setItem("playerName", playerName);
         } else {
-            playerName = "Player"; // Default name if the user cancels the prompt
+            playerName = "Player";
         }
     }
 
-    // Step 4: Initialize highScore
     let highScore = localStorage.getItem("highScore") || 0;
     highScore = parseInt(highScore);
 
-    // Step 5: Check if the player is new (highScore is 0 or doesn't exist)
     const isNewPlayer = highScore === 0;
 
-    // Step 6: Show the "How to Play" message only for new players
     if (isNewPlayer) {
-        showWelcomeModal(playerName); // Show the welcome modal with "How to Play" message
+        showWelcomeModal(playerName);
     }
 
-    // Function to show the welcome modal
     function showWelcomeModal(name) {
         welcomeMessage.textContent = `How are you doing, ${name}? Let's have some fun together and fight some aliens!`;
         howToPlayMessage.textContent = `
@@ -49,25 +40,22 @@ document.addEventListener("DOMContentLoaded", () => {
             5. Collect power-ups for shields.
             6. Reach the highest score!
         `;
-        howToPlayMessage.style.whiteSpace = "pre-line"; // Add this line to respect newlines
-        welcomeModal.style.display = "flex"; // Show the modal
+        howToPlayMessage.style.whiteSpace = "pre-line";
+        welcomeModal.style.display = "flex";
     }
 
-    // Function to hide the welcome modal
     function hideWelcomeModal() {
-        welcomeModal.style.display = "none"; // Hide the modal
+        welcomeModal.style.display = "none";
     }
 
-    // Event listener for the "Let's Play!" button
     startGameButton.addEventListener("click", () => {
         hideWelcomeModal();
-        setGameState("menu"); // Start the game
+        setGameState("menu");
     });
 
-    // Declare and initialize the player object
     const player = {
         x: 100,
-        y: 0, // Will be set after canvas initialization
+        y: 0,
         width: 32,
         height: 48,
         velocityX: 0,
@@ -82,7 +70,6 @@ document.addEventListener("DOMContentLoaded", () => {
         shieldTimer: 0
     };
 
-    // Define the game over messages array AFTER player and highScore are initialized
     const gameOverMessages = [
         `${playerName}, your highest score is ${highScore}... but I know you can do better!`,
         `${playerName}, you scored ${player.score}! I know you can make it higher!`,
@@ -106,188 +93,107 @@ document.addEventListener("DOMContentLoaded", () => {
         `Your reflexes are improving, ${playerName}! You scored ${player.score}, keep going!`
     ];
 
-    // Function to get a random game over message
     function getRandomGameOverMessage() {
         const randomIndex = Math.floor(Math.random() * gameOverMessages.length);
         return gameOverMessages[randomIndex].replace("${playerName}", playerName);
     }
 
-    // Declare and initialize gameState before using it
-    let gameState = "menu"; // Possible values: "menu", "playing", "gameOver"
-    let settingsState = false; // Tracks whether the settings menu is open
-    let howToPlayState = false; // Tracks whether the "How to Play" screen is open
+    let gameState = "menu";
+    let settingsState = false;
+    let howToPlayState = false;
     let currentGameOverMessage = "";
 
-    // Function to set the game state
     function setGameState(newState) {
-        console.log(`Setting game state to: ${newState}`); // Debugging line
         if (newState === "playing") {
-            resetGame(); // Reset the game before starting
+            resetGame();
         } else if (newState === "gameOver") {
-            currentGameOverMessage = getRandomGameOverMessage(); // Set a random game over message
-            console.log(`Game Over Message: ${currentGameOverMessage}`); // Debugging line
+            currentGameOverMessage = getRandomGameOverMessage();
         }
         gameState = newState;
     }
 
-    // Rest of your game code...
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
 
-    // Resize canvas to fit the window
     function resizeCanvas() {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
-        player.y = canvas.height - 150; // Set player's initial Y position after canvas resize
+        player.y = canvas.height - 150;
     }
     window.addEventListener('resize', resizeCanvas);
-    resizeCanvas(); // Initial resize to fit the window
+    resizeCanvas();
 
     let gameOver = false;
 
-    // Load the background image
     const backgroundImage = new Image();
     backgroundImage.src = "GameBackground.jpg";
-    backgroundImage.onerror = () => {
-        console.error("Failed to load background image.");
-    };
 
-    // Load the player sprite sheet
     const playerSpriteSheet = new Image();
     playerSpriteSheet.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/NewPlayermovement.png";
-    playerSpriteSheet.onerror = () => {
-        console.error("Failed to load player sprite sheet.");
-    };
 
-    // Load the non-shooting enemy sprite sheet
     const nonShootingEnemySpriteSheet = new Image();
     nonShootingEnemySpriteSheet.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/AlienRoboticEnemyMovement.png";
-    nonShootingEnemySpriteSheet.onerror = () => {
-        console.error("Failed to load non-shooting enemy sprite sheet.");
-    };
 
-    // Load the shooting enemy (drone) sprite sheet
     const shootingEnemySpriteSheet = new Image();
     shootingEnemySpriteSheet.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/AIDroneEnemyMovement.png";
-    shootingEnemySpriteSheet.onerror = () => {
-        console.error("Failed to load shooting enemy sprite sheet.");
-    };
 
-    // Load platform images
     const platformImage = new Image();
     platformImage.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/platform.jpg";
-    platformImage.onerror = () => {
-        console.error("Failed to load platform image.");
-    };
 
     const movingPlatformImage = new Image();
     movingPlatformImage.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/moving-platform.jpg";
-    movingPlatformImage.onerror = () => {
-        console.error("Failed to load moving platform image.");
-    };
 
-    // Load the spike image
     const spikeImage = new Image();
     spikeImage.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/testingspike.png";
-    spikeImage.onerror = () => {
-        console.error("Failed to load spike image.");
-    };
 
-    // Load the background sounds
     const gameMusic = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/Playingthegamesound.wav");
     gameMusic.loop = true;
     gameMusic.volume = 0.5;
-    gameMusic.onerror = () => {
-        console.error("Failed to load game music.");
-    };
 
     const menuMusic = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/GameMenuSound.wav");
     menuMusic.loop = true;
     menuMusic.volume = 0.5;
-    menuMusic.onerror = () => {
-        console.error("Failed to load menu music.");
-    };
 
-    // Load player sound effects
     const jumpSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/jumping_sound.wav");
     jumpSound.volume = 0.5;
-    jumpSound.onerror = () => {
-        console.error("Failed to load jump sound.");
-    };
 
     const shootSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/Playershooting.mp3");
     shootSound.volume = 0.5;
-    shootSound.onerror = () => {
-        console.error("Failed to load shoot sound.");
-    };
 
     const fallSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/Playerfallingdown.mp3");
     fallSound.volume = 0.5;
-    fallSound.onerror = () => {
-        console.error("Failed to load fall sound.");
-    };
 
     const spikeDeathSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/Playerkilledbyspikes.wav");
     spikeDeathSound.volume = 0.5;
-    spikeDeathSound.onerror = () => {
-        console.error("Failed to load spike death sound.");
-    };
 
     const playerDeathSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/Playergetsshootbyenemy.mp3");
     playerDeathSound.volume = 0.5;
-    playerDeathSound.onerror = () => {
-        console.error("Failed to load player death sound.");
-    };
 
-    // Load enemy sound effects
     const enemyShootSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/Droneshooting.mp3");
     enemyShootSound.volume = 0.5;
-    enemyShootSound.onerror = () => {
-        console.error("Failed to load enemy shoot sound.");
-    };
 
     const enemyDeathSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/Enemydying.wav");
     enemyDeathSound.volume = 0.5;
-    enemyDeathSound.onerror = () => {
-        console.error("Failed to load enemy death sound.");
-    };
 
-    // Load the power-up sound
     const powerUpSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/playerpowerup.wav");
     powerUpSound.volume = 0.5;
-    powerUpSound.onerror = () => {
-        console.error("Failed to load power-up sound.");
-    };
 
-    // Load the new high score sound
     const newHighScoreSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/highscore.wav");
     newHighScoreSound.volume = 0.5;
-    newHighScoreSound.onerror = () => {
-        console.error("Failed to load new high score sound.");
-    };
 
-    // Load the menu image
     const menuImage = new Image();
     menuImage.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/GameMenuBackground.webp";
-    menuImage.onerror = () => {
-        console.error("Failed to load menu image.");
-    };
 
-    // Music control functions
     function playMenuMusic() {
         gameMusic.pause();
-        gameMusic.currentTime = 0; // Reset game music
-        menuMusic.play().catch((error) => {
-            console.error("Failed to play menu music:", error);
-        });
+        gameMusic.currentTime = 0;
+        menuMusic.play();
     }
 
     function playGameMusic() {
         menuMusic.pause();
-        menuMusic.currentTime = 0; // Reset menu music
-        gameMusic.play().catch((error) => {
-            console.error("Failed to play game music:", error);
-        });
+        menuMusic.currentTime = 0;
+        gameMusic.play();
     }
 
     function stopAllMusic() {
@@ -295,7 +201,6 @@ document.addEventListener("DOMContentLoaded", () => {
         gameMusic.pause();
     }
 
-    // Animation class to handle animations
     class Animation {
         constructor(frames, frameRate) {
             this.frames = frames;
@@ -317,7 +222,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Player animation frames
     const playerAnimations = {
         idle: new Animation([{ x: 0, y: 0, width: 32, height: 48 }], 1),
         walk: new Animation([{ x: 32, y: 0, width: 32, height: 48 }, { x: 64, y: 0, width: 32, height: 48 }], 10),
@@ -327,39 +231,37 @@ document.addEventListener("DOMContentLoaded", () => {
         dieLie: new Animation([{ x: 224, y: 0, width: 32, height: 48 }], 1)
     };
 
-    // Non-shooting enemy animation frames
     const nonShootingEnemyAnimations = {
         walk: new Animation(
             [
-                { x: 0, y: 0, width: 48, height: 64 },  // Frame 1 (walking)
-                { x: 48, y: 0, width: 48, height: 64 }, // Frame 2 (walking)
-                { x: 96, y: 0, width: 53, height: 64 }  // Frame 3 (walking)
+                { x: 0, y: 0, width: 48, height: 64 },
+                { x: 48, y: 0, width: 48, height: 64 },
+                { x: 96, y: 0, width: 53, height: 64 }
             ],
-            10 // Frame rate for walking
+            10
         ),
         explode: new Animation(
             [
-                { x: 149, y: 0, width: 48, height: 64 } // Frame 4 (explosion)
+                { x: 149, y: 0, width: 48, height: 64 }
             ],
-            1 // Frame rate for explosion (single frame)
+            1
         )
     };
 
-    // Shooting enemy (drone) animation frames
     const shootingEnemyAnimations = {
         fly: new Animation(
             [
-                { x: 0, y: 0, width: 30, height: 40 },  // Frame 1 (flying)
-                { x: 30, y: 0, width: 28, height: 40 }, // Frame 2 (flying)
-                { x: 60, y: 0, width: 30, height: 40 }  // Frame 3 (explosion)
+                { x: 0, y: 0, width: 30, height: 40 },
+                { x: 30, y: 0, width: 28, height: 40 },
+                { x: 60, y: 0, width: 30, height: 40 }
             ],
-            10 // Frame rate for flying
+            10
         ),
         explode: new Animation(
             [
-                { x: 60, y: 0, width: 30, height: 40 } // Frame 3 (explosion)
+                { x: 60, y: 0, width: 30, height: 40 }
             ],
-            1 // Frame rate for explosion (single frame)
+            1
         )
     };
 
@@ -431,7 +333,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 for (let i = 0; i < this.spikeWidth; i += 20) {
                     ctx.drawImage(
                         spikeImage,
-                        this.spikeX + i - camera.x, this.y - 15, 20, 15 // Match the size of the old spikes
+                        this.spikeX + i - camera.x, this.y - 15, 20, 15
                     );
                 }
             }
@@ -442,32 +344,29 @@ document.addEventListener("DOMContentLoaded", () => {
         constructor(platform) {
             this.platform = platform;
             this.x = platform.x + platform.width / 4;
-            this.y = platform.y - 64; // Adjust for enemy height
-            this.width = 48; // Default width
-            this.height = 64; // Default height
+            this.y = platform.y - 64;
+            this.width = 48;
+            this.height = 64;
             this.speed = 2;
             this.direction = 1;
             this.minX = platform.x + 10;
             this.maxX = platform.x + platform.width - this.width - 10;
             this.currentAnimation = nonShootingEnemyAnimations.walk;
-            this.isExploding = false; // Track if the enemy is exploding
-            this.explodeTimer = 0; // Timer for explosion animation
+            this.isExploding = false;
+            this.explodeTimer = 0;
         }
 
         update() {
             if (this.isExploding) {
-                // Handle explosion
                 this.explodeTimer++;
-                if (this.explodeTimer >= 30) { // Explosion lasts for 0.5 seconds (30 frames)
+                if (this.explodeTimer >= 30) {
                     this.isExploding = false;
-                    // Remove the enemy after explosion
                     const index = enemies.indexOf(this);
                     if (index !== -1) {
                         enemies.splice(index, 1);
                     }
                 }
             } else {
-                // Handle walking
                 this.x += this.direction * this.speed;
                 if (this.x <= this.minX || this.x >= this.maxX) {
                     this.direction *= -1;
@@ -498,10 +397,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         explode() {
             this.isExploding = true;
-            this.currentAnimation = nonShootingEnemyAnimations.explode; // Switch to explosion animation
-            enemyDeathSound.play().catch((error) => {
-                console.error("Failed to play enemy death sound:", error);
-            });
+            this.currentAnimation = nonShootingEnemyAnimations.explode;
+            enemyDeathSound.play();
         }
     }
 
@@ -509,41 +406,37 @@ document.addEventListener("DOMContentLoaded", () => {
         constructor(platform) {
             this.platform = platform;
             this.x = platform.x + platform.width / 4;
-            this.y = platform.y - 40; // Adjust for drone height
-            this.width = 30; // Default width
-            this.height = 40; // Default height
+            this.y = platform.y - 40;
+            this.width = 30;
+            this.height = 40;
             this.speed = 2;
             this.direction = 1;
             this.minX = platform.x + 10;
             this.maxX = platform.x + platform.width - this.width - 10;
             this.currentAnimation = shootingEnemyAnimations.fly;
-            this.isExploding = false; // Track if the drone is exploding
-            this.explodeTimer = 0; // Timer for explosion animation
-            this.shootCooldown = 100; // Cooldown for shooting
-            this.shootTimer = 0; // Timer for shooting
+            this.isExploding = false;
+            this.explodeTimer = 0;
+            this.shootCooldown = 100;
+            this.shootTimer = 0;
         }
 
         update() {
             if (this.isExploding) {
-                // Handle explosion
                 this.explodeTimer++;
-                if (this.explodeTimer >= 30) { // Explosion lasts for 0.5 seconds (30 frames)
+                if (this.explodeTimer >= 30) {
                     this.isExploding = false;
-                    // Remove the drone after explosion
                     const index = enemies.indexOf(this);
                     if (index !== -1) {
                         enemies.splice(index, 1);
                     }
                 }
             } else {
-                // Handle flying
                 this.x += this.direction * this.speed;
                 if (this.x <= this.minX || this.x >= this.maxX) {
                     this.direction *= -1;
                 }
                 this.currentAnimation.update();
 
-                // Handle shooting
                 if (this.shootTimer <= 0) {
                     this.shoot();
                     this.shootTimer = this.shootCooldown;
@@ -557,12 +450,11 @@ document.addEventListener("DOMContentLoaded", () => {
             const frame = this.currentAnimation.getCurrentFrame();
             ctx.save();
 
-            // Center the frame if it's smaller than the default size
-            const offsetX = (this.width - frame.width) / 2; // Center horizontally
-            const offsetY = (this.height - frame.height) / 2; // Center vertically
+            const offsetX = (this.width - frame.width) / 2;
+            const offsetY = (this.height - frame.height) / 2;
 
             if (this.direction === -1 && !this.isExploding) {
-                ctx.scale(-1, 1); // Flip horizontally if moving left
+                ctx.scale(-1, 1);
                 ctx.drawImage(
                     shootingEnemySpriteSheet,
                     frame.x, frame.y, frame.width, frame.height,
@@ -583,17 +475,13 @@ document.addEventListener("DOMContentLoaded", () => {
             const bulletX = this.x + this.width / 2;
             const bulletY = this.y + this.height / 2;
             enemyBullets.push(new Bullet(bulletX, bulletY, direction));
-            enemyShootSound.play().catch((error) => {
-                console.error("Failed to play enemy shoot sound:", error);
-            });
+            enemyShootSound.play();
         }
 
         explode() {
             this.isExploding = true;
-            this.currentAnimation = shootingEnemyAnimations.explode; // Switch to explosion animation
-            enemyDeathSound.play().catch((error) => {
-                console.error("Failed to play enemy death sound:", error);
-            });
+            this.currentAnimation = shootingEnemyAnimations.explode;
+            enemyDeathSound.play();
         }
     }
 
@@ -691,16 +579,14 @@ document.addEventListener("DOMContentLoaded", () => {
     window.addEventListener('keydown', (event) => {
         keys[event.code] = true;
         if (event.code === "KeyR" && gameOver) {
-            setGameState("playing"); // This will call resetGame() internally
+            setGameState("playing");
         }
         if (event.code === "KeyM" && gameOver) {
             setGameState("menu");
         }
         if (event.code === "KeyF" || event.code === "KeyJ") {
             bullets.push(new Bullet(player.x + player.width / 2, player.y + player.height / 2, player.direction));
-            shootSound.play().catch((error) => {
-                console.error("Failed to play shoot sound:", error);
-            });
+            shootSound.play();
         }
     });
 
@@ -732,10 +618,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (platform.hasSpikes && player.x + player.width > platform.spikeX && player.x < platform.spikeX + platform.spikeWidth) {
                     if (!player.isShieldActive) {
                         gameOver = true;
-                        spikeDeathSound.play().catch((error) => {
-                            console.error("Failed to play spike death sound:", error);
-                        });
-                        updateHighScore(); // Update high score when the player dies
+                        spikeDeathSound.play();
+                        updateHighScore();
                     } else {
                         player.y = platform.y - player.height;
                         player.velocityY = 0;
@@ -746,9 +630,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     player.velocityY = 0;
                     onPlatform = true;
 
-                    // Track the moving platform
                     if (platform.isMoving) {
-                        player.x += platform.direction * platform.speed; // Move the player with the platform
+                        player.x += platform.direction * platform.speed;
                     }
 
                     if (player.lastPlatform !== platform) {
@@ -763,11 +646,11 @@ document.addEventListener("DOMContentLoaded", () => {
             player.isJumping = true;
         } else {
             if (player.isJumping) {
-                isJumpLanding = true; // Player is landing
+                isJumpLanding = true;
                 setTimeout(() => {
-                    isJumpLanding = false; // Reset landing state after a short delay
-                    isJumping = false; // Reset jumping state
-                }, 100); // Adjust the delay as needed
+                    isJumpLanding = false;
+                    isJumping = false;
+                }, 100);
             }
             player.isJumping = false;
         }
@@ -780,28 +663,22 @@ document.addEventListener("DOMContentLoaded", () => {
             }, 100);
             player.velocityY = -player.jumpHeight;
             player.isJumping = true;
-            jumpSound.play().catch((error) => {
-                console.error("Failed to play jump sound:", error);
-            });
+            jumpSound.play();
         }
 
         if (player.y > canvas.height) {
             gameOver = true;
-            setGameState("gameOver"); // Ensure this is called
-            fallSound.play().catch((error) => {
-                console.error("Failed to play fall sound:", error);
-            });
-            updateHighScore(); // Update high score when the player falls
+            setGameState("gameOver");
+            fallSound.play();
+            updateHighScore();
         }
     }
 
     function updateHighScore() {
         if (player.score > highScore) {
-            highScore = player.score; // Update the high score
-            localStorage.setItem("highScore", highScore); // Save the new high score to localStorage
-            newHighScoreSound.play().catch((error) => {
-                console.error("Failed to play new high score sound:", error);
-            });
+            highScore = player.score;
+            localStorage.setItem("highScore", highScore);
+            newHighScoreSound.play();
         }
     }
 
@@ -820,19 +697,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function resetGame() {
-        stopAllMusic(); // Stop all music
-
-        // Resize the canvas to fit the window
+        stopAllMusic();
         resizeCanvas();
-
-        // Reset game state variables
-        gameOver = false; // Ensure gameOver is reset
+        gameOver = false;
         isDying = false;
         isJumping = false;
         isJumpStarting = false;
         isJumpLanding = false;
-
-        // Reset player position and state
         player.x = 100;
         player.y = canvas.height - 150;
         player.velocityX = 0;
@@ -841,31 +712,20 @@ document.addEventListener("DOMContentLoaded", () => {
         player.lastPlatform = null;
         player.isShieldActive = false;
         player.shieldTimer = 0;
-
-        // Reset camera
         camera.x = 0;
-
-        // Reset platforms, enemies, bullets, and power-ups
-        platforms.length = 1; // Keep the initial platform
+        platforms.length = 1;
         enemies.length = 0;
         bullets.length = 0;
         enemyBullets.length = 0;
         shieldPowerUps.length = 0;
-
-        // Regenerate platforms
         generatePlatforms();
-
-        // Reset sound volumes
         playerDeathSound.volume = 0.5;
         spikeDeathSound.volume = 0.5;
         fallSound.volume = 0.5;
-
-        // Start the game music
         playGameMusic();
     }
 
     function drawGameOverScreen() {
-        // Draw the background image
         if (menuImage.complete && menuImage.naturalWidth !== 0) {
             ctx.drawImage(menuImage, 0, 0, canvas.width, canvas.height);
         } else {
@@ -873,50 +733,41 @@ document.addEventListener("DOMContentLoaded", () => {
             ctx.fillRect(0, 0, canvas.width, canvas.height);
         }
     
-        // Draw semi-transparent overlay
         ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
     
-        // Draw the title
         ctx.fillStyle = "red";
         ctx.font = "60px Arial";
         ctx.textAlign = "center";
         ctx.fillText("Game Over", canvas.width / 2, canvas.height / 2 - 150);
     
-        // Draw the player's score
         ctx.fillStyle = "white";
         ctx.font = "30px Arial";
         ctx.fillText(`${playerName}, your score is: ${player.score}`, canvas.width / 2, canvas.height / 2 - 50);
     
-        // Draw the high score
         ctx.fillStyle = "gold";
         ctx.font = "30px Arial";
         ctx.fillText(`Your High Score: ${highScore}`, canvas.width / 2, canvas.height / 2);
     
-        // Draw the current game over message below the high score
-        ctx.fillStyle = "cyan"; // Use a different color for the message
+        ctx.fillStyle = "cyan";
         ctx.font = "25px Arial";
         ctx.textAlign = "center";
-        ctx.fillText(currentGameOverMessage, canvas.width / 2, canvas.height / 2 + 50); // Positioned below the high score
+        ctx.fillText(currentGameOverMessage, canvas.width / 2, canvas.height / 2 + 50);
     
-        // Draw instructions
         ctx.fillStyle = "white";
         ctx.font = "20px Arial";
         ctx.fillText("Press R to Restart", canvas.width / 2, canvas.height / 2 + 140);
         ctx.fillText("Press M to Return to Menu", canvas.width / 2, canvas.height / 2 + 180);
     }
 
-    // Store menu items and positions
     let menuItems = ["Start Game", "Settings", "How To Play", "Highest Score"];
     let menuPositions = [];
-    let hoveredIndex = -1; // Track hovered item
-    let hoverAnimation = { opacity: 1, scale: 1 }; // Store opacity & scale for smooth effect
+    let hoveredIndex = -1;
+    let hoverAnimation = { opacity: 1, scale: 1 };
 
     function drawMainMenu() {
-        // Clear the canvas
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // Draw the menu background image
         if (menuImage.complete && menuImage.naturalWidth !== 0) {
             ctx.drawImage(menuImage, 0, 0, canvas.width, canvas.height);
         } else {
@@ -924,7 +775,6 @@ document.addEventListener("DOMContentLoaded", () => {
             ctx.fillRect(0, 0, canvas.width, canvas.height);
         }
 
-        // Draw the title at the top-left
         ctx.fillStyle = "cyan";
         ctx.font = "bold 80px Arial";
         ctx.shadowColor = "blue";
@@ -934,77 +784,63 @@ document.addEventListener("DOMContentLoaded", () => {
         ctx.shadowBlur = 0;
         ctx.shadowColor = "transparent";
 
-        // Move menu slightly to the left to keep it on-screen
         let centerX = canvas.width - 350;
         let centerY = canvas.height / 2;
         let radius = 180;
 
-        // Draw curved menu items with dark background and borders
         for (let i = 0; i < menuItems.length; i++) {
             let angle = (-Math.PI / 3.5) + (i * (Math.PI / 5));
             let x = centerX + radius * Math.cos(angle);
             let y = centerY + radius * Math.sin(angle);
 
-            // Store menu item positions for hover and click detection
             ctx.font = "30px Arial";
             let textWidth = ctx.measureText(menuItems[i]).width;
             let padding = 10;
             let boxWidth = textWidth + padding * 2;
             let boxHeight = 40;
 
-            // Update menuPositions with the new button positions
             menuPositions[i] = {
-                x: x - boxWidth / 2, // Left edge of the button
-                y: y - 30, // Top edge of the button
-                width: boxWidth, // Width of the button
-                height: boxHeight, // Height of the button
+                x: x - boxWidth / 2,
+                y: y - 30,
+                width: boxWidth,
+                height: boxHeight,
             };
 
-            // Save the current canvas state
             ctx.save();
 
-            // Check if the mouse is hovering over this item
             if (hoveredIndex === i) {
-                // Apply hover animation (scale and opacity)
                 ctx.globalAlpha = hoverAnimation.opacity;
                 ctx.translate(x, y);
                 ctx.scale(hoverAnimation.scale, hoverAnimation.scale);
                 ctx.translate(-x, -y);
             }
 
-            // Draw dark semi-transparent background behind text
-            ctx.fillStyle = "rgba(0, 0, 0, 0.7)"; // Dark semi-transparent layer
+            ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
             ctx.fillRect(x - boxWidth / 2, y - 30, boxWidth, boxHeight);
 
-            // Draw white border around the menu option
             ctx.strokeStyle = "white";
             ctx.lineWidth = 3;
             ctx.strokeRect(x - boxWidth / 2, y - 30, boxWidth, boxHeight);
 
-            // Draw menu text
-            ctx.fillStyle = hoveredIndex === i ? "rgba(255, 255, 0, 1)" : "rgba(0, 255, 255, 1)"; // Change color on hover
-            ctx.shadowColor = hoveredIndex === i ? "yellow" : "cyan"; // Change shadow color on hover
+            ctx.fillStyle = hoveredIndex === i ? "rgba(255, 255, 0, 1)" : "rgba(0, 255, 255, 1)";
+            ctx.shadowColor = hoveredIndex === i ? "yellow" : "cyan";
             ctx.shadowBlur = 10;
             ctx.textAlign = "center";
             ctx.fillText(menuItems[i], x, y);
 
-            // Restore the canvas state to isolate hover effects
             ctx.restore();
         }
 
-        // Draw credits in the bottom-right
         ctx.font = "20px Arial";
         ctx.textAlign = "right";
         ctx.fillText("Created by [Your Name]", canvas.width - 20, canvas.height - 20);
     }
 
-    // Add event listeners for hover detection
     canvas.addEventListener("mousemove", (e) => {
         let rect = canvas.getBoundingClientRect();
         let mouseX = e.clientX - rect.left;
         let mouseY = e.clientY - rect.top;
 
-        // Check if the mouse is over any menu item
         hoveredIndex = -1;
         for (let i = 0; i < menuPositions.length; i++) {
             let pos = menuPositions[i];
@@ -1021,11 +857,10 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     canvas.addEventListener("mouseleave", () => {
-        hoveredIndex = -1; // Reset hover state when mouse leaves canvas
+        hoveredIndex = -1;
     });
 
     function drawSettingsMenu() {
-        // Draw the menu background image
         if (menuImage.complete && menuImage.naturalWidth !== 0) {
             ctx.drawImage(menuImage, 0, 0, canvas.width, canvas.height);
         } else {
@@ -1033,28 +868,23 @@ document.addEventListener("DOMContentLoaded", () => {
             ctx.fillRect(0, 0, canvas.width, canvas.height);
         }
 
-        // Draw semi-transparent overlay
         ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        // Draw the title
         ctx.fillStyle = "white";
         ctx.font = "60px Arial";
         ctx.textAlign = "center";
         ctx.fillText("Settings", canvas.width / 2, canvas.height / 2 - 150);
 
-        // Draw settings options
         ctx.font = "30px Arial";
-        ctx.fillText("1. Sound Volume: " + Math.round(gameMusic.volume * 100) + "%", canvas.width / 2, canvas.height / 2 - 50); // Display volume as percentage
+        ctx.fillText("1. Sound Volume: " + Math.round(gameMusic.volume * 100) + "%", canvas.width / 2, canvas.height / 2 - 50);
         ctx.fillText("2. Back to Main Menu", canvas.width / 2, canvas.height / 2);
 
-        // Draw instructions
         ctx.font = "20px Arial";
         ctx.fillText("Use Arrow Keys to adjust volume. Press Enter to go back.", canvas.width / 2, canvas.height / 2 + 100);
     }
 
     function drawHowToPlayScreen() {
-        // Draw the menu background image
         if (menuImage.complete && menuImage.naturalWidth !== 0) {
             ctx.drawImage(menuImage, 0, 0, canvas.width, canvas.height);
         } else {
@@ -1062,17 +892,14 @@ document.addEventListener("DOMContentLoaded", () => {
             ctx.fillRect(0, 0, canvas.width, canvas.height);
         }
 
-        // Draw semi-transparent overlay
         ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        // Draw the title
         ctx.fillStyle = "white";
         ctx.font = "60px Arial";
         ctx.textAlign = "center";
         ctx.fillText("How to Play", canvas.width / 2, canvas.height / 2 - 150);
 
-        // Draw instructions
         ctx.font = "20px Arial";
         ctx.textAlign = "left";
         const instructions = [
@@ -1087,7 +914,6 @@ document.addEventListener("DOMContentLoaded", () => {
             ctx.fillText(line, canvas.width / 2 - 200, canvas.height / 2 - 50 + index * 30);
         });
 
-        // Draw back option
         ctx.font = "30px Arial";
         ctx.textAlign = "center";
         ctx.fillText("Press Enter to go back", canvas.width / 2, canvas.height / 2 + 150);
@@ -1105,12 +931,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 enemies.forEach((enemy, enemyIndex) => {
                     if (bullet.hitEnemy(enemy)) {
                         bullets.splice(bulletIndex, 1);
-                        enemy.explode(); // Trigger enemy explosion
+                        enemy.explode();
                         player.score += 20;
                     }
                 });
 
-                // Remove bullets that go off-screen
                 if (bullet.x < camera.x || bullet.x > camera.x + canvas.width) {
                     bullets.splice(bulletIndex, 1);
                 }
@@ -1126,10 +951,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 ) {
                     if (!player.isShieldActive) {
                         gameOver = true;
-                        playerDeathSound.play().catch((error) => {
-                            console.error("Failed to play player death sound:", error);
-                        });
-                        updateHighScore(); // Update high score when the player dies
+                        playerDeathSound.play();
+                        updateHighScore();
                     }
                 }
             });
@@ -1144,10 +967,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 ) {
                     if (!player.isShieldActive) {
                         gameOver = true;
-                        playerDeathSound.play().catch((error) => {
-                            console.error("Failed to play player death sound:", error);
-                        });
-                        updateHighScore(); // Update high score when the player dies
+                        playerDeathSound.play();
+                        updateHighScore();
                     }
                 }
 
@@ -1160,9 +981,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (powerUp.isCollected()) {
                     activateShield(powerUp.duration);
                     shieldPowerUps.splice(index, 1);
-                    powerUpSound.play().catch((error) => {
-                        console.error("Failed to play power-up sound:", error);
-                    });
+                    powerUpSound.play();
                 }
             });
         }
@@ -1171,37 +990,31 @@ document.addEventListener("DOMContentLoaded", () => {
     function drawScore() {
         ctx.font = "20px Arial";
 
-        // Measure text width
         const scoreText = `${playerName} your current score is: ${player.score}`;
         const highScoreText = `Highest Score: ${highScore}`;
         const scoreWidth = ctx.measureText(scoreText).width;
         const highScoreWidth = ctx.measureText(highScoreText).width;
-        const textHeight = 20; // Approximate height of the text in pixels
+        const textHeight = 20;
 
-        // Background box padding
-        const paddingX = 8;  // Horizontal padding
-        const paddingY = 3;  // Reduced vertical padding for a tighter fit
+        const paddingX = 8;
+        const paddingY = 3;
 
-        // Box height is now very close to the text size
-        const boxHeight = textHeight + paddingY * 2 - 4; // Reduced further from the bottom
+        const boxHeight = textHeight + paddingY * 2 - 4;
 
-        // Draw semi-transparent background behind the scores
         ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
-        ctx.fillRect(10, 10, scoreWidth + paddingX * 2, boxHeight); // Player score box
-        ctx.fillRect(canvas.width - highScoreWidth - 20, 10, highScoreWidth + paddingX * 2, boxHeight); // High score box
+        ctx.fillRect(10, 10, scoreWidth + paddingX * 2, boxHeight);
+        ctx.fillRect(canvas.width - highScoreWidth - 20, 10, highScoreWidth + paddingX * 2, boxHeight);
 
-        // Draw the score text
         ctx.fillStyle = "white";
-        ctx.fillText(scoreText, 20, 10 + textHeight - 3); // Moved text slightly up for a better fit
+        ctx.fillText(scoreText, 20, 10 + textHeight - 3);
 
-        // Draw the high score text
         ctx.fillStyle = "gold";
         ctx.fillText(highScoreText, canvas.width - highScoreWidth - 10, 10 + textHeight - 3);
     }
 
     function drawPlayer() {
         if (gameOver) {
-            currentAnimation = playerAnimations.dieLie; // Directly use the lying down animation
+            currentAnimation = playerAnimations.dieLie;
         } else if (isJumpStarting) {
             currentAnimation = playerAnimations.jumpStart;
         } else if (isJumping) {
@@ -1252,13 +1065,10 @@ document.addEventListener("DOMContentLoaded", () => {
         const scale = canvas.height / imageHeight;
         const scaledWidth = imageWidth * scale;
 
-        // Calculate the number of tiles needed to cover the canvas width
         const numTiles = Math.ceil(canvas.width / scaledWidth) + 1;
 
-        // Calculate the offset to ensure seamless tiling
         const offset = (camera.x * 0.5) % scaledWidth;
 
-        // Draw the background image tiles
         for (let i = -1; i < numTiles; i++) {
             ctx.drawImage(
                 backgroundImage,
@@ -1269,7 +1079,6 @@ document.addEventListener("DOMContentLoaded", () => {
             );
         }
 
-        // Draw platforms, enemies, bullets, power-ups, player, and score
         platforms.forEach(platform => platform.draw());
         enemies.forEach(enemy => enemy.draw());
         bullets.forEach(bullet => bullet.draw());
@@ -1278,7 +1087,6 @@ document.addEventListener("DOMContentLoaded", () => {
         drawPlayer();
         drawScore();
 
-        // Draw the game over screen if the game is over
         if (gameOver) {
             drawGameOverScreen();
         }
@@ -1286,44 +1094,39 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function gameLoop() {
         if (gameState === "menu") {
-            // Update hover animation
             if (hoveredIndex !== -1) {
-                // Fade in and scale up when hovered
-                hoverAnimation.opacity = Math.min(hoverAnimation.opacity + 0.05, 1); // Fade in to 1
-                hoverAnimation.scale = Math.min(hoverAnimation.scale + 0.01, 1.1); // Scale up to 1.1
+                hoverAnimation.opacity = Math.min(hoverAnimation.opacity + 0.05, 1);
+                hoverAnimation.scale = Math.min(hoverAnimation.scale + 0.01, 1.1);
             } else {
-                // Fade out and scale down when not hovered
-                hoverAnimation.opacity = Math.max(hoverAnimation.opacity - 0.05, 0.8); // Fade out to 0.8
-                hoverAnimation.scale = Math.max(hoverAnimation.scale - 0.01, 1); // Scale down to 1
+                hoverAnimation.opacity = Math.max(hoverAnimation.opacity - 0.05, 0.8);
+                hoverAnimation.scale = Math.max(hoverAnimation.scale - 0.01, 1);
             }
 
             if (settingsState) {
-                drawSettingsMenu(); // Draw the settings menu
+                drawSettingsMenu();
             } else if (howToPlayState) {
-                drawHowToPlayScreen(); // Draw the "How to Play" screen
+                drawHowToPlayScreen();
             } else {
-                drawMainMenu(); // Draw the main menu
+                drawMainMenu();
             }
-            playMenuMusic(); // Ensure menu music is playing
+            playMenuMusic();
         } else if (gameState === "playing") {
-            update(); // Update game logic
-            render(); // Render the game
-            playGameMusic(); // Ensure game music is playing
+            update();
+            render();
+            playGameMusic();
         } else if (gameState === "gameOver") {
-            drawGameOverScreen(); // Draw the game over screen
+            drawGameOverScreen();
         }
 
         requestAnimationFrame(gameLoop);
     }
 
-    // Handle mouse clicks on the menu
     canvas.addEventListener("click", (event) => {
         const rect = canvas.getBoundingClientRect();
-        const mouseX = event.clientX - rect.left; // Mouse X coordinate relative to canvas
-        const mouseY = event.clientY - rect.top; // Mouse Y coordinate relative to canvas
+        const mouseX = event.clientX - rect.left;
+        const mouseY = event.clientY - rect.top;
 
         if (gameState === "menu") {
-            // Check if the user clicked on a menu option
             for (let i = 0; i < menuPositions.length; i++) {
                 const pos = menuPositions[i];
                 if (
@@ -1332,73 +1135,61 @@ document.addEventListener("DOMContentLoaded", () => {
                     mouseY >= pos.y &&
                     mouseY <= pos.y + pos.height
                 ) {
-                    // Handle menu item clicks
                     switch (i) {
-                        case 0: // Start Game
+                        case 0:
                             setGameState("playing");
                             break;
-                        case 1: // Settings
+                        case 1:
                             settingsState = true;
                             break;
-                        case 2: // How to Play
+                        case 2:
                             drawHowToPlayScreen();
-                            howToPlayState = true; // Show the "How to Play" screen
+                            howToPlayState = true;
                             break;
-                        case 3: // Highest Score
+                        case 3:
                             alert(`Your Highest Score is: ${highScore}`);
                             break;
                     }
-                    break; // Exit the loop after handling the click
+                    break;
                 }
             }
         } else if (gameState === "gameOver") {
-            // Handle mouse clicks on the game over screen
             if (mouseX > canvas.width / 2 - 100 && mouseX < canvas.width / 2 + 100) {
                 if (mouseY > canvas.height / 2 + 80 && mouseY < canvas.height / 2 + 120) {
-                    // Restart Game
                     setGameState("playing");
                 } else if (mouseY > canvas.height / 2 + 120 && mouseY < canvas.height / 2 + 160) {
-                    // Return to Main Menu
                     setGameState("menu");
                 }
             }
         }
     });
 
-    // Handle key presses for settings and how-to-play screens
     window.addEventListener('keydown', (event) => {
         if (gameState === "menu") {
             if (settingsState) {
                 if (event.code === "ArrowUp") {
-                    // Increase volume by 10%
                     gameMusic.volume = Math.min(1, gameMusic.volume + 0.1);
                     menuMusic.volume = Math.min(1, menuMusic.volume + 0.1);
                 } else if (event.code === "ArrowDown") {
-                    // Decrease volume by 5%
                     gameMusic.volume = Math.max(0, gameMusic.volume - 0.1);
                     menuMusic.volume = Math.max(0, menuMusic.volume - 0.1);
                 } else if (event.code === "Enter") {
-                    // Go back to the main menu
                     settingsState = false;
                 }
             } else if (howToPlayState) {
                 if (event.code === "Enter") {
-                    // Go back to the main menu
                     howToPlayState = false;
                 }
             }
         } else if (gameState === "gameOver") {
             if (event.code === "KeyR") {
-                // Restart the game
                 setGameState("playing");
             } else if (event.code === "KeyM") {
-                // Return to the main menu
                 setGameState("menu");
             }
         }
     });
 
-    // Ensure all images and sounds are loaded before starting the game
     Promise.all([
         new Promise((resolve) => { backgroundImage.onload = resolve; }),
         new Promise((resolve) => { playerSpriteSheet.onload = resolve; }),
@@ -1407,23 +1198,20 @@ document.addEventListener("DOMContentLoaded", () => {
         new Promise((resolve) => { platformImage.onload = resolve; }),
         new Promise((resolve) => { movingPlatformImage.onload = resolve; }),
         new Promise((resolve) => { spikeImage.onload = resolve; }),
-        new Promise((resolve) => { menuImage.onload = resolve; }), // Wait for the menu image to load
+        new Promise((resolve) => { menuImage.onload = resolve; }),
         new Promise((resolve) => {
-            gameMusic.addEventListener("canplaythrough", resolve); // Wait for the game music to load
+            gameMusic.addEventListener("canplaythrough", resolve);
         }),
         new Promise((resolve) => {
-            menuMusic.addEventListener("canplaythrough", resolve); // Wait for the menu music to load
+            menuMusic.addEventListener("canplaythrough", resolve);
         }),
         new Promise((resolve) => {
-            powerUpSound.addEventListener("canplaythrough", resolve); // Wait for the power-up sound to load
+            powerUpSound.addEventListener("canplaythrough", resolve);
         }),
         new Promise((resolve) => {
-            newHighScoreSound.addEventListener("canplaythrough", resolve); // Wait for the high score sound to load
+            newHighScoreSound.addEventListener("canplaythrough", resolve);
         })
     ]).then(() => {
-        console.log("All assets loaded successfully.");
-        gameLoop(); // Start the game loop
-    }).catch((error) => {
-        console.error("Error loading assets:", error);
+        gameLoop();
     });
 });
