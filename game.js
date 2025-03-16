@@ -185,10 +185,10 @@ document.addEventListener("DOMContentLoaded", () => {
     shootSound.volume = 0.5; // Set volume (0 to 1)
 
     const fallSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/Playerfallingdown.mp3"); // Fall sound
-    fallSound.volume = 0.7; // Set volume (0 to 1)
+    fallSound.volume = 0.9; // Set volume (0 to 1)
 
     const spikeDeathSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/Playerkilledbyspikes.wav"); // Spike death sound
-    spikeDeathSound.volume = 0.7; // Set volume (0 to 1)
+    spikeDeathSound.volume = 0.9; // Set volume (0 to 1)
 
     const playerDeathSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/Playergetsshootbyenemy.mp3"); // Player death sound
     playerDeathSound.volume = 0.5; // Set volume (0 to 1)
@@ -551,7 +551,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Draw the bullet
         draw() {
-            ctx.fillStyle = "red"; // Bullet color (can be changed)
+            ctx.fillStyle = "yellow"; // Bullet color (can be changed)
             ctx.fillRect(this.x - camera.x, this.y, this.width, this.height);
         }
 
@@ -563,6 +563,29 @@ document.addEventListener("DOMContentLoaded", () => {
                 this.y + this.height > enemy.y &&
                 this.y < enemy.y + enemy.height
             );
+        }
+    }
+
+    // EnemyBullet class for enemy bullets
+    class EnemyBullet {
+        constructor(x, y, direction) {
+            this.x = x; // X position
+            this.y = y; // Y position
+            this.width = 10; // Bullet width
+            this.height = 5; // Bullet height
+            this.speed = 8; // Bullet speed
+            this.direction = direction; // Bullet direction (1 for right, -1 for left)
+        }
+    
+        // Update the bullet's position
+        update() {
+            this.x += this.speed * this.direction; // Move the bullet
+        }
+    
+        // Draw the bullet
+        draw() {
+            ctx.fillStyle = "red"; // Enemy bullet color (red)
+            ctx.fillRect(this.x - camera.x, this.y, this.width, this.height);
         }
     }
 
