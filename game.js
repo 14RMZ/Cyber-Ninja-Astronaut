@@ -89,8 +89,8 @@ document.addEventListener("DOMContentLoaded", () => {
         `Keep going, ${playerName}! the next run will be even better!`,
         `${playerName}, you're so close to beating your high score of ${highScore}! Don't give up!`,
         `Practice makes perfect, ${playerName}!, give it another shot!`,
-        `${playerName}, you're a star! Scored ${player.score}—just one more try!`,
-        `${playerName}, you're unstoppable! Keep pushing past ${player.score} points!`,
+        `${playerName}, you're a star! —Just one more try!`,
+        `${playerName}, you're unstoppable! Keep pushing fast points!`,
         `Every failure is a step closer to success, ${playerName}! You reached ${player.score}, now aim higher!`,
         `The AI got lucky this time, ${playerName}… but not next time! ${player.score} is just a warm-up!`,
         `You're learning the patterns, ${playerName}. Victory is near! Your score: ${player.score}.`,
@@ -934,7 +934,7 @@ document.addEventListener("DOMContentLoaded", () => {
         
         // Draw semi-transparent background behind the text
         ctx.fillStyle = "rgba(0, 0, 0, 0.7)"; // Dark overlay for readability
-        ctx.fillRect(0, canvas.height - 50, canvas.width, 50)); // Background box
+        ctx.fillRect(0, canvas.height - 50, canvas.width, 50); // Background box
         
         ctx.fillStyle = "cyan"; // Neon cyan color
         ctx.shadowColor = "blue"; // Glowing blue shadow
