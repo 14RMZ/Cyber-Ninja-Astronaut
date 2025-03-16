@@ -931,18 +931,29 @@ document.addEventListener("DOMContentLoaded", () => {
         // Draw credits in the bottom-right with glowing effect
         ctx.font = "25px Arial";
         ctx.textAlign = "right";
-        ctx.fillStyle = "rgba(0, 0, 0, 0.7)"; // Semi-transparent overlay
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = "cyan"; // Neon cyan color
-        ctx.shadowColor = "blue"; // Glowing blue shadow
-        ctx.shadowBlur = 25; // Soft glow effect
+        
+        const textWidth = Math.max(
+            ctx.measureText(`Hope you had fun, ${playerName}!`).width,
+            ctx.measureText("Thank you for playing my Game!").width,
+            ctx.measureText("Created by RMZ").width
+        );
+        const padding = 15;
+        const boxHeight = 90;
+        
+        ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+        ctx.fillRect(canvas.width - textWidth - (padding * 2) - 20, canvas.height - 100, textWidth + (padding * 2), boxHeight);
+        
+        ctx.fillStyle = "cyan";
+        ctx.shadowColor = "blue";
+        ctx.shadowBlur = 25;
+        
         ctx.fillText(`Hope you had fun, ${playerName}!`, canvas.width - 20, canvas.height - 80);
         ctx.fillText("Thank you for playing my Game!", canvas.width - 20, canvas.height - 50);
         ctx.fillText("Created by RMZ", canvas.width - 20, canvas.height - 20);
         
-        // Reset shadow so it doesn't affect other elements
         ctx.shadowBlur = 0;
         ctx.shadowColor = "transparent";
+
 
     }
 
