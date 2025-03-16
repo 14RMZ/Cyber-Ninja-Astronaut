@@ -83,7 +83,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Array of game over messages
     const gameOverMessages = [
         `${playerName}, your highest score is ${highScore}... but I know you can do better!`,
-        `${playerName}, you scored ${player.score}! I know you can make it higher!`,
+        `${playerName}, you scored! But I know you can make it higher!`,
         `Don't give up, ${playerName}! You reached ${player.score}, try again!`,
         `${playerName}, you're getting better with every try! Your score: ${player.score}.`,
         `Keep going, ${playerName}! ${player.score} points this time, but the next run will be even better!`,
@@ -929,29 +929,30 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         // Draw credits in the bottom-right with glowing effect
-        ctx.font = "bold 32px Arial"; // Bold for better visibility
+        ctx.font = "bold 20px Arial"; // Keep it small but bold for clarity
         ctx.textAlign = "right";
         ctx.fillStyle = "cyan";
         ctx.shadowColor = "blue";
-        ctx.shadowBlur = 20;
+        ctx.shadowBlur = 15;
         
-        // Thicker outline for better clarity
-        ctx.lineWidth = 6; 
+        // Thin outline for a clean effect
+        ctx.lineWidth = 3; 
         ctx.strokeStyle = "white";
         
-        // Draw outlined and filled text for each line
-        ctx.strokeText(`Hope you had fun, ${playerName}!`, canvas.width - 20, canvas.height - 80);
-        ctx.fillText(`Hope you had fun, ${playerName}!`, canvas.width - 20, canvas.height - 80);
+        // Draw outlined and filled text
+        ctx.strokeText(`Hope you had fun, ${playerName}!`, canvas.width - 20, canvas.height - 70);
+        ctx.fillText(`Hope you had fun, ${playerName}!`, canvas.width - 20, canvas.height - 70);
         
-        ctx.strokeText("Thank you for playing my Game!", canvas.width - 20, canvas.height - 50);
-        ctx.fillText("Thank you for playing my Game!", canvas.width - 20, canvas.height - 50);
+        ctx.strokeText("Thank you for playing my Game!", canvas.width - 20, canvas.height - 45);
+        ctx.fillText("Thank you for playing my Game!", canvas.width - 20, canvas.height - 45);
         
         ctx.strokeText("Created by RMZ", canvas.width - 20, canvas.height - 20);
         ctx.fillText("Created by RMZ", canvas.width - 20, canvas.height - 20);
         
-        // Reset shadow to avoid affecting other elements
+        // Reset shadow
         ctx.shadowBlur = 0;
         ctx.shadowColor = "transparent";
+
 
     }
 
