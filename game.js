@@ -185,10 +185,10 @@ document.addEventListener("DOMContentLoaded", () => {
     shootSound.volume = 0.5; // Set volume (0 to 1)
 
     const fallSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/Playerfallingdown.mp3"); // Fall sound
-    fallSound.volume = 0.9; // Set volume (0 to 1)
+    fallSound.volume = 1; // Set volume (0 to 1)
 
     const spikeDeathSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/Playerkilledbyspikes.wav"); // Spike death sound
-    spikeDeathSound.volume = 0.9; // Set volume (0 to 1)
+    spikeDeathSound.volume = 1; // Set volume (0 to 1)
 
     const playerDeathSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/Playergetsshootbyenemy.mp3"); // Player death sound
     playerDeathSound.volume = 0.5; // Set volume (0 to 1)
@@ -445,7 +445,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Shooting enemy (drone) class
+    // Update the ShootingEnemy class to use EnemyBullet
     class ShootingEnemy {
         constructor(platform) {
             this.platform = platform; // Platform the drone is on
@@ -463,7 +463,7 @@ document.addEventListener("DOMContentLoaded", () => {
             this.shootCooldown = 100; // Cooldown for shooting
             this.shootTimer = 0; // Timer for shooting
         }
-
+    
         // Update the drone's position and state
         update() {
             if (this.isExploding) {
@@ -481,7 +481,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     this.direction *= -1; // Reverse direction at the edges
                 }
                 this.currentAnimation.update(); // Update animation
-
+    
                 if (this.shootTimer <= 0) {
                     this.shoot(); // Shoot if cooldown is over
                     this.shootTimer = this.shootCooldown; // Reset cooldown
@@ -490,15 +490,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             }
         }
-
+    
         // Draw the drone
         draw() {
             const frame = this.currentAnimation.getCurrentFrame();
             ctx.save();
-
+    
             const offsetX = (this.width - frame.width) / 2; // Center the frame horizontally
             const offsetY = (this.height - frame.height) / 2; // Center the frame vertically
-
+    
             if (this.direction === -1 && !this.isExploding) {
                 ctx.scale(-1, 1); // Flip the drone if moving left
                 ctx.drawImage(
@@ -515,16 +515,16 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             ctx.restore();
         }
-
+    
         // Shoot a bullet
         shoot() {
             const direction = player.x > this.x ? 1 : -1; // Shoot towards the player
             const bulletX = this.x + this.width / 2; // Bullet X position
             const bulletY = this.y + this.height / 2; // Bullet Y position
-            enemyBullets.push(new Bullet(bulletX, bulletY, direction)); // Add bullet to the array
+            enemyBullets.push(new EnemyBullet(bulletX, bulletY, direction)); // Add enemy bullet to the array
             enemyShootSound.play(); // Play shoot sound
         }
-
+    
         // Trigger drone explosion
         explode() {
             this.isExploding = true;
@@ -532,39 +532,39 @@ document.addEventListener("DOMContentLoaded", () => {
             enemyDeathSound.play(); // Play death sound
         }
     }
-
-    // Bullet class
-    class Bullet {
-        constructor(x, y, direction) {
-            this.x = x; // X position
-            this.y = y; // Y position
-            this.width = 10; // Bullet width
-            this.height = 5; // Bullet height
-            this.speed = 8; // Bullet speed
-            this.direction = direction; // Bullet direction (1 for right, -1 for left)
+    
+        // Bullet class
+        class Bullet {
+            constructor(x, y, direction) {
+                this.x = x; // X position
+                this.y = y; // Y position
+                this.width = 10; // Bullet width
+                this.height = 5; // Bullet height
+                this.speed = 8; // Bullet speed
+                this.direction = direction; // Bullet direction (1 for right, -1 for left)
+            }
+    
+            // Update the bullet's position
+            update() {
+                this.x += this.speed * this.direction; // Move the bullet
+            }
+    
+            // Draw the bullet
+            draw() {
+                ctx.fillStyle = "yellow"; // Bullet color (can be changed)
+                ctx.fillRect(this.x - camera.x, this.y, this.width, this.height);
+            }
+    
+            // Check if the bullet hits an enemy
+            hitEnemy(enemy) {
+                return (
+                    this.x + this.width > enemy.x &&
+                    this.x < enemy.x + enemy.width &&
+                    this.y + this.height > enemy.y &&
+                    this.y < enemy.y + enemy.height
+                );
+            }
         }
-
-        // Update the bullet's position
-        update() {
-            this.x += this.speed * this.direction; // Move the bullet
-        }
-
-        // Draw the bullet
-        draw() {
-            ctx.fillStyle = "yellow"; // Bullet color (can be changed)
-            ctx.fillRect(this.x - camera.x, this.y, this.width, this.height);
-        }
-
-        // Check if the bullet hits an enemy
-        hitEnemy(enemy) {
-            return (
-                this.x + this.width > enemy.x &&
-                this.x < enemy.x + enemy.width &&
-                this.y + this.height > enemy.y &&
-                this.y < enemy.y + enemy.height
-            );
-        }
-    }
 
     // EnemyBullet class for enemy bullets
     class EnemyBullet {
@@ -875,7 +875,7 @@ document.addEventListener("DOMContentLoaded", () => {
         ctx.fillStyle = "cyan"; // Title color
         ctx.font = "bold 80px Arial"; // Title font
         ctx.shadowColor = "blue"; // Title shadow color
-        ctx.shadowBlur = 40; // Title shadow blur
+        ctx.shadowBlur = 50; // Title shadow blur
         ctx.textAlign = "left"; // Left align text
         ctx.fillText("Cyber Ninja Astronaut", 100, 80); // Draw title
         ctx.shadowBlur = 0; // Reset shadow blur
@@ -928,9 +928,19 @@ document.addEventListener("DOMContentLoaded", () => {
             ctx.restore(); // Restore canvas state
         }
 
-        ctx.font = "20px Arial"; // Credits font
-        ctx.textAlign = "right"; // Right align text
-        ctx.fillText("Created by [Your Name]", canvas.width - 20, canvas.height - 20); // Draw credits
+        // Draw credits in the bottom-right with glowing effect
+        ctx.font = "bold 30px Impact"; // Same bold font as the title
+        ctx.textAlign = "right";
+        ctx.fillStyle = "cyan"; // Neon cyan color
+        ctx.shadowColor = "blue"; // Glowing blue shadow
+        ctx.shadowBlur = 25; // Soft glow effect
+        ctx.fillText(`Hope you had fun! Thank you for playing, ${playerName}!`, canvas.width - 20, canvas.height - 50);
+        ctx.fillText("Created by [Your Name]", canvas.width - 20, canvas.height - 20);
+        
+        // Reset shadow so it doesn't affect other elements
+        ctx.shadowBlur = 0;
+        ctx.shadowColor = "transparent";
+
     }
 
     // Event listener for mouse movement on the canvas
