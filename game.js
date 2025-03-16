@@ -915,7 +915,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Draw the title at the top-left
         ctx.fillStyle = "cyan";
-        ctx.font = "80px Arial";
+        ctx.font = "bold 80px Arial";
         ctx.shadowColor = "blue";
         ctx.shadowBlur = 40;
         ctx.textAlign = "left";
