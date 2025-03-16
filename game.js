@@ -933,7 +933,7 @@ document.addEventListener("DOMContentLoaded", () => {
         ctx.textAlign = "right";
         ctx.fillStyle = "cyan";
         ctx.shadowColor = "blue";
-        ctx.shadowBlur = 25;
+        ctx.shadowBlur = 10;
         
         // Outline effect for text
         ctx.lineWidth = 4;
