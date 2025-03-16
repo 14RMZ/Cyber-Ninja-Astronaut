@@ -17,6 +17,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!playerName) {
         playerName = prompt("Hello! What is your name?");
         if (playerName) {
+            // Capitalize the first letter of the player's name
+            playerName = playerName.charAt(0).toUpperCase() + playerName.slice(1).toLowerCase();
             localStorage.setItem("playerName", playerName);
         } else {
             playerName = "Player"; // Default name if the user cancels the prompt
