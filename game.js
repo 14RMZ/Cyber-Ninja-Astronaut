@@ -84,11 +84,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const gameOverMessages = [
         `${playerName}, your highest score is ${highScore}... but I know you can do better!`,
         `${playerName}, you scored! But I know you can make it higher!`,
-        `Don't give up, ${playerName}! You are reaching closed, try again!`,
+        `Don't give up, ${playerName}! You are reaching closer, try again!`,
         `${playerName}, you're getting better with every try!`,
         `Keep going, ${playerName}! the next run will be even better!`,
-        `${playerName}, you're so close to beating your high score of ${highScore}! You got ${player.score} this time!`,
-        `Practice makes perfect, ${playerName}! You scored ${player.score}, give it another shot!`,
+        `${playerName}, you're so close to beating your high score of ${highScore}! Don't give up!`,
+        `Practice makes perfect, ${playerName}!, give it another shot!`,
         `${playerName}, you're a star! Scored ${player.score}—just one more try!`,
         `${playerName}, you're unstoppable! Keep pushing past ${player.score} points!`,
         `Every failure is a step closer to success, ${playerName}! You reached ${player.score}, now aim higher!`,
@@ -929,27 +929,27 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         // Draw credits in the bottom-right with glowing effect
-        ctx.font = "20px Arial"; // Keep it small but bold for clarity
+        ctx.font = "30px Arial";
         ctx.textAlign = "right";
-        ctx.fillStyle = "cyan";
-        ctx.shadowColor = "blue";
-        ctx.shadowBlur = 15;
         
-        // Thin outline for a clean effect
-        ctx.lineWidth = 6; 
-        ctx.strokeStyle = "white";
+        // Draw semi-transparent background behind the text
+        ctx.fillStyle = "rgba(0, 0, 0, 0.7)"; // Dark overlay for readability
+        ctx.fillRect(0, canvas.height - 50, canvas.width, 50)); // Background box
         
-        // Draw outlined and filled text
-        ctx.strokeText(`Hope you had fun, ${playerName}!`, canvas.width - 20, canvas.height - 70);
-        ctx.fillText(`Hope you had fun, ${playerName}!`, canvas.width - 20, canvas.height - 70);
+        ctx.fillStyle = "cyan"; // Neon cyan color
+        ctx.shadowColor = "blue"; // Glowing blue shadow
+        ctx.shadowBlur = 25; // Soft glow effect
         
-        ctx.strokeText("Thank you for playing my Game!", canvas.width - 20, canvas.height - 45);
-        ctx.fillText("Thank you for playing my Game!", canvas.width - 20, canvas.height - 45);
+        // Draw player name and "Hope you had fun" on one line
+        ctx.fillText(`Hope you had fun, ${playerName}!`, canvas.width - 20, canvas.height - 80);
         
-        ctx.strokeText("Created by RMZ", canvas.width - 20, canvas.height - 20);
+        // Draw "Thank you for playing my Game!" on the next line
+        ctx.fillText("Thank you for playing my Game!", canvas.width - 20, canvas.height - 50);
+        
+        // Draw the creator's name at the very bottom
         ctx.fillText("Created by RMZ", canvas.width - 20, canvas.height - 20);
         
-        // Reset shadow
+        // Reset shadow so it doesn't affect other elements
         ctx.shadowBlur = 0;
         ctx.shadowColor = "transparent";
 
