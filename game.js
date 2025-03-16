@@ -929,13 +929,13 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         // Draw credits in the bottom-right with glowing effect
-        ctx.font = "bold 30px Impact"; // Same bold font as the title
+        ctx.font = "30px Arial";
         ctx.textAlign = "right";
         ctx.fillStyle = "cyan"; // Neon cyan color
         ctx.shadowColor = "blue"; // Glowing blue shadow
         ctx.shadowBlur = 25; // Soft glow effect
-        ctx.fillText(`Hope you had fun! Thank you for playing, ${playerName}!`, canvas.width - 20, canvas.height - 50);
-        ctx.fillText("Created by [Your Name]", canvas.width - 20, canvas.height - 20);
+        ctx.fillText(`Hope you had fun, ${playerName} Thank you for playing my Game!`, canvas.width - 20, canvas.height - 50);
+        ctx.fillText("Created by RMZ", canvas.width - 20, canvas.height - 20);
         
         // Reset shadow so it doesn't affect other elements
         ctx.shadowBlur = 0;
