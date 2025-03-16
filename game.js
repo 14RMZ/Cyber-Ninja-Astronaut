@@ -40,7 +40,16 @@ document.addEventListener("DOMContentLoaded", () => {
     // Function to show the welcome modal
     function showWelcomeModal(name) {
         welcomeMessage.textContent = `How are you doing, ${name}? Let's have some fun together and fight some aliens!`;
-        howToPlayMessage.textContent = "How to Play:\n1. Use Arrow Keys or WASD to move.\n2. Press Space to jump.\n3. Press F or J to shoot.\n4. Avoid enemies and spikes.\n5. Collect power-ups for shields.\n6. Reach the highest score!";
+        howToPlayMessage.textContent = `
+            How to Play:
+            1. Use Arrow Keys or WASD to move.
+            2. Press Space to jump.
+            3. Press F or J to shoot.
+            4. Avoid enemies and spikes.
+            5. Collect power-ups for shields.
+            6. Reach the highest score!
+        `;
+        howToPlayMessage.style.whiteSpace = "pre-line"; // Add this line to respect newlines
         welcomeModal.style.display = "flex"; // Show the modal
     }
 
