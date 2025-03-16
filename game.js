@@ -84,9 +84,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const gameOverMessages = [
         `${playerName}, your highest score is ${highScore}... but I know you can do better!`,
         `${playerName}, you scored! But I know you can make it higher!`,
-        `Don't give up, ${playerName}! You reached ${player.score}, try again!`,
-        `${playerName}, you're getting better with every try! Your score: ${player.score}.`,
-        `Keep going, ${playerName}! ${player.score} points this time, but the next run will be even better!`,
+        `Don't give up, ${playerName}! You are reaching closed, try again!`,
+        `${playerName}, you're getting better with every try!`,
+        `Keep going, ${playerName}! the next run will be even better!`,
         `${playerName}, you're so close to beating your high score of ${highScore}! You got ${player.score} this time!`,
         `Practice makes perfect, ${playerName}! You scored ${player.score}, give it another shot!`,
         `${playerName}, you're a star! Scored ${player.score}—just one more try!`,
@@ -929,14 +929,14 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         // Draw credits in the bottom-right with glowing effect
-        ctx.font = "bold 20px Arial"; // Keep it small but bold for clarity
+        ctx.font = "20px Arial"; // Keep it small but bold for clarity
         ctx.textAlign = "right";
         ctx.fillStyle = "cyan";
         ctx.shadowColor = "blue";
         ctx.shadowBlur = 15;
         
         // Thin outline for a clean effect
-        ctx.lineWidth = 3; 
+        ctx.lineWidth = 6; 
         ctx.strokeStyle = "white";
         
         // Draw outlined and filled text
