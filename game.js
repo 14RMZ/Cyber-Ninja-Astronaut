@@ -914,10 +914,14 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         // Draw the title at the top-left
-        ctx.fillStyle = "white";
-        ctx.font = "80px Arial";
+        ctx.fillStyle = "cyan";
+        ctx.font = "80px Impact";
+        ctx.shadowColor = "blue";
+        ctx.shadowBlur = 20;
         ctx.textAlign = "left";
         ctx.fillText("Cyber Ninja Astronaut", 100, 80);
+        ctx.shadowBlur = 0;
+        ctx.shadowColor = "transparent";
 
         // Move menu slightly to the left to keep it on-screen
         let centerX = canvas.width - 350;
