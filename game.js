@@ -43,7 +43,7 @@ document.addEventListener("DOMContentLoaded", () => {
         howToPlayMessage.textContent = `
             How to Play:
             1. Use Arrow Keys or WASD to move.
-            2. Press Space to jump.
+            2. Press Space, W or Up key to jump.
             3. Press F or J to shoot.
             4. Avoid enemies and spikes.
             5. Collect power-ups for shields.
