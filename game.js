@@ -52,7 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Event listener for the "Let's Play!" button
     startGameButton.addEventListener("click", () => {
         hideWelcomeModal();
-        setGameState("playing"); // Start the game
+        setGameState("menu"); // Start the game
     });
 
     // Declare and initialize the player object
