@@ -929,16 +929,17 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         // Draw credits in the bottom-right with glowing effect
-        ctx.font = "20px Arial";
+        ctx.font = "bold 32px Arial"; // Bold for better visibility
         ctx.textAlign = "right";
         ctx.fillStyle = "cyan";
         ctx.shadowColor = "blue";
-        ctx.shadowBlur = 10;
+        ctx.shadowBlur = 20;
         
-        // Outline effect for text
-        ctx.lineWidth = 4;
+        // Thicker outline for better clarity
+        ctx.lineWidth = 6; 
         ctx.strokeStyle = "white";
         
+        // Draw outlined and filled text for each line
         ctx.strokeText(`Hope you had fun, ${playerName}!`, canvas.width - 20, canvas.height - 80);
         ctx.fillText(`Hope you had fun, ${playerName}!`, canvas.width - 20, canvas.height - 80);
         
@@ -948,6 +949,7 @@ document.addEventListener("DOMContentLoaded", () => {
         ctx.strokeText("Created by RMZ", canvas.width - 20, canvas.height - 20);
         ctx.fillText("Created by RMZ", canvas.width - 20, canvas.height - 20);
         
+        // Reset shadow to avoid affecting other elements
         ctx.shadowBlur = 0;
         ctx.shadowColor = "transparent";
 
