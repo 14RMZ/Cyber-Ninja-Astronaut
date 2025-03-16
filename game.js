@@ -915,9 +915,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Draw the title at the top-left
         ctx.fillStyle = "cyan";
-        ctx.font = "80px Impact";
+        ctx.font = "80px Arial";
         ctx.shadowColor = "blue";
-        ctx.shadowBlur = 20;
+        ctx.shadowBlur = 40;
         ctx.textAlign = "left";
         ctx.fillText("Cyber Ninja Astronaut", 100, 80);
         ctx.shadowBlur = 0;
