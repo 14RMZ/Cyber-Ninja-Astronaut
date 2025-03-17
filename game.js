@@ -227,14 +227,30 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Function to draw social media icons & Privacy Policy link
     function drawSocialMediaIcons() {
-        ctx.drawImage(facebookImg, facebookPos.x, facebookPos.y, iconSize, iconSize);
-        ctx.drawImage(instagramImg, instagramPos.x, instagramPos.y, iconSize, iconSize);
-
-        // Privacy Policy text
+        console.log("Drawing social media icons...");
+    
+        // Draw Facebook icon
+        if (facebookImg.complete && facebookImg.naturalWidth !== 0) {
+            ctx.drawImage(facebookImg, facebookPos.x, facebookPos.y, iconSize, iconSize);
+            console.log("Facebook icon drawn at:", facebookPos.x, facebookPos.y);
+        } else {
+            console.error("Facebook image not ready");
+        }
+    
+        // Draw Instagram icon
+        if (instagramImg.complete && instagramImg.naturalWidth !== 0) {
+            ctx.drawImage(instagramImg, instagramPos.x, instagramPos.y, iconSize, iconSize);
+            console.log("Instagram icon drawn at:", instagramPos.x, instagramPos.y);
+        } else {
+            console.error("Instagram image not ready");
+        }
+    
+        // Draw Privacy Policy text
         ctx.font = "18px Arial";
         ctx.fillStyle = "white";
         ctx.textAlign = "left";
         ctx.fillText("Privacy Policy", privacyPos.x, privacyPos.y);
+        console.log("Privacy Policy text drawn at:", privacyPos.x, privacyPos.y);
     }
 
     // Detect clicks on icons & Privacy Policy link
@@ -1214,14 +1230,13 @@ document.addEventListener("DOMContentLoaded", () => {
     function render() {
         ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
     
-        const imageWidth = backgroundImage.width; // Background image width
-        const imageHeight = backgroundImage.height; // Background image height
-        const scale = canvas.height / imageHeight; // Scale to fit canvas height
-        const scaledWidth = imageWidth * scale; // Scaled background width
-    
-        const numTiles = Math.ceil(canvas.width / scaledWidth) + 1; // Number of tiles needed to cover the canvas
-    
-        const offset = (camera.x * 0.5) % scaledWidth; // Offset for seamless tiling
+        // Draw background
+        const imageWidth = backgroundImage.width;
+        const imageHeight = backgroundImage.height;
+        const scale = canvas.height / imageHeight;
+        const scaledWidth = imageWidth * scale;
+        const numTiles = Math.ceil(canvas.width / scaledWidth) + 1;
+        const offset = (camera.x * 0.5) % scaledWidth;
     
         for (let i = -1; i < numTiles; i++) {
             ctx.drawImage(
@@ -1230,24 +1245,25 @@ document.addEventListener("DOMContentLoaded", () => {
                 0,
                 scaledWidth,
                 canvas.height
-            ); // Draw background tiles
+            );
         }
     
-        platforms.forEach(platform => platform.draw()); // Draw platforms
-        enemies.forEach(enemy => enemy.draw()); // Draw enemies
-        bullets.forEach(bullet => bullet.draw()); // Draw player bullets
-        enemyBullets.forEach(bullet => bullet.draw()); // Draw enemy bullets
-        shieldPowerUps.forEach(powerUp => powerUp.draw()); // Draw power-ups
-        drawPlayer(); // Draw the player
-        drawScore(); // Draw the score
-    
-        // Only draw social media icons and privacy policy link in the menu state
+        // Draw social media icons (only in menu state)
         if (gameState === "menu") {
             drawSocialMediaIcons();
         }
     
+        // Draw other game elements
+        platforms.forEach(platform => platform.draw());
+        enemies.forEach(enemy => enemy.draw());
+        bullets.forEach(bullet => bullet.draw());
+        enemyBullets.forEach(bullet => bullet.draw());
+        shieldPowerUps.forEach(powerUp => powerUp.draw());
+        drawPlayer();
+        drawScore();
+    
         if (gameOver) {
-            drawGameOverScreen(); // Draw the game over screen
+            drawGameOverScreen();
         }
     }
 
