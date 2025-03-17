@@ -939,11 +939,11 @@ document.addEventListener("DOMContentLoaded", () => {
         ctx.shadowColor = "blue"; // Glowing blue shadow
         ctx.shadowBlur = 25; // Soft glow effect
         
-        ctx.fillText(`Hope you had fun, ${playerName}!`, canvas.width - 20, canvas.height - 70);
+        ctx.fillText(`Hope you had fun, ${playerName}!`, canvas.width - 20, canvas.height - 60);
         
         ctx.fillText("Thank you for playing my Game!", canvas.width - 20, canvas.height - 40);
         
-        ctx.fillText("Created by RMZ", canvas.width - 20, canvas.height - 20);
+        ctx.fillText("Created by RMZ", canvas.width - 20, canvas.height - 15);
         
         ctx.shadowBlur = 0;
         ctx.shadowColor = "transparent";
