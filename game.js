@@ -212,6 +212,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const menuImage = new Image();
     menuImage.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/GameMenuBackground.webp"; // Path to the menu background image
 
+    const facebookImg = new Image();
+    facebookImg.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/facebook.png"; // Make sure the image is in your project folder
+
+    const instagramImg = new Image();
+    instagramImg.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/instagram.png"; // Same for Instagram
+
     // Music control functions
     function playMenuMusic() {
         gameMusic.pause(); // Pause game music
@@ -1106,6 +1112,18 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    // Function to draw social media icons & Privacy Policy link
+    function drawSocialMediaIcons() {
+        ctx.drawImage(facebookImg, facebookPos.x, facebookPos.y, iconSize, iconSize);
+        ctx.drawImage(instagramImg, instagramPos.x, instagramPos.y, iconSize, iconSize);
+    
+        // Privacy Policy text
+        ctx.font = "18px Arial";
+        ctx.fillStyle = "white";
+        ctx.textAlign = "left";
+        ctx.fillText("Privacy Policy", privacyPos.x, privacyPos.y);
+    }
+
     // Function to draw the player's score
     function drawScore() {
         ctx.font = "20px Arial"; // Score font
@@ -1208,6 +1226,7 @@ document.addEventListener("DOMContentLoaded", () => {
         shieldPowerUps.forEach(powerUp => powerUp.draw()); // Draw power-ups
         drawPlayer(); // Draw the player
         drawScore(); // Draw the score
+        drawSocialMediaIcons(); // Draw social media icons and privacy policy link
 
         if (gameOver) {
             drawGameOverScreen(); // Draw the game over screen
@@ -1249,7 +1268,27 @@ document.addEventListener("DOMContentLoaded", () => {
         const rect = canvas.getBoundingClientRect();
         const mouseX = event.clientX - rect.left; // Mouse X position relative to canvas
         const mouseY = event.clientY - rect.top; // Mouse Y position relative to canvas
-
+    
+        // Social media icons and privacy policy link click detection
+        // Facebook click detection
+        if (mouseX >= facebookPos.x && mouseX <= facebookPos.x + iconSize &&
+            mouseY >= facebookPos.y && mouseY <= facebookPos.y + iconSize) {
+            window.open("https://www.facebook.com/yourpage", "_blank");
+        }
+    
+        // Instagram click detection
+        if (mouseX >= instagramPos.x && mouseX <= instagramPos.x + iconSize &&
+            mouseY >= instagramPos.y && mouseY <= instagramPos.y + iconSize) {
+            window.open("https://www.instagram.com/yourpage", "_blank");
+        }
+    
+        // Privacy Policy click detection
+        if (mouseX >= privacyPos.x && mouseX <= privacyPos.x + privacyPos.width &&
+            mouseY >= privacyPos.y - 15 && mouseY <= privacyPos.y) {
+            window.open("https://yourwebsite.com/privacy-policy", "_blank");
+        }
+    
+        // Existing game state click detection
         if (gameState === "menu") {
             for (let i = 0; i < menuPositions.length; i++) {
                 const pos = menuPositions[i];
