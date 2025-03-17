@@ -1213,16 +1213,16 @@ document.addEventListener("DOMContentLoaded", () => {
     // Function to render the game
     function render() {
         ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
-
+    
         const imageWidth = backgroundImage.width; // Background image width
         const imageHeight = backgroundImage.height; // Background image height
         const scale = canvas.height / imageHeight; // Scale to fit canvas height
         const scaledWidth = imageWidth * scale; // Scaled background width
-
+    
         const numTiles = Math.ceil(canvas.width / scaledWidth) + 1; // Number of tiles needed to cover the canvas
-
+    
         const offset = (camera.x * 0.5) % scaledWidth; // Offset for seamless tiling
-
+    
         for (let i = -1; i < numTiles; i++) {
             ctx.drawImage(
                 backgroundImage,
@@ -1232,7 +1232,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 canvas.height
             ); // Draw background tiles
         }
-
+    
         platforms.forEach(platform => platform.draw()); // Draw platforms
         enemies.forEach(enemy => enemy.draw()); // Draw enemies
         bullets.forEach(bullet => bullet.draw()); // Draw player bullets
@@ -1240,8 +1240,12 @@ document.addEventListener("DOMContentLoaded", () => {
         shieldPowerUps.forEach(powerUp => powerUp.draw()); // Draw power-ups
         drawPlayer(); // Draw the player
         drawScore(); // Draw the score
-        drawSocialMediaIcons(); // Draw social media icons and privacy policy link
-
+    
+        // Only draw social media icons and privacy policy link in the menu state
+        if (gameState === "menu") {
+            drawSocialMediaIcons();
+        }
+    
         if (gameOver) {
             drawGameOverScreen(); // Draw the game over screen
         }
@@ -1275,7 +1279,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 hoverAnimation.opacity = Math.max(hoverAnimation.opacity - 0.05, 0.8); // Fade out hover effect
                 hoverAnimation.scale = Math.max(hoverAnimation.scale - 0.01, 1); // Scale down hover effect
             }
-
+    
             if (settingsState) {
                 drawSettingsMenu(); // Draw the settings menu
             } else if (howToPlayState) {
@@ -1291,7 +1295,7 @@ document.addEventListener("DOMContentLoaded", () => {
         } else if (gameState === "gameOver") {
             drawGameOverScreen(); // Draw the game over screen
         }
-
+    
         requestAnimationFrame(gameLoop); // Continue the game loop
     }
 
@@ -1301,23 +1305,25 @@ document.addEventListener("DOMContentLoaded", () => {
         const mouseX = event.clientX - rect.left; // Mouse X position relative to canvas
         const mouseY = event.clientY - rect.top; // Mouse Y position relative to canvas
     
-        // Social media icons and privacy policy link click detection
-        // Facebook click detection
-        if (mouseX >= facebookPos.x && mouseX <= facebookPos.x + iconSize &&
-            mouseY >= facebookPos.y && mouseY <= facebookPos.y + iconSize) {
-            window.open("https://www.facebook.com/", "_blank");
-        }
+        // Only handle clicks on icons and privacy policy link in the menu state
+        if (gameState === "menu") {
+            // Facebook click detection
+            if (mouseX >= facebookPos.x && mouseX <= facebookPos.x + iconSize &&
+                mouseY >= facebookPos.y && mouseY <= facebookPos.y + iconSize) {
+                window.open("https://www.facebook.com/", "_blank");
+            }
     
-        // Instagram click detection
-        if (mouseX >= instagramPos.x && mouseX <= instagramPos.x + iconSize &&
-            mouseY >= instagramPos.y && mouseY <= instagramPos.y + iconSize) {
-            window.open("https://www.instagram.com/", "_blank");
-        }
+            // Instagram click detection
+            if (mouseX >= instagramPos.x && mouseX <= instagramPos.x + iconSize &&
+                mouseY >= instagramPos.y && mouseY <= instagramPos.y + iconSize) {
+                window.open("https://www.instagram.com/", "_blank");
+            }
     
-        // Privacy Policy click detection
-        if (mouseX >= privacyPos.x && mouseX <= privacyPos.x + privacyPos.width &&
-            mouseY >= privacyPos.y - 15 && mouseY <= privacyPos.y) {
-            window.open("https://example.com/", "_blank");
+            // Privacy Policy click detection
+            if (mouseX >= privacyPos.x && mouseX <= privacyPos.x + privacyPos.width &&
+                mouseY >= privacyPos.y - 15 && mouseY <= privacyPos.y) {
+                window.open("https://example.com/", "_blank");
+            }
         }
     
         // Existing game state click detection
