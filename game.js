@@ -217,7 +217,7 @@ document.addEventListener("DOMContentLoaded", () => {
     facebookImg.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/facebook.png"; // Update path if needed
     facebookImg.onload = () => console.log("Facebook image loaded successfully");
     facebookImg.onerror = () => console.error("Failed to load Facebook image");
-    
+
     const instagramImg = new Image();
     instagramImg.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/instagram.png"; // Update path if needed
     instagramImg.onload = () => console.log("Instagram image loaded successfully");
@@ -232,11 +232,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Function to draw social media icons & Privacy Policy link
     function drawSocialMediaIcons() {
         console.log("Drawing social media icons...");
-    
-        // Draw a temporary rectangle to confirm the function is being called
-        ctx.fillStyle = "red";
-        ctx.fillRect(facebookPos.x, facebookPos.y, iconSize, iconSize); // Draw a red rectangle at Facebook icon position
-    
+
         // Draw Facebook icon
         if (facebookImg.complete && facebookImg.naturalWidth !== 0) {
             ctx.drawImage(facebookImg, facebookPos.x, facebookPos.y, iconSize, iconSize);
@@ -244,7 +240,7 @@ document.addEventListener("DOMContentLoaded", () => {
         } else {
             console.error("Facebook image not ready");
         }
-    
+
         // Draw Instagram icon
         if (instagramImg.complete && instagramImg.naturalWidth !== 0) {
             ctx.drawImage(instagramImg, instagramPos.x, instagramPos.y, iconSize, iconSize);
@@ -252,7 +248,7 @@ document.addEventListener("DOMContentLoaded", () => {
         } else {
             console.error("Instagram image not ready");
         }
-    
+
         // Draw Privacy Policy text
         ctx.font = "18px Arial";
         ctx.fillStyle = "white";
