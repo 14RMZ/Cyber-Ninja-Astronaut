@@ -212,29 +212,55 @@ document.addEventListener("DOMContentLoaded", () => {
     const menuImage = new Image();
     menuImage.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/GameMenuBackground.webp"; // Path to the menu background image
 
+    // Load social media icons
     const facebookImg = new Image();
     facebookImg.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/facebook.png"; // Make sure the image is in your project folder
 
     const instagramImg = new Image();
     instagramImg.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/instagram.png"; // Same for Instagram
 
-    // Music control functions
-    function playMenuMusic() {
-        gameMusic.pause(); // Pause game music
-        gameMusic.currentTime = 0; // Reset game music
-        menuMusic.play(); // Play menu music
+    // Define positions for the icons
+    const iconSize = 40; // Minimum size set to 40px
+    const facebookPos = { x: 20, y: canvas.height - 50 };
+    const instagramPos = { x: 70, y: canvas.height - 50 };
+    const privacyPos = { x: 20, y: canvas.height - 10, width: 150, height: 20 }; // Privacy Policy Position
+
+    // Function to draw social media icons & Privacy Policy link
+    function drawSocialMediaIcons() {
+        ctx.drawImage(facebookImg, facebookPos.x, facebookPos.y, iconSize, iconSize);
+        ctx.drawImage(instagramImg, instagramPos.x, instagramPos.y, iconSize, iconSize);
+
+        // Privacy Policy text
+        ctx.font = "18px Arial";
+        ctx.fillStyle = "white";
+        ctx.textAlign = "left";
+        ctx.fillText("Privacy Policy", privacyPos.x, privacyPos.y);
     }
 
-    function playGameMusic() {
-        menuMusic.pause(); // Pause menu music
-        menuMusic.currentTime = 0; // Reset menu music
-        gameMusic.play(); // Play game music
-    }
+    // Detect clicks on icons & Privacy Policy link
+    canvas.addEventListener("click", (event) => {
+        const rect = canvas.getBoundingClientRect();
+        const mouseX = event.clientX - rect.left;
+        const mouseY = event.clientY - rect.top;
 
-    function stopAllMusic() {
-        menuMusic.pause(); // Pause menu music
-        gameMusic.pause(); // Pause game music
-    }
+        // Facebook click detection
+        if (mouseX >= facebookPos.x && mouseX <= facebookPos.x + iconSize &&
+            mouseY >= facebookPos.y && mouseY <= facebookPos.y + iconSize) {
+            window.open("https://www.facebook.com/", "_blank");
+        }
+
+        // Instagram click detection
+        if (mouseX >= instagramPos.x && mouseX <= instagramPos.x + iconSize &&
+            mouseY >= instagramPos.y && mouseY <= instagramPos.y + iconSize) {
+            window.open("https://www.instagram.com/", "_blank");
+        }
+
+        // Privacy Policy click detection
+        if (mouseX >= privacyPos.x && mouseX <= privacyPos.x + privacyPos.width &&
+            mouseY >= privacyPos.y - 15 && mouseY <= privacyPos.y) {
+            window.open("https://example.com/", "_blank");
+        }
+    });
 
     // Animation class to handle animations
     class Animation {
@@ -1110,18 +1136,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             });
         }
-    }
-
-    // Function to draw social media icons & Privacy Policy link
-    function drawSocialMediaIcons() {
-        ctx.drawImage(facebookImg, facebookPos.x, facebookPos.y, iconSize, iconSize);
-        ctx.drawImage(instagramImg, instagramPos.x, instagramPos.y, iconSize, iconSize);
-    
-        // Privacy Policy text
-        ctx.font = "18px Arial";
-        ctx.fillStyle = "white";
-        ctx.textAlign = "left";
-        ctx.fillText("Privacy Policy", privacyPos.x, privacyPos.y);
     }
 
     // Function to draw the player's score
