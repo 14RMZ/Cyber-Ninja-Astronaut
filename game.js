@@ -929,30 +929,24 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         // Draw credits in the bottom-right with glowing effect
-        ctx.font = "30px Arial";
+        ctx.font = "20px Arial";
         ctx.textAlign = "right";
         
-        // Draw semi-transparent background behind the text
         ctx.fillStyle = "rgba(0, 0, 0, 0.7)"; // Dark overlay for readability
-        ctx.fillRect(0, canvas.height - 50, canvas.width, 50); // Background box
+        ctx.fillRect(0, canvas.height - 75, canvas.width, 75); // Background box
         
         ctx.fillStyle = "cyan"; // Neon cyan color
         ctx.shadowColor = "blue"; // Glowing blue shadow
         ctx.shadowBlur = 25; // Soft glow effect
         
-        // Draw player name and "Hope you had fun" on one line
-        ctx.fillText(`Hope you had fun, ${playerName}!`, canvas.width - 20, canvas.height - 80);
+        ctx.fillText(`Hope you had fun, ${playerName}!`, canvas.width - 20, canvas.height - 70);
         
-        // Draw "Thank you for playing my Game!" on the next line
-        ctx.fillText("Thank you for playing my Game!", canvas.width - 20, canvas.height - 50);
+        ctx.fillText("Thank you for playing my Game!", canvas.width - 20, canvas.height - 40);
         
-        // Draw the creator's name at the very bottom
         ctx.fillText("Created by RMZ", canvas.width - 20, canvas.height - 20);
         
-        // Reset shadow so it doesn't affect other elements
         ctx.shadowBlur = 0;
         ctx.shadowColor = "transparent";
-
 
     }
 
