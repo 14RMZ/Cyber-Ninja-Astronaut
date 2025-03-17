@@ -1273,19 +1273,19 @@ document.addEventListener("DOMContentLoaded", () => {
         // Facebook click detection
         if (mouseX >= facebookPos.x && mouseX <= facebookPos.x + iconSize &&
             mouseY >= facebookPos.y && mouseY <= facebookPos.y + iconSize) {
-            window.open("https://www.facebook.com/yourpage", "_blank");
+            window.open("https://www.facebook.com/", "_blank");
         }
     
         // Instagram click detection
         if (mouseX >= instagramPos.x && mouseX <= instagramPos.x + iconSize &&
             mouseY >= instagramPos.y && mouseY <= instagramPos.y + iconSize) {
-            window.open("https://www.instagram.com/yourpage", "_blank");
+            window.open("https://www.instagram.com/", "_blank");
         }
     
         // Privacy Policy click detection
         if (mouseX >= privacyPos.x && mouseX <= privacyPos.x + privacyPos.width &&
             mouseY >= privacyPos.y - 15 && mouseY <= privacyPos.y) {
-            window.open("https://yourwebsite.com/privacy-policy", "_blank");
+            window.open("https://example.com/", "_blank");
         }
     
         // Existing game state click detection
