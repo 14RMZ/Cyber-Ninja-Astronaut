@@ -1247,6 +1247,24 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+     // Music control functions
+    function playMenuMusic() {
+        gameMusic.pause(); // Pause game music
+        gameMusic.currentTime = 0; // Reset game music
+        menuMusic.play(); // Play menu music
+    }
+    
+    function playGameMusic() {
+        menuMusic.pause(); // Pause menu music
+        menuMusic.currentTime = 0; // Reset menu music
+        gameMusic.play(); // Play game music
+    }
+    
+    function stopAllMusic() {
+        menuMusic.pause(); // Pause menu music
+        gameMusic.pause(); // Pause game music
+    }
+
     // Game loop function
     function gameLoop() {
         if (gameState === "menu") {
