@@ -214,10 +214,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Load social media icons
     const facebookImg = new Image();
-    facebookImg.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/facebook.png"; // Make sure the image is in your project folder
-
+    facebookImg.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/facebook.png"; // Update path if needed
+    facebookImg.onload = () => console.log("Facebook image loaded successfully");
+    facebookImg.onerror = () => console.error("Failed to load Facebook image");
+    
     const instagramImg = new Image();
-    instagramImg.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/instagram.png"; // Same for Instagram
+    instagramImg.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/instagram.png"; // Update path if needed
+    instagramImg.onload = () => console.log("Instagram image loaded successfully");
+    instagramImg.onerror = () => console.error("Failed to load Instagram image");
 
     // Define positions for the icons
     const iconSize = 40; // Minimum size set to 40px
@@ -228,6 +232,10 @@ document.addEventListener("DOMContentLoaded", () => {
     // Function to draw social media icons & Privacy Policy link
     function drawSocialMediaIcons() {
         console.log("Drawing social media icons...");
+    
+        // Draw a temporary rectangle to confirm the function is being called
+        ctx.fillStyle = "red";
+        ctx.fillRect(facebookPos.x, facebookPos.y, iconSize, iconSize); // Draw a red rectangle at Facebook icon position
     
         // Draw Facebook icon
         if (facebookImg.complete && facebookImg.naturalWidth !== 0) {
@@ -1287,6 +1295,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Game loop function
     function gameLoop() {
+        console.log("Current game state:", gameState); // Debug log
+    
         if (gameState === "menu") {
             if (hoveredIndex !== -1) {
                 hoverAnimation.opacity = Math.min(hoverAnimation.opacity + 0.05, 1); // Fade in hover effect
