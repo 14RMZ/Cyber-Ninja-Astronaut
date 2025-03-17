@@ -929,7 +929,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         // Draw credits in the bottom-right with glowing effect
-        ctx.font = "20px Arial";
+        ctx.font = "15px Arial";
         ctx.textAlign = "right";
         
         ctx.fillStyle = "rgba(0, 0, 0, 0.7)"; // Dark overlay for readability
@@ -937,7 +937,7 @@ document.addEventListener("DOMContentLoaded", () => {
         
         ctx.fillStyle = "cyan"; // Neon cyan color
         ctx.shadowColor = "blue"; // Glowing blue shadow
-        ctx.shadowBlur = 25; // Soft glow effect
+        ctx.shadowBlur = 35; // Soft glow effect
         
         ctx.fillText(`Hope you had fun, ${playerName}!`, canvas.width - 20, canvas.height - 55);
         
