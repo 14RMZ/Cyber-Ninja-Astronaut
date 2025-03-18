@@ -993,41 +993,42 @@ document.addEventListener("DOMContentLoaded", () => {
         let rect = canvas.getBoundingClientRect();
         let mouseX = e.clientX - rect.left; // Mouse X position relative to canvas
         let mouseY = e.clientY - rect.top; // Mouse Y position relative to canvas
-
-        hoveredIndex = -1; // Reset hovered index
-        for (let i = 0; i < menuPositions.length; i++) {
-            let pos = menuPositions[i];
-            if (
-                mouseX >= pos.x &&
-                mouseX <= pos.x + pos.width &&
-                mouseY >= pos.y &&
-                mouseY <= pos.y + pos.height
-            ) {
-                hoveredIndex = i; // Set hovered index if mouse is over a menu item
-                break;
-            }
-        }
-
-        // Check if mouse is over Facebook logo
-        hoveredFacebook = mouseX >= facebookX && mouseX <= facebookX + logoSize &&
-                          mouseY >= facebookY && mouseY <= facebookY + logoSize;
-
-        // Check if mouse is over Instagram logo
-        hoveredInstagram = mouseX >= instagramX && mouseX <= instagramX + logoSize &&
-                           mouseY >= instagramY && mouseY <= instagramY + logoSize;
-
-        // Check if mouse is over Privacy Policy text
-        const privacyPolicyTextWidth = ctx.measureText(privacyPolicyText).width;
-        hoveredPrivacyPolicy = mouseX >= privacyPolicyX && mouseX <= privacyPolicyX + privacyPolicyTextWidth &&
-                               mouseY >= privacyPolicyY - 20 && mouseY <= privacyPolicyY;
-    });
-
-    // Event listener for mouse leaving the canvas
-    canvas.addEventListener("mouseleave", () => {
-        hoveredIndex = -1; // Reset hovered index
+    
+        // Reset hover states
         hoveredFacebook = false;
         hoveredInstagram = false;
         hoveredPrivacyPolicy = false;
+    
+        // Check if mouse is over Facebook logo
+        if (
+            mouseX >= facebookX &&
+            mouseX <= facebookX + logoSize &&
+            mouseY >= facebookY &&
+            mouseY <= facebookY + logoSize
+        ) {
+            hoveredFacebook = true;
+        }
+    
+        // Check if mouse is over Instagram logo
+        if (
+            mouseX >= instagramX &&
+            mouseX <= instagramX + logoSize &&
+            mouseY >= instagramY &&
+            mouseY <= instagramY + logoSize
+        ) {
+            hoveredInstagram = true;
+        }
+    
+        // Check if mouse is over Privacy Policy text
+        const privacyPolicyTextWidth = ctx.measureText(privacyPolicyText).width;
+        if (
+            mouseX >= privacyPolicyX &&
+            mouseX <= privacyPolicyX + privacyPolicyTextWidth &&
+            mouseY >= privacyPolicyY - 20 &&
+            mouseY <= privacyPolicyY
+        ) {
+            hoveredPrivacyPolicy = true;
+        }
     });
 
     // Event listener for mouse clicks on the canvas
@@ -1035,19 +1036,35 @@ document.addEventListener("DOMContentLoaded", () => {
         let rect = canvas.getBoundingClientRect();
         let mouseX = e.clientX - rect.left; // Mouse X position relative to canvas
         let mouseY = e.clientY - rect.top; // Mouse Y position relative to canvas
-
+    
         // Check if Facebook logo is clicked
-        if (hoveredFacebook) {
+        if (
+            mouseX >= facebookX &&
+            mouseX <= facebookX + logoSize &&
+            mouseY >= facebookY &&
+            mouseY <= facebookY + logoSize
+        ) {
             window.open("https://www.facebook.com", "_blank"); // Open Facebook in a new tab
         }
-
+    
         // Check if Instagram logo is clicked
-        if (hoveredInstagram) {
+        if (
+            mouseX >= instagramX &&
+            mouseX <= instagramX + logoSize &&
+            mouseY >= instagramY &&
+            mouseY <= instagramY + logoSize
+        ) {
             window.open("https://www.instagram.com", "_blank"); // Open Instagram in a new tab
         }
-
+    
         // Check if Privacy Policy text is clicked
-        if (hoveredPrivacyPolicy) {
+        const privacyPolicyTextWidth = ctx.measureText(privacyPolicyText).width;
+        if (
+            mouseX >= privacyPolicyX &&
+            mouseX <= privacyPolicyX + privacyPolicyTextWidth &&
+            mouseY >= privacyPolicyY - 20 &&
+            mouseY <= privacyPolicyY
+        ) {
             window.open("https://www.example.com/", "_blank"); // Open Privacy Policy in a new tab
         }
     });
