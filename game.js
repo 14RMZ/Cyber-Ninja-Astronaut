@@ -212,19 +212,26 @@ document.addEventListener("DOMContentLoaded", () => {
     const menuImage = new Image();
     menuImage.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/GameMenuBackground.webp"; // Path to the menu background image
 
+    // Load Facebook and Instagram logos
+    const facebookLogo = new Image();
+    facebookLogo.src = "facebook-logo.png"; // Path to the Facebook logo
+
+    const instagramLogo = new Image();
+    instagramLogo.src = "instagram-logo.png"; // Path to the Instagram logo
+
     // Music control functions
     function playMenuMusic() {
         gameMusic.pause(); // Pause game music
         gameMusic.currentTime = 0; // Reset game music
         menuMusic.play(); // Play menu music
     }
-    
+
     function playGameMusic() {
         menuMusic.pause(); // Pause menu music
         menuMusic.currentTime = 0; // Reset menu music
         gameMusic.play(); // Play game music
     }
-    
+
     function stopAllMusic() {
         menuMusic.pause(); // Pause menu music
         gameMusic.pause(); // Pause game music
@@ -463,7 +470,7 @@ document.addEventListener("DOMContentLoaded", () => {
             this.shootCooldown = 100; // Cooldown for shooting
             this.shootTimer = 0; // Timer for shooting
         }
-    
+
         // Update the drone's position and state
         update() {
             if (this.isExploding) {
@@ -481,7 +488,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     this.direction *= -1; // Reverse direction at the edges
                 }
                 this.currentAnimation.update(); // Update animation
-    
+
                 if (this.shootTimer <= 0) {
                     this.shoot(); // Shoot if cooldown is over
                     this.shootTimer = this.shootCooldown; // Reset cooldown
@@ -490,15 +497,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             }
         }
-    
+
         // Draw the drone
         draw() {
             const frame = this.currentAnimation.getCurrentFrame();
             ctx.save();
-    
+
             const offsetX = (this.width - frame.width) / 2; // Center the frame horizontally
             const offsetY = (this.height - frame.height) / 2; // Center the frame vertically
-    
+
             if (this.direction === -1 && !this.isExploding) {
                 ctx.scale(-1, 1); // Flip the drone if moving left
                 ctx.drawImage(
@@ -515,7 +522,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             ctx.restore();
         }
-    
+
         // Shoot a bullet
         shoot() {
             const direction = player.x > this.x ? 1 : -1; // Shoot towards the player
@@ -524,7 +531,7 @@ document.addEventListener("DOMContentLoaded", () => {
             enemyBullets.push(new EnemyBullet(bulletX, bulletY, direction)); // Add enemy bullet to the array
             enemyShootSound.play(); // Play shoot sound
         }
-    
+
         // Trigger drone explosion
         explode() {
             this.isExploding = true;
@@ -532,39 +539,39 @@ document.addEventListener("DOMContentLoaded", () => {
             enemyDeathSound.play(); // Play death sound
         }
     }
-    
-        // Bullet class
-        class Bullet {
-            constructor(x, y, direction) {
-                this.x = x; // X position
-                this.y = y; // Y position
-                this.width = 10; // Bullet width
-                this.height = 5; // Bullet height
-                this.speed = 8; // Bullet speed
-                this.direction = direction; // Bullet direction (1 for right, -1 for left)
-            }
-    
-            // Update the bullet's position
-            update() {
-                this.x += this.speed * this.direction; // Move the bullet
-            }
-    
-            // Draw the bullet
-            draw() {
-                ctx.fillStyle = "yellow"; // Bullet color (can be changed)
-                ctx.fillRect(this.x - camera.x, this.y, this.width, this.height);
-            }
-    
-            // Check if the bullet hits an enemy
-            hitEnemy(enemy) {
-                return (
-                    this.x + this.width > enemy.x &&
-                    this.x < enemy.x + enemy.width &&
-                    this.y + this.height > enemy.y &&
-                    this.y < enemy.y + enemy.height
-                );
-            }
+
+    // Bullet class
+    class Bullet {
+        constructor(x, y, direction) {
+            this.x = x; // X position
+            this.y = y; // Y position
+            this.width = 10; // Bullet width
+            this.height = 5; // Bullet height
+            this.speed = 8; // Bullet speed
+            this.direction = direction; // Bullet direction (1 for right, -1 for left)
         }
+
+        // Update the bullet's position
+        update() {
+            this.x += this.speed * this.direction; // Move the bullet
+        }
+
+        // Draw the bullet
+        draw() {
+            ctx.fillStyle = "yellow"; // Bullet color (can be changed)
+            ctx.fillRect(this.x - camera.x, this.y, this.width, this.height);
+        }
+
+        // Check if the bullet hits an enemy
+        hitEnemy(enemy) {
+            return (
+                this.x + this.width > enemy.x &&
+                this.x < enemy.x + enemy.width &&
+                this.y + this.height > enemy.y &&
+                this.y < enemy.y + enemy.height
+            );
+        }
+    }
 
     // EnemyBullet class for enemy bullets
     class EnemyBullet {
@@ -576,12 +583,12 @@ document.addEventListener("DOMContentLoaded", () => {
             this.speed = 8; // Bullet speed
             this.direction = direction; // Bullet direction (1 for right, -1 for left)
         }
-    
+
         // Update the bullet's position
         update() {
             this.x += this.speed * this.direction; // Move the bullet
         }
-    
+
         // Draw the bullet
         draw() {
             ctx.fillStyle = "red"; // Enemy bullet color (red)
@@ -827,28 +834,28 @@ document.addEventListener("DOMContentLoaded", () => {
             ctx.fillStyle = "black"; // Fallback background color
             ctx.fillRect(0, 0, canvas.width, canvas.height);
         }
-    
+
         ctx.fillStyle = "rgba(0, 0, 0, 0.7)"; // Semi-transparent overlay
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
+
         ctx.fillStyle = "red"; // Title color
         ctx.font = "60px Arial"; // Title font
         ctx.textAlign = "center"; // Center align text
         ctx.fillText("Game Over", canvas.width / 2, canvas.height / 2 - 150); // Draw title
-    
+
         ctx.fillStyle = "white"; // Score text color
         ctx.font = "30px Arial"; // Score font
         ctx.fillText(`${playerName}, your score is: ${player.score}`, canvas.width / 2, canvas.height / 2 - 50); // Draw score
-    
+
         ctx.fillStyle = "gold"; // High score text color
         ctx.font = "30px Arial"; // High score font
         ctx.fillText(`Your High Score: ${highScore}`, canvas.width / 2, canvas.height / 2); // Draw high score
-    
+
         ctx.fillStyle = "cyan"; // Game over message color
         ctx.font = "25px Arial"; // Message font
         ctx.textAlign = "center"; // Center align text
         ctx.fillText(currentGameOverMessage, canvas.width / 2, canvas.height / 2 + 50); // Draw game over message
-    
+
         ctx.fillStyle = "white"; // Instruction text color
         ctx.font = "20px Arial"; // Instruction font
         ctx.fillText("Press R to Restart", canvas.width / 2, canvas.height / 2 + 140); // Draw restart instruction
@@ -860,6 +867,11 @@ document.addEventListener("DOMContentLoaded", () => {
     let menuPositions = []; // Store positions of menu items
     let hoveredIndex = -1; // Track hovered menu item
     let hoverAnimation = { opacity: 1, scale: 1 }; // Hover animation properties
+
+    // Track hover states for Facebook, Instagram, and Privacy Policy
+    let hoveredFacebook = false;
+    let hoveredInstagram = false;
+    let hoveredPrivacyPolicy = false;
 
     // Function to draw the main menu
     function drawMainMenu() {
@@ -928,26 +940,51 @@ document.addEventListener("DOMContentLoaded", () => {
             ctx.restore(); // Restore canvas state
         }
 
+        // Draw Facebook and Instagram logos with hover effect
+        const logoSize = 40; // Size of the logos
+        const logoPadding = 20; // Padding between logos and text
+        const privacyPolicyText = "Privacy Policy"; // Privacy Policy text
+
+        // Facebook logo
+        const facebookX = 20; // X position for Facebook logo
+        const facebookY = canvas.height - logoSize - 20; // Y position for Facebook logo
+        ctx.globalAlpha = hoveredFacebook ? 0.8 : 1; // Change opacity on hover
+        ctx.drawImage(facebookLogo, facebookX, facebookY, logoSize, logoSize); // Draw Facebook logo
+        ctx.globalAlpha = 1; // Reset opacity
+
+        // Instagram logo
+        const instagramX = facebookX + logoSize + logoPadding; // X position for Instagram logo
+        const instagramY = canvas.height - logoSize - 20; // Y position for Instagram logo
+        ctx.globalAlpha = hoveredInstagram ? 0.8 : 1; // Change opacity on hover
+        ctx.drawImage(instagramLogo, instagramX, instagramY, logoSize, logoSize); // Draw Instagram logo
+        ctx.globalAlpha = 1; // Reset opacity
+
+        // Privacy Policy text
+        const privacyPolicyX = instagramX + logoSize + logoPadding; // X position for Privacy Policy text
+        const privacyPolicyY = canvas.height - 25; // Y position for Privacy Policy text
+        ctx.fillStyle = hoveredPrivacyPolicy ? "yellow" : "white"; // Change color on hover
+        ctx.font = "20px Arial"; // Text font
+        ctx.fillText(privacyPolicyText, privacyPolicyX, privacyPolicyY); // Draw Privacy Policy text
+
         // Draw credits in the bottom-right with glowing effect
         ctx.font = "15px Arial";
         ctx.textAlign = "right";
-        
+
         ctx.fillStyle = "rgba(0, 0, 0, 0.7)"; // Dark overlay for readability
         ctx.fillRect(0, canvas.height - 75, canvas.width, 75); // Background box
-        
+
         ctx.fillStyle = "cyan"; // Neon cyan color
         ctx.shadowColor = "blue"; // Glowing blue shadow
         ctx.shadowBlur = 35; // Soft glow effect
-        
+
         ctx.fillText(`Hope you had fun, ${playerName}!`, canvas.width - 20, canvas.height - 55);
-        
+
         ctx.fillText("Thank you for playing my Game!", canvas.width - 20, canvas.height - 35);
-        
+
         ctx.fillText("Created by RMZ", canvas.width - 20, canvas.height - 15);
-        
+
         ctx.shadowBlur = 0;
         ctx.shadowColor = "transparent";
-
     }
 
     // Event listener for mouse movement on the canvas
@@ -969,11 +1006,49 @@ document.addEventListener("DOMContentLoaded", () => {
                 break;
             }
         }
+
+        // Check if mouse is over Facebook logo
+        hoveredFacebook = mouseX >= facebookX && mouseX <= facebookX + logoSize &&
+                          mouseY >= facebookY && mouseY <= facebookY + logoSize;
+
+        // Check if mouse is over Instagram logo
+        hoveredInstagram = mouseX >= instagramX && mouseX <= instagramX + logoSize &&
+                           mouseY >= instagramY && mouseY <= instagramY + logoSize;
+
+        // Check if mouse is over Privacy Policy text
+        const privacyPolicyTextWidth = ctx.measureText(privacyPolicyText).width;
+        hoveredPrivacyPolicy = mouseX >= privacyPolicyX && mouseX <= privacyPolicyX + privacyPolicyTextWidth &&
+                               mouseY >= privacyPolicyY - 20 && mouseY <= privacyPolicyY;
     });
 
     // Event listener for mouse leaving the canvas
     canvas.addEventListener("mouseleave", () => {
         hoveredIndex = -1; // Reset hovered index
+        hoveredFacebook = false;
+        hoveredInstagram = false;
+        hoveredPrivacyPolicy = false;
+    });
+
+    // Event listener for mouse clicks on the canvas
+    canvas.addEventListener("click", (e) => {
+        let rect = canvas.getBoundingClientRect();
+        let mouseX = e.clientX - rect.left; // Mouse X position relative to canvas
+        let mouseY = e.clientY - rect.top; // Mouse Y position relative to canvas
+
+        // Check if Facebook logo is clicked
+        if (hoveredFacebook) {
+            window.open("https://www.facebook.com", "_blank"); // Open Facebook in a new tab
+        }
+
+        // Check if Instagram logo is clicked
+        if (hoveredInstagram) {
+            window.open("https://www.instagram.com", "_blank"); // Open Instagram in a new tab
+        }
+
+        // Check if Privacy Policy text is clicked
+        if (hoveredPrivacyPolicy) {
+            window.open("https://www.yourwebsite.com/privacy-policy", "_blank"); // Open Privacy Policy in a new tab
+        }
     });
 
     // Function to draw the settings menu
@@ -1181,16 +1256,16 @@ document.addEventListener("DOMContentLoaded", () => {
     // Function to render the game
     function render() {
         ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
-    
+
         const imageWidth = backgroundImage.width; // Background image width
         const imageHeight = backgroundImage.height; // Background image height
         const scale = canvas.height / imageHeight; // Scale to fit canvas height
         const scaledWidth = imageWidth * scale; // Scaled background width
-    
+
         const numTiles = Math.ceil(canvas.width / scaledWidth) + 1; // Number of tiles needed to cover the canvas
-    
+
         const offset = (camera.x * 0.5) % scaledWidth; // Offset for seamless tiling
-    
+
         for (let i = -1; i < numTiles; i++) {
             ctx.drawImage(
                 backgroundImage,
@@ -1200,7 +1275,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 canvas.height
             ); // Draw background tiles
         }
-    
+
         platforms.forEach(platform => platform.draw()); // Draw platforms
         enemies.forEach(enemy => enemy.draw()); // Draw enemies
         bullets.forEach(bullet => bullet.draw()); // Draw player bullets
@@ -1208,7 +1283,7 @@ document.addEventListener("DOMContentLoaded", () => {
         shieldPowerUps.forEach(powerUp => powerUp.draw()); // Draw power-ups
         drawPlayer(); // Draw the player
         drawScore(); // Draw the score
-    
+
         if (gameOver) {
             drawGameOverScreen(); // Draw the game over screen
         }
@@ -1249,7 +1324,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const rect = canvas.getBoundingClientRect();
         const mouseX = event.clientX - rect.left; // Mouse X position relative to canvas
         const mouseY = event.clientY - rect.top; // Mouse Y position relative to canvas
-    
+
         // Existing game state click detection
         if (gameState === "menu") {
             for (let i = 0; i < menuPositions.length; i++) {
@@ -1326,6 +1401,8 @@ document.addEventListener("DOMContentLoaded", () => {
         new Promise((resolve) => { movingPlatformImage.onload = resolve; }),
         new Promise((resolve) => { spikeImage.onload = resolve; }),
         new Promise((resolve) => { menuImage.onload = resolve; }),
+        new Promise((resolve) => { facebookLogo.onload = resolve; }),
+        new Promise((resolve) => { instagramLogo.onload = resolve; }),
         new Promise((resolve) => {
             gameMusic.addEventListener("canplaythrough", resolve);
         }),
