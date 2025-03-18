@@ -1258,7 +1258,9 @@ document.addEventListener("DOMContentLoaded", () => {
         shieldPowerUps.forEach(powerUp => powerUp.draw()); // Draw power-ups
         drawPlayer(); // Draw the player
         drawScore(); // Draw the score
-        drawSocialMediaIcons(); // Draw social media icons and privacy policy link
+        if (gameState === "menu") {
+            drawSocialMediaIcons();
+        }
 
         if (gameOver) {
             drawGameOverScreen(); // Draw the game over screen
