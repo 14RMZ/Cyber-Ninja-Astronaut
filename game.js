@@ -214,10 +214,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Load Facebook and Instagram logos
     const facebookLogo = new Image();
-    facebookLogo.src = "facebook-logo.png"; // Path to the Facebook logo
+    facebookLogo.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/facebook.png"; // Path to the Facebook logo
 
     const instagramLogo = new Image();
-    instagramLogo.src = "instagram-logo.png"; // Path to the Instagram logo
+    instagramLogo.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/instagram.png"; // Path to the Instagram logo
 
     // Music control functions
     function playMenuMusic() {
@@ -1047,7 +1047,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Check if Privacy Policy text is clicked
         if (hoveredPrivacyPolicy) {
-            window.open("https://www.yourwebsite.com/privacy-policy", "_blank"); // Open Privacy Policy in a new tab
+            window.open("https://www.example.com/", "_blank"); // Open Privacy Policy in a new tab
         }
     });
 
