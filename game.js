@@ -953,7 +953,7 @@ document.addEventListener("DOMContentLoaded", () => {
         // Draw Facebook and Instagram logos with hover effect
         facebookX = 20; // X position for Facebook logo
         facebookY = canvas.height - logoSize - 20; // Y position for Facebook logo
-        ctx.globalAlpha = hoveredFacebook ? 0.8 : 1; // Change opacity on hover
+        ctx.globalAlpha = hoveredFacebook ? 0.5 : 1; // Change opacity on hover
         ctx.drawImage(facebookLogo, facebookX, facebookY, logoSize, logoSize); // Draw Facebook logo
         ctx.globalAlpha = 1; // Reset opacity
     
@@ -964,8 +964,8 @@ document.addEventListener("DOMContentLoaded", () => {
         ctx.globalAlpha = 1; // Reset opacity
     
         privacyPolicyX = instagramX + logoSize + logoPadding; // X position for Privacy Policy text
-        privacyPolicyY = canvas.height - 37; // Y position for Privacy Policy text
-        ctx.fillStyle = hoveredPrivacyPolicy ? "yellow" : "blue"; // Change color on hover
+        privacyPolicyY = canvas.height - 35; // Y position for Privacy Policy text
+        ctx.fillStyle = hoveredPrivacyPolicy ? "yellow" : "cyan"; // Change color on hover
         ctx.font = "20px Arial"; // Text font
         ctx.fillText(privacyPolicyText, privacyPolicyX, privacyPolicyY); // Draw Privacy Policy text
     
