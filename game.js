@@ -964,7 +964,7 @@ document.addEventListener("DOMContentLoaded", () => {
         ctx.globalAlpha = 1; // Reset opacity
     
         privacyPolicyX = instagramX + logoSize + logoPadding; // X position for Privacy Policy text
-        privacyPolicyY = canvas.height - 35; // Y position for Privacy Policy text
+        privacyPolicyY = canvas.height - 32; // Y position for Privacy Policy text
         ctx.fillStyle = hoveredPrivacyPolicy ? "yellow" : "cyan"; // Change color on hover
         ctx.font = "20px Arial"; // Text font
         ctx.fillText(privacyPolicyText, privacyPolicyX, privacyPolicyY); // Draw Privacy Policy text
