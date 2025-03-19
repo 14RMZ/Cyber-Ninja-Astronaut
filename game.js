@@ -730,7 +730,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     }
 
                     if (player.lastPlatform !== platform) {
-                        player.score += 10; // Increase score for landing on a new platform
+                        player.score += 2; // Increase score for landing on a new platform
                         player.lastPlatform = platform;
                     }
                 }
@@ -1154,10 +1154,15 @@ document.addEventListener("DOMContentLoaded", () => {
             bullets.forEach(bullet => bullet.update()); // Update player bullets
             bullets.forEach((bullet, bulletIndex) => {
                 enemies.forEach((enemy, enemyIndex) => {
-                    if (bullet.hitEnemy(enemy)) { // Check if bullet hits an enemy
+                    if (bullet.hitEnemy(enemy)) {
                         bullets.splice(bulletIndex, 1); // Remove bullet
                         enemy.explode(); // Trigger enemy explosion
-                        player.score += 20; // Increase score
+                    
+                        // Check the type of enemy and update the score accordingly
+                        if (enemy instanceof ShootingEnemy) {
+                            player.score += 5; // Increase score by 5 for killing a shooting enemy
+                        } else if (enemy instanceof NonShootingEnemy) {
+                            player.score += 3; // Increase score by 3 for killing a non-shooting enemy
                     }
                 });
 
