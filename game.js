@@ -214,10 +214,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Load Facebook and Instagram logos
     const facebookLogo = new Image();
-    facebookLogo.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/facebook.png"; // Path to the Facebook logo
+    facebookLogo.src = "facebook-logo.png"; // Path to the Facebook logo
 
     const instagramLogo = new Image();
-    instagramLogo.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/instagram.png"; // Path to the Instagram logo
+    instagramLogo.src = "instagram-logo.png"; // Path to the Instagram logo
 
     // Music control functions
     function playMenuMusic() {
@@ -876,14 +876,14 @@ document.addEventListener("DOMContentLoaded", () => {
     // Function to draw the main menu
     function drawMainMenu() {
         ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
-    
+
         if (menuImage.complete && menuImage.naturalWidth !== 0) {
             ctx.drawImage(menuImage, 0, 0, canvas.width, canvas.height); // Draw menu background
         } else {
             ctx.fillStyle = "black"; // Fallback background color
             ctx.fillRect(0, 0, canvas.width, canvas.height);
         }
-    
+
         ctx.fillStyle = "cyan"; // Title color
         ctx.font = "bold 80px Arial"; // Title font
         ctx.shadowColor = "blue"; // Title shadow color
@@ -892,98 +892,98 @@ document.addEventListener("DOMContentLoaded", () => {
         ctx.fillText("Cyber Ninja Astronaut", 100, 80); // Draw title
         ctx.shadowBlur = 0; // Reset shadow blur
         ctx.shadowColor = "transparent"; // Reset shadow color
-    
+
         let centerX = canvas.width - 350; // Center X position for menu items
         let centerY = canvas.height / 2; // Center Y position for menu items
         let radius = 180; // Radius for menu item placement
-    
+
         for (let i = 0; i < menuItems.length; i++) {
             let angle = (-Math.PI / 3.5) + (i * (Math.PI / 5)); // Calculate angle for menu item
             let x = centerX + radius * Math.cos(angle); // Calculate X position
             let y = centerY + radius * Math.sin(angle); // Calculate Y position
-    
+
             ctx.font = "30px Arial"; // Menu item font
             let textWidth = ctx.measureText(menuItems[i]).width; // Measure text width
             let padding = 10; // Padding around text
             let boxWidth = textWidth + padding * 2; // Box width
             let boxHeight = 40; // Box height
-    
+
             menuPositions[i] = {
                 x: x - boxWidth / 2, // Left edge of the button
                 y: y - 30, // Top edge of the button
                 width: boxWidth, // Button width
                 height: boxHeight // Button height
             };
-    
+
             ctx.save(); // Save canvas state
-    
+
             if (hoveredIndex === i) {
                 ctx.globalAlpha = hoverAnimation.opacity; // Apply hover opacity
                 ctx.translate(x, y); // Translate to menu item position
                 ctx.scale(hoverAnimation.scale, hoverAnimation.scale); // Apply hover scale
                 ctx.translate(-x, -y); // Translate back
             }
-    
+
             ctx.fillStyle = "rgba(0, 0, 0, 0.7)"; // Button background color
             ctx.fillRect(x - boxWidth / 2, y - 30, boxWidth, boxHeight); // Draw button background
-    
+
             ctx.strokeStyle = "white"; // Button border color
             ctx.lineWidth = 3; // Button border width
             ctx.strokeRect(x - boxWidth / 2, y - 30, boxWidth, boxHeight); // Draw button border
-    
+
             ctx.fillStyle = hoveredIndex === i ? "rgba(255, 255, 0, 1)" : "rgba(0, 255, 255, 1)"; // Button text color
             ctx.shadowColor = hoveredIndex === i ? "yellow" : "cyan"; // Button shadow color
             ctx.shadowBlur = 10; // Button shadow blur
             ctx.textAlign = "center"; // Center align text
             ctx.fillText(menuItems[i], x, y); // Draw menu item text
-    
+
             ctx.restore(); // Restore canvas state
         }
-    
+
         // Draw the credits background (transparent overlay)
         ctx.fillStyle = "rgba(0, 0, 0, 0.7)"; // Dark overlay for readability
         ctx.fillRect(0, canvas.height - 75, canvas.width, 75); // Background box
-    
+
         // Draw Facebook and Instagram logos with hover effect
         const logoSize = 40; // Size of the logos
         const logoPadding = 20; // Padding between logos and text
         const privacyPolicyText = "Privacy Policy"; // Privacy Policy text
-    
+
         // Facebook logo
         const facebookX = 20; // X position for Facebook logo
         const facebookY = canvas.height - logoSize - 20; // Y position for Facebook logo
         ctx.globalAlpha = hoveredFacebook ? 0.8 : 1; // Change opacity on hover
         ctx.drawImage(facebookLogo, facebookX, facebookY, logoSize, logoSize); // Draw Facebook logo
         ctx.globalAlpha = 1; // Reset opacity
-    
+
         // Instagram logo
         const instagramX = facebookX + logoSize + logoPadding; // X position for Instagram logo
         const instagramY = canvas.height - logoSize - 20; // Y position for Instagram logo
         ctx.globalAlpha = hoveredInstagram ? 0.8 : 1; // Change opacity on hover
         ctx.drawImage(instagramLogo, instagramX, instagramY, logoSize, logoSize); // Draw Instagram logo
         ctx.globalAlpha = 1; // Reset opacity
-    
+
         // Privacy Policy text
         const privacyPolicyX = instagramX + logoSize + logoPadding; // X position for Privacy Policy text
         const privacyPolicyY = canvas.height - 25; // Y position for Privacy Policy text
         ctx.fillStyle = hoveredPrivacyPolicy ? "yellow" : "white"; // Change color on hover
         ctx.font = "20px Arial"; // Text font
         ctx.fillText(privacyPolicyText, privacyPolicyX, privacyPolicyY); // Draw Privacy Policy text
-    
+
         // Draw credits text (on top of the transparent background)
         ctx.font = "15px Arial";
         ctx.textAlign = "right";
-    
+
         ctx.fillStyle = "cyan"; // Neon cyan color
         ctx.shadowColor = "blue"; // Glowing blue shadow
         ctx.shadowBlur = 35; // Soft glow effect
-    
+
         ctx.fillText(`Hope you had fun, ${playerName}!`, canvas.width - 20, canvas.height - 55);
-    
+
         ctx.fillText("Thank you for playing my Game!", canvas.width - 20, canvas.height - 35);
-    
+
         ctx.fillText("Created by RMZ", canvas.width - 20, canvas.height - 15);
-    
+
         ctx.shadowBlur = 0;
         ctx.shadowColor = "transparent";
     }
@@ -993,12 +993,12 @@ document.addEventListener("DOMContentLoaded", () => {
         let rect = canvas.getBoundingClientRect();
         let mouseX = e.clientX - rect.left; // Mouse X position relative to canvas
         let mouseY = e.clientY - rect.top; // Mouse Y position relative to canvas
-    
-        // Reset hover states
+
+        // Reset hover states for links
         hoveredFacebook = false;
         hoveredInstagram = false;
         hoveredPrivacyPolicy = false;
-    
+
         // Check if mouse is over Facebook logo
         if (
             mouseX >= facebookX &&
@@ -1008,7 +1008,7 @@ document.addEventListener("DOMContentLoaded", () => {
         ) {
             hoveredFacebook = true;
         }
-    
+
         // Check if mouse is over Instagram logo
         if (
             mouseX >= instagramX &&
@@ -1018,7 +1018,7 @@ document.addEventListener("DOMContentLoaded", () => {
         ) {
             hoveredInstagram = true;
         }
-    
+
         // Check if mouse is over Privacy Policy text
         const privacyPolicyTextWidth = ctx.measureText(privacyPolicyText).width;
         if (
@@ -1029,14 +1029,37 @@ document.addEventListener("DOMContentLoaded", () => {
         ) {
             hoveredPrivacyPolicy = true;
         }
+
+        // Existing hover logic for menu items
+        hoveredIndex = -1; // Reset hovered index
+        for (let i = 0; i < menuPositions.length; i++) {
+            let pos = menuPositions[i];
+            if (
+                mouseX >= pos.x &&
+                mouseX <= pos.x + pos.width &&
+                mouseY >= pos.y &&
+                mouseY <= pos.y + pos.height
+            ) {
+                hoveredIndex = i; // Set hovered index if mouse is over a menu item
+                break;
+            }
+        }
     });
 
-    // Event listener for mouse clicks on the canvas
+    // Event listener for mouse leaving the canvas
+    canvas.addEventListener("mouseleave", () => {
+        hoveredIndex = -1; // Reset hovered index for menu items
+        hoveredFacebook = false; // Reset hover state for Facebook
+        hoveredInstagram = false; // Reset hover state for Instagram
+        hoveredPrivacyPolicy = false; // Reset hover state for Privacy Policy
+    });
+
+    // Event listener for mouse clicks
     canvas.addEventListener("click", (e) => {
         let rect = canvas.getBoundingClientRect();
         let mouseX = e.clientX - rect.left; // Mouse X position relative to canvas
         let mouseY = e.clientY - rect.top; // Mouse Y position relative to canvas
-    
+
         // Check if Facebook logo is clicked
         if (
             mouseX >= facebookX &&
@@ -1046,7 +1069,7 @@ document.addEventListener("DOMContentLoaded", () => {
         ) {
             window.open("https://www.facebook.com", "_blank"); // Open Facebook in a new tab
         }
-    
+
         // Check if Instagram logo is clicked
         if (
             mouseX >= instagramX &&
@@ -1056,7 +1079,7 @@ document.addEventListener("DOMContentLoaded", () => {
         ) {
             window.open("https://www.instagram.com", "_blank"); // Open Instagram in a new tab
         }
-    
+
         // Check if Privacy Policy text is clicked
         const privacyPolicyTextWidth = ctx.measureText(privacyPolicyText).width;
         if (
@@ -1065,7 +1088,7 @@ document.addEventListener("DOMContentLoaded", () => {
             mouseY >= privacyPolicyY - 20 &&
             mouseY <= privacyPolicyY
         ) {
-            window.open("https://www.example.com/", "_blank"); // Open Privacy Policy in a new tab
+            window.open("https://www.yourwebsite.com/privacy-policy", "_blank"); // Open Privacy Policy in a new tab
         }
     });
 
