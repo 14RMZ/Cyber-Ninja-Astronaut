@@ -1164,7 +1164,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         } else if (enemy instanceof NonShootingEnemy) {
                             player.score += 3; // Increase score by 3 for killing a non-shooting enemy
                     }
-                });
+                };
 
                 if (bullet.x < camera.x || bullet.x > camera.x + canvas.width) {
                     bullets.splice(bulletIndex, 1); // Remove bullet if it goes off-screen
