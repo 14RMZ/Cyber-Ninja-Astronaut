@@ -1151,21 +1151,21 @@ document.addEventListener("DOMContentLoaded", () => {
             generatePlatforms(); // Generate new platforms
             camera.update(); // Update camera position
 
-            bullets.forEach(bullet => bullet.update()); // Update player bullets
             bullets.forEach((bullet, bulletIndex) => {
                 enemies.forEach((enemy, enemyIndex) => {
-                    if (bullet.hitEnemy(enemy)) {
+                    if (bullet.hitEnemy(enemy)) { // Check if bullet hits an enemy
                         bullets.splice(bulletIndex, 1); // Remove bullet
                         enemy.explode(); // Trigger enemy explosion
-                    
-                        // Check the type of enemy and update the score accordingly
+            
+                        // Check the type of enemy and update the score
                         if (enemy instanceof ShootingEnemy) {
-                            player.score += 5; // Increase score by 5 for killing a shooting enemy
+                            player.score += 5; // +5 for shooting enemy
                         } else if (enemy instanceof NonShootingEnemy) {
-                            player.score += 3; // Increase score by 3 for killing a non-shooting enemy
+                            player.score += 3; // +3 for non-shooting enemy
+                        }
                     }
-                };
-
+                });
+            
                 if (bullet.x < camera.x || bullet.x > camera.x + canvas.width) {
                     bullets.splice(bulletIndex, 1); // Remove bullet if it goes off-screen
                 }
