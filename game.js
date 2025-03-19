@@ -959,13 +959,13 @@ document.addEventListener("DOMContentLoaded", () => {
     
         instagramX = facebookX + logoSize + logoPadding; // X position for Instagram logo
         instagramY = canvas.height - logoSize - 20; // Y position for Instagram logo
-        ctx.globalAlpha = hoveredInstagram ? 0.8 : 1; // Change opacity on hover
+        ctx.globalAlpha = hoveredInstagram ? 0.5 : 1; // Change opacity on hover
         ctx.drawImage(instagramLogo, instagramX, instagramY, logoSize, logoSize); // Draw Instagram logo
         ctx.globalAlpha = 1; // Reset opacity
     
         privacyPolicyX = instagramX + logoSize + logoPadding; // X position for Privacy Policy text
-        privacyPolicyY = canvas.height - 25; // Y position for Privacy Policy text
-        ctx.fillStyle = hoveredPrivacyPolicy ? "yellow" : "white"; // Change color on hover
+        privacyPolicyY = canvas.height - 37; // Y position for Privacy Policy text
+        ctx.fillStyle = hoveredPrivacyPolicy ? "yellow" : "blue"; // Change color on hover
         ctx.font = "20px Arial"; // Text font
         ctx.fillText(privacyPolicyText, privacyPolicyX, privacyPolicyY); // Draw Privacy Policy text
     
