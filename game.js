@@ -1057,7 +1057,7 @@ document.addEventListener("DOMContentLoaded", () => {
             mouseY >= facebookY &&
             mouseY <= facebookY + logoSize
         ) {
-            window.open("https://www.facebook.com", "_blank"); // Open Facebook in a new tab
+            window.open("https://www.facebook.com/profile.php?id=61573991140874", "_blank"); // Open Facebook in a new tab
         }
     
         // Check if Instagram logo is clicked
@@ -1067,7 +1067,7 @@ document.addEventListener("DOMContentLoaded", () => {
             mouseY >= instagramY &&
             mouseY <= instagramY + logoSize
         ) {
-            window.open("https://www.instagram.com", "_blank"); // Open Instagram in a new tab
+            window.open("https://www.instagram.com/cyberninjaastronaut/", "_blank"); // Open Instagram in a new tab
         }
     
         // Check if Privacy Policy text is clicked
