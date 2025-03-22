@@ -458,7 +458,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Update the ShootingEnemy class to use EnemyBullet
+    // Shooting enemy (drone) class
     class ShootingEnemy {
         constructor(platform) {
             this.platform = platform; // Platform the drone is on
@@ -546,7 +546,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Bullet class
+    // Bullet class for player bullets
     class Bullet {
         constructor(x, y, direction) {
             this.x = x; // X position
@@ -564,7 +564,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Draw the bullet
         draw() {
-            ctx.fillStyle = "yellow"; // Bullet color (can be changed)
+            ctx.fillStyle = "yellow"; // Bullet color
             ctx.fillRect(this.x - camera.x, this.y, this.width, this.height);
         }
 
@@ -597,7 +597,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Draw the bullet
         draw() {
-            ctx.fillStyle = "red"; // Enemy bullet color (red)
+            ctx.fillStyle = "red"; // Enemy bullet color
             ctx.fillRect(this.x - camera.x, this.y, this.width, this.height);
         }
     }
@@ -615,7 +615,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Draw the power-up
         draw() {
-            ctx.fillStyle = "cyan"; // Power-up color (can be changed)
+            ctx.fillStyle = "cyan"; // Power-up color
             ctx.beginPath();
             ctx.arc(this.x - camera.x, this.y, this.width / 2, 0, Math.PI * 2); // Draw a circle
             ctx.fill();
