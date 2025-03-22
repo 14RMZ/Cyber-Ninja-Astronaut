@@ -114,7 +114,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let facebookX, facebookY, instagramX, instagramY, privacyPolicyX, privacyPolicyY;
     let logoSize = 40; // Size of the logos
     let logoPadding = 20; // Padding between logos and text
-    let privacyPolicyText = "Privacy Policy"; // Privacy Policy text
+    let privacyPolicyText = "How We Use Your Info & Privacy"; // Privacy Policy text
 
     // Game state variables
     let gameState = "menu"; // Possible values: "menu", "playing", "gameOver"
