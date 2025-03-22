@@ -556,18 +556,18 @@ document.addEventListener("DOMContentLoaded", () => {
             this.speed = 8; // Bullet speed
             this.direction = direction; // Bullet direction (1 for right, -1 for left)
         }
-
+    
         // Update the bullet's position
         update() {
             this.x += this.speed * this.direction; // Move the bullet
         }
-
+    
         // Draw the bullet
         draw() {
             ctx.fillStyle = "yellow"; // Bullet color
             ctx.fillRect(this.x - camera.x, this.y, this.width, this.height);
         }
-
+    
         // Check if the bullet hits an enemy
         hitEnemy(enemy) {
             return (
@@ -1150,14 +1150,18 @@ document.addEventListener("DOMContentLoaded", () => {
             handleMovement(); // Handle player movement
             generatePlatforms(); // Generate new platforms
             camera.update(); // Update camera position
-
+    
+            // Update player bullets
             bullets.forEach((bullet, bulletIndex) => {
+                bullet.update(); // Update bullet position
+    
+                // Check for collisions with enemies
                 enemies.forEach((enemy, enemyIndex) => {
-                    if (bullet.hitEnemy(enemy)) { // Check if bullet hits an enemy
+                    if (bullet.hitEnemy(enemy)) {
                         bullets.splice(bulletIndex, 1); // Remove bullet
                         enemy.explode(); // Trigger enemy explosion
-            
-                        // Check the type of enemy and update the score
+    
+                        // Update score based on enemy type
                         if (enemy instanceof ShootingEnemy) {
                             player.score += 5; // +5 for shooting enemy
                         } else if (enemy instanceof NonShootingEnemy) {
@@ -1165,14 +1169,18 @@ document.addEventListener("DOMContentLoaded", () => {
                         }
                     }
                 });
-            
+    
+                // Remove bullets that go off-screen
                 if (bullet.x < camera.x || bullet.x > camera.x + canvas.width) {
-                    bullets.splice(bulletIndex, 1); // Remove bullet if it goes off-screen
+                    bullets.splice(bulletIndex, 1);
                 }
             });
-
+    
+            // Update enemies
             enemies.forEach(enemy => {
-                enemy.update(); // Update enemies
+                enemy.update(); // Update enemy position and state
+    
+                // Check for collisions with the player
                 if (
                     player.x + player.width > enemy.x &&
                     player.x < enemy.x + enemy.width &&
@@ -1186,9 +1194,12 @@ document.addEventListener("DOMContentLoaded", () => {
                     }
                 }
             });
-
-            enemyBullets.forEach(bullet => bullet.update()); // Update enemy bullets
+    
+            // Update enemy bullets
             enemyBullets.forEach((bullet, bulletIndex) => {
+                bullet.update(); // Update enemy bullet position
+    
+                // Check for collisions with the player
                 if (
                     bullet.x + bullet.width > player.x &&
                     bullet.x < player.x + player.width &&
@@ -1201,12 +1212,14 @@ document.addEventListener("DOMContentLoaded", () => {
                         updateHighScore(); // Update high score
                     }
                 }
-
+    
+                // Remove enemy bullets that go off-screen
                 if (bullet.x < camera.x || bullet.x > camera.x + canvas.width) {
-                    enemyBullets.splice(bulletIndex, 1); // Remove enemy bullet if it goes off-screen
+                    enemyBullets.splice(bulletIndex, 1);
                 }
             });
-
+    
+            // Update shield power-ups
             shieldPowerUps.forEach((powerUp, index) => {
                 if (powerUp.isCollected()) { // Check if player collects a power-up
                     activateShield(powerUp.duration); // Activate shield
@@ -1292,16 +1305,15 @@ document.addEventListener("DOMContentLoaded", () => {
     // Function to render the game
     function render() {
         ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
-
+    
+        // Draw the background
         const imageWidth = backgroundImage.width; // Background image width
         const imageHeight = backgroundImage.height; // Background image height
         const scale = canvas.height / imageHeight; // Scale to fit canvas height
         const scaledWidth = imageWidth * scale; // Scaled background width
-
         const numTiles = Math.ceil(canvas.width / scaledWidth) + 1; // Number of tiles needed to cover the canvas
-
         const offset = (camera.x * 0.5) % scaledWidth; // Offset for seamless tiling
-
+    
         for (let i = -1; i < numTiles; i++) {
             ctx.drawImage(
                 backgroundImage,
@@ -1311,17 +1323,31 @@ document.addEventListener("DOMContentLoaded", () => {
                 canvas.height
             ); // Draw background tiles
         }
-
-        platforms.forEach(platform => platform.draw()); // Draw platforms
-        enemies.forEach(enemy => enemy.draw()); // Draw enemies
-        bullets.forEach(bullet => bullet.draw()); // Draw player bullets
-        enemyBullets.forEach(bullet => bullet.draw()); // Draw enemy bullets
-        shieldPowerUps.forEach(powerUp => powerUp.draw()); // Draw power-ups
-        drawPlayer(); // Draw the player
-        drawScore(); // Draw the score
-
+    
+        // Draw platforms
+        platforms.forEach(platform => platform.draw());
+    
+        // Draw enemies
+        enemies.forEach(enemy => enemy.draw());
+    
+        // Draw player bullets
+        bullets.forEach(bullet => bullet.draw());
+    
+        // Draw enemy bullets
+        enemyBullets.forEach(bullet => bullet.draw());
+    
+        // Draw shield power-ups
+        shieldPowerUps.forEach(powerUp => powerUp.draw());
+    
+        // Draw the player
+        drawPlayer();
+    
+        // Draw the score
+        drawScore();
+    
+        // Draw the game over screen if the game is over
         if (gameOver) {
-            drawGameOverScreen(); // Draw the game over screen
+            drawGameOverScreen();
         }
     }
 
