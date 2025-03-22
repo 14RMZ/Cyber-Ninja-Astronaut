@@ -648,7 +648,7 @@ document.addEventListener("DOMContentLoaded", () => {
             let isMoving = Math.random() > 0.6; // Randomly decide if the platform moves
             let hasSpikes = player.score >= 10 && Math.random() > 0.7; // Randomly add spikes
             let hasNonShootingEnemy = player.score >= 12 && !isMoving && !hasSpikes && Math.random() > 0.5; // Randomly add non-shooting enemy
-            let hasShootingEnemy = player.score >= 20 && !isMoving && !hasSpikes && Math.random() > 0.4; // Randomly add shooting enemy
+            let hasShootingEnemy = player.score >= 15 && !isMoving && !hasSpikes && Math.random() > 0.3; // Randomly add shooting enemy
             let hasShieldPowerUp = player.score >= 30 && Math.random() > 0.8; // Randomly add shield power-up
 
             let platform = new Platform(x, y, 180, 20, isMoving, hasSpikes); // Create a new platform
