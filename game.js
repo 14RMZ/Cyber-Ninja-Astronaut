@@ -33,6 +33,36 @@ document.addEventListener("DOMContentLoaded", () => {
         audio: {}
     };
 
+    // Music control functions
+    function playMenuMusic() {
+        if (loadedAssets.audio.gameMusic) {
+            loadedAssets.audio.gameMusic.pause(); // Pause game music
+            loadedAssets.audio.gameMusic.currentTime = 0; // Reset game music
+        }
+        if (loadedAssets.audio.menuMusic) {
+            loadedAssets.audio.menuMusic.play(); // Play menu music
+        }
+    }
+    
+    function playGameMusic() {
+        if (loadedAssets.audio.menuMusic) {
+            loadedAssets.audio.menuMusic.pause(); // Pause menu music
+            loadedAssets.audio.menuMusic.currentTime = 0; // Reset menu music
+        }
+        if (loadedAssets.audio.gameMusic) {
+            loadedAssets.audio.gameMusic.play(); // Play game music
+        }
+    }
+    
+    function stopAllMusic() {
+        if (loadedAssets.audio.menuMusic) {
+            loadedAssets.audio.menuMusic.pause(); // Pause menu music
+        }
+        if (loadedAssets.audio.gameMusic) {
+            loadedAssets.audio.gameMusic.pause(); // Pause game music
+        }
+    }
+
     // Load all assets
     function loadAssets() {
         const imagePromises = Object.keys(assets.images).map(key => {
@@ -1327,7 +1357,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 hoverAnimation.opacity = Math.max(hoverAnimation.opacity - 0.05, 0.8); // Fade out hover effect
                 hoverAnimation.scale = Math.max(hoverAnimation.scale - 0.01, 1); // Scale down hover effect
             }
-
+    
             if (settingsState) {
                 drawSettingsMenu(); // Draw the settings menu
             } else if (howToPlayState) {
@@ -1343,7 +1373,7 @@ document.addEventListener("DOMContentLoaded", () => {
         } else if (gameState === "gameOver") {
             drawGameOverScreen(); // Draw the game over screen
         }
-
+    
         requestAnimationFrame(gameLoop); // Continue the game loop
     }
 
