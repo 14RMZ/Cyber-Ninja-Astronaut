@@ -82,6 +82,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 const audio = new Audio(assets.audio[key]);
                 audio.addEventListener("canplaythrough", () => {
                     loadedAssets.audio[key] = audio;
+    
+                    // Set default volume to 50% for gameMusic and menuMusic
+                    if (key === "gameMusic" || key === "menuMusic") {
+                        audio.volume = 0.5; // 50% volume
+                    }
+    
                     resolve();
                 });
                 audio.onerror = reject;
