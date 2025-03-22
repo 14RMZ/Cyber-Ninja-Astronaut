@@ -1094,7 +1094,7 @@ document.addEventListener("DOMContentLoaded", () => {
         ctx.fillStyle = "rgba(0, 0, 0, 0.7)"; // Semi-transparent overlay
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        ctx.fillStyle = "white"; // Title color
+        ctx.fillStyle = "cyan"; // Title color
         ctx.font = "60px Arial"; // Title font
         ctx.textAlign = "center"; // Center align text
         ctx.fillText("Settings", canvas.width / 2, canvas.height / 2 - 150); // Draw title
@@ -1119,7 +1119,7 @@ document.addEventListener("DOMContentLoaded", () => {
         ctx.fillStyle = "rgba(0, 0, 0, 0.7)"; // Semi-transparent overlay
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        ctx.fillStyle = "white"; // Title color
+        ctx.fillStyle = "cyan"; // Title color
         ctx.font = "60px Arial"; // Title font
         ctx.textAlign = "center"; // Center align text
         ctx.fillText("How to Play", canvas.width / 2, canvas.height / 2 - 150); // Draw title
