@@ -149,11 +149,10 @@ document.addEventListener("DOMContentLoaded", () => {
         if (oldWidth !== canvas.width || oldHeight !== canvas.height) {
             player.y = canvas.height - 150;
             
-            // Reset platforms and camera if needed
+            // Reset camera position
             camera.x = player.x - canvas.width / 3;
             if (camera.x < 0) camera.x = 0;
             
-            // You might need additional game state adjustments here
             if (gameState === "playing") {
                 // Regenerate platforms if needed
                 while (platforms.length < 5) {
@@ -364,7 +363,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let isJumpStarting = false; // Track if the player is starting a jump
     let isJumpLanding = false; // Track if the player is landing from a jump
 
-    // Camera object to follow the player
+    // Camera object to follow the player - MOVED THIS BEFORE resizeCanvas
     const camera = {
         x: 0, // Camera X position
         update: function() {
