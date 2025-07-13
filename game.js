@@ -94,8 +94,8 @@ document.addEventListener("DOMContentLoaded", () => {
         `Every failure is a step closer to success, ${playerName}! You reached ${highScore}, now aim higher!`,
         `The AI got lucky this time, ${playerName}… but not next time! is just a warm-up!`,
         `You're learning the patterns, ${playerName}. Victory is near!`,
-        `Even legends have setbacks, ${playerName}. Get back in there! ${highScore} isn't your limit!`,
-        `${playerName}, your cyber-ninja training isn't over yet! You reached ${highScore}, now go further!`,
+        `Even legends have setbacks, ${playerName}. Get back in there! ${highScore} isn’t your limit!`,
+        `${playerName}, your cyber-ninja training isn’t over yet! You reached ${highScore}, now go further!`,
         `Every attempt makes you stronger, ${playerName}. Try again!`,
         `${playerName}, you dodged lasers, jumped spikes… and scored ${highScore}! Now do it again!`,
         `${playerName}, the cyber-ninjas believe in you! ${highScore} is great, but you can do better!`,
@@ -136,57 +136,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
 
-    // Improved function to resize the canvas to fit the window
+    // Function to resize the canvas to fit the window
     function resizeCanvas() {
-        const oldWidth = canvas.width;
-        const oldHeight = canvas.height;
-        
-        // Set canvas dimensions to match window
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        
-        // Only reset player position if the size actually changed
-        if (oldWidth !== canvas.width || oldHeight !== canvas.height) {
-            player.y = canvas.height - 150;
-            
-            // Reset camera position
-            camera.x = player.x - canvas.width / 3;
-            if (camera.x < 0) camera.x = 0;
-            
-            if (gameState === "playing") {
-                // Regenerate platforms if needed
-                while (platforms.length < 5) {
-                    generatePlatforms();
-                }
-            }
-        }
+        canvas.width = window.innerWidth; // Set canvas width to window width
+        canvas.height = window.innerHeight; // Set canvas height to window height
+        player.y = canvas.height - 150; // Set player's initial Y position
     }
-
-    // Add fullscreen event listeners
-    document.addEventListener('fullscreenchange', handleFullscreenChange);
-    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
-    document.addEventListener('MSFullscreenChange', handleFullscreenChange);
-
-    function handleFullscreenChange() {
-        // Add a small delay to ensure the fullscreen transition is complete
-        setTimeout(() => {
-            resizeCanvas();
-            // Reset player position to prevent falling through platforms
-            if (gameState === "playing") {
-                player.y = canvas.height - 150;
-                player.velocityY = 0;
-            }
-        }, 100);
-    }
-
-    window.addEventListener('resize', () => {
-        // Throttle the resize events to prevent performance issues
-        clearTimeout(window.resizeTimer);
-        window.resizeTimer = setTimeout(() => {
-            resizeCanvas();
-        }, 200);
-    });
-
+    window.addEventListener('resize', resizeCanvas); // Resize canvas when the window is resized
     resizeCanvas(); // Initial resize
 
     let gameOver = false; // Track if the game is over
@@ -363,7 +319,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let isJumpStarting = false; // Track if the player is starting a jump
     let isJumpLanding = false; // Track if the player is landing from a jump
 
-    // Camera object to follow the player - MOVED THIS BEFORE resizeCanvas
+    // Camera object to follow the player
     const camera = {
         x: 0, // Camera X position
         update: function() {
@@ -1525,3 +1481,48 @@ document.addEventListener("DOMContentLoaded", () => {
         gameLoop(); // Start the game loop
     });
 });
+
+
+
+I want to embed it on the blogger with adding a feature or full screen so that the game experience can be good but on the full screen  the player keeps falling down from the platform. here is the embed code:
+<div style="position: relative; width: 100%; padding-bottom: 80vh; height: 0; overflow: hidden;">
+  <iframe 
+    id="gameFrame"
+    src="https://14rmz.github.io/Cyber-Ninja-Astronaut" 
+    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;" 
+    allow="fullscreen"
+  ></iframe>
+
+  <!-- Fullscreen button -->
+  <button onclick="toggleFullscreen()" 
+          style="position: absolute; top: 10px; right: 10px; padding: 5px 10px; background: rgba(0,0,0,0.6); color: white; border: none; border-radius: 4px; cursor: pointer; z-index: 10; font-size: 14px;">
+    ⛶ Fullscreen
+  </button>
+</div>
+
+<script>
+function toggleFullscreen() {
+  const iframe = document.getElementById("gameFrame");
+
+  // Create a wrapper to go fullscreen instead of the iframe directly
+  const wrapper = iframe.parentNode;
+
+  if (!document.fullscreenElement) {
+    if (wrapper.requestFullscreen) {
+      wrapper.requestFullscreen();
+    } else if (wrapper.webkitRequestFullscreen) {
+      wrapper.webkitRequestFullscreen();
+    } else if (wrapper.msRequestFullscreen) {
+      wrapper.msRequestFullscreen();
+    }
+  } else {
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+    } else if (document.webkitExitFullscreen) {
+      document.webkitExitFullscreen();
+    } else if (document.msExitFullscreen) {
+      document.msExitFullscreen();
+    }
+  }
+}
+</script>
