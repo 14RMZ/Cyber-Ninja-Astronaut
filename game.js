@@ -86,6 +86,15 @@ document.addEventListener("DOMContentLoaded", () => {
     let loadedAssets = 0;
     let assetsLoaded = false;
 
+    // Animation variables for the start button
+    let buttonPulse = 0;
+    let buttonPulseDirection = 1;
+    let buttonGlow = 0;
+    let buttonGlowDirection = 1;
+    let buttonScale = 1;
+    let buttonScaleDirection = 1;
+    let buttonYOffset = 0;
+
     // Player object (initialize with defaults, will be used later)
     const player = {
         x: 100,
@@ -154,6 +163,30 @@ document.addEventListener("DOMContentLoaded", () => {
     let logoPadding = 20;
     let privacyPolicyText = "How We Use Your Info & Privacy";
 
+    // Function to update button animations
+    function updateButtonAnimations() {
+        // Pulse animation (size)
+        buttonPulse += 0.02 * buttonPulseDirection;
+        if (buttonPulse >= 1 || buttonPulse <= 0) {
+            buttonPulseDirection *= -1;
+        }
+        
+        // Glow animation (opacity)
+        buttonGlow += 0.03 * buttonGlowDirection;
+        if (buttonGlow >= 1 || buttonGlow <= 0.3) {
+            buttonGlowDirection *= -1;
+        }
+        
+        // Scale animation
+        buttonScale += 0.002 * buttonScaleDirection;
+        if (buttonScale >= 1.05 || buttonScale <= 0.95) {
+            buttonScaleDirection *= -1;
+        }
+        
+        // Floating animation
+        buttonYOffset = Math.sin(Date.now() / 500) * 5;
+    }
+
     // Function to draw the initial loading/start screen
     function drawStartScreen() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -166,42 +199,98 @@ document.addEventListener("DOMContentLoaded", () => {
             ctx.fillRect(0, 0, canvas.width, canvas.height);
         }
 
-        // Draw overlay
-        ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+        // Draw dark overlay for better contrast
+        ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        // Draw title
+        // Draw title with glowing effect
         ctx.fillStyle = "cyan";
-        ctx.font = "bold 60px Arial";
+        ctx.font = "bold 70px Arial";
         ctx.shadowColor = "blue";
-        ctx.shadowBlur = 50;
+        ctx.shadowBlur = 30;
         ctx.textAlign = "center";
-        ctx.fillText("Cyber Ninja Astronaut", canvas.width / 2, canvas.height / 2 - 100);
+        ctx.fillText("CYBER NINJA ASTRONAUT", canvas.width / 2, canvas.height / 2 - 150);
         ctx.shadowBlur = 0;
         ctx.shadowColor = "transparent";
 
-        // Draw start button
-        const buttonWidth = 200;
-        const buttonHeight = 60;
-        const buttonX = canvas.width / 2 - buttonWidth / 2;
-        const buttonY = canvas.height / 2;
-
-        ctx.fillStyle = "rgba(0, 0, 255, 0.7)";
-        ctx.fillRect(buttonX, buttonY, buttonWidth, buttonHeight);
-
-        ctx.strokeStyle = "white";
-        ctx.lineWidth = 3;
-        ctx.strokeRect(buttonX, buttonY, buttonWidth, buttonHeight);
-
-        ctx.fillStyle = "white";
+        // Draw subtitle
+        ctx.fillStyle = "#00ffff";
         ctx.font = "30px Arial";
-        ctx.textAlign = "center";
-        ctx.fillText("Start Game", canvas.width / 2, buttonY + buttonHeight / 2 + 10);
+        ctx.fillText("Ready for Adventure?", canvas.width / 2, canvas.height / 2 - 70);
 
-        // Draw loading hint
-        ctx.font = "20px Arial";
+        // Update button animations
+        updateButtonAnimations();
+
+        // Draw animated start button
+        const buttonWidth = 400;
+        const buttonHeight = 80;
+        const buttonX = canvas.width / 2 - buttonWidth / 2;
+        const buttonY = canvas.height / 2 + buttonYOffset; // Add floating effect
+
+        // Save canvas state for transformations
+        ctx.save();
+        
+        // Apply scale transformation at the button's center
+        ctx.translate(buttonX + buttonWidth / 2, buttonY + buttonHeight / 2);
+        ctx.scale(buttonScale, buttonScale);
+        ctx.translate(-(buttonX + buttonWidth / 2), -(buttonY + buttonHeight / 2));
+
+        // Draw button background with gradient
+        const gradient = ctx.createLinearGradient(buttonX, buttonY, buttonX, buttonY + buttonHeight);
+        gradient.addColorStop(0, "rgba(0, 150, 255, 0.8)");
+        gradient.addColorStop(1, "rgba(0, 50, 150, 0.8)");
+        
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.roundRect(buttonX, buttonY, buttonWidth, buttonHeight, 20);
+        ctx.fill();
+
+        // Draw button border with animated glow
+        ctx.strokeStyle = `rgba(0, 255, 255, ${buttonGlow})`;
+        ctx.lineWidth = 4 + (buttonPulse * 2); // Pulsing border
+        ctx.beginPath();
+        ctx.roundRect(buttonX, buttonY, buttonWidth, buttonHeight, 20);
+        ctx.stroke();
+
+        // Draw outer glow effect
+        ctx.shadowColor = "cyan";
+        ctx.shadowBlur = 20 + (buttonPulse * 10);
+        ctx.strokeStyle = `rgba(0, 255, 255, ${buttonGlow * 0.5})`;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.roundRect(buttonX - 5, buttonY - 5, buttonWidth + 10, buttonHeight + 10, 25);
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+
+        // Draw button text with glow effect
+        ctx.fillStyle = "white";
+        ctx.font = "bold 40px Arial";
+        ctx.shadowColor = "blue";
+        ctx.shadowBlur = 15;
+        ctx.textAlign = "center";
+        ctx.fillText("PRESS ENTER TO START GAME", canvas.width / 2, buttonY + buttonHeight / 2 + 15);
+        
+        ctx.shadowBlur = 0;
+        ctx.restore();
+
+        // Draw instruction text below button
         ctx.fillStyle = "yellow";
-        ctx.fillText("Click to load the game assets", canvas.width / 2, buttonY + buttonHeight + 50);
+        ctx.font = "20px Arial";
+        ctx.fillText("Press Enter or click the button to begin", canvas.width / 2, buttonY + buttonHeight + 40);
+
+        // Draw loading indicator (small)
+        ctx.fillStyle = "rgba(255, 255, 255, 0.3)";
+        ctx.fillRect(canvas.width / 2 - 100, buttonY + buttonHeight + 70, 200, 10);
+        
+        ctx.fillStyle = "cyan";
+        ctx.fillRect(canvas.width / 2 - 100, buttonY + buttonHeight + 70, 200 * (menuImage.complete ? 1 : 0.5), 10);
+
+        // Draw game info
+        ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
+        ctx.font = "18px Arial";
+        ctx.textAlign = "center";
+        ctx.fillText("Game by RMZ", canvas.width / 2, canvas.height - 50);
+        ctx.fillText(`Welcome, ${playerName}!`, canvas.width / 2, canvas.height - 25);
     }
 
     // Function to draw the loading screen
@@ -212,11 +301,28 @@ document.addEventListener("DOMContentLoaded", () => {
         ctx.fillStyle = "black";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        // Draw loading title
-        ctx.fillStyle = "cyan";
+        // Draw loading title with animation
+        const pulse = Math.sin(Date.now() / 200) * 0.2 + 0.8;
+        ctx.fillStyle = `rgba(0, 255, 255, ${pulse})`;
         ctx.font = "bold 60px Arial";
         ctx.textAlign = "center";
-        ctx.fillText("Loading...", canvas.width / 2, canvas.height / 2 - 100);
+        ctx.fillText("LOADING GAME...", canvas.width / 2, canvas.height / 2 - 100);
+
+        // Draw animated loading dots
+        const dotSize = 10;
+        const dotSpacing = 30;
+        const baseX = canvas.width / 2 - dotSpacing;
+        const dotY = canvas.height / 2 - 30;
+        
+        for (let i = 0; i < 3; i++) {
+            const offset = Math.sin(Date.now() / 300 + i * 1) * 5;
+            const alpha = 0.3 + Math.abs(Math.sin(Date.now() / 300 + i * 1)) * 0.7;
+            
+            ctx.fillStyle = `rgba(0, 255, 255, ${alpha})`;
+            ctx.beginPath();
+            ctx.arc(baseX + i * dotSpacing, dotY + offset, dotSize, 0, Math.PI * 2);
+            ctx.fill();
+        }
 
         // Draw progress bar background
         const barWidth = 400;
@@ -225,31 +331,75 @@ document.addEventListener("DOMContentLoaded", () => {
         const barY = canvas.height / 2;
 
         ctx.fillStyle = "rgba(255, 255, 255, 0.2)";
-        ctx.fillRect(barX, barY, barWidth, barHeight);
+        ctx.beginPath();
+        ctx.roundRect(barX, barY, barWidth, barHeight, 15);
+        ctx.fill();
 
-        // Draw progress bar fill
+        // Draw animated progress bar fill
         const progressWidth = (loadingProgress / 100) * barWidth;
-        ctx.fillStyle = "cyan";
-        ctx.fillRect(barX, barY, progressWidth, barHeight);
+        const gradient = ctx.createLinearGradient(barX, barY, barX + progressWidth, barY);
+        gradient.addColorStop(0, "#00ffff");
+        gradient.addColorStop(1, "#0088ff");
+        
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.roundRect(barX, barY, progressWidth, barHeight, 15);
+        ctx.fill();
 
-        // Draw progress bar border
-        ctx.strokeStyle = "white";
+        // Draw progress bar border with glow
+        ctx.strokeStyle = "cyan";
         ctx.lineWidth = 2;
-        ctx.strokeRect(barX, barY, barWidth, barHeight);
+        ctx.beginPath();
+        ctx.roundRect(barX, barY, barWidth, barHeight, 15);
+        ctx.stroke();
 
-        // Draw percentage text
-        ctx.fillStyle = "white";
-        ctx.font = "20px Arial";
+        // Draw percentage text with animation
+        const textPulse = Math.sin(Date.now() / 150) * 0.3 + 0.7;
+        ctx.fillStyle = `rgba(255, 255, 255, ${textPulse})`;
+        ctx.font = "bold 25px Arial";
         ctx.fillText(`${Math.round(loadingProgress)}%`, canvas.width / 2, barY + barHeight + 30);
 
         // Draw loading assets count
-        ctx.font = "16px Arial";
+        ctx.font = "18px Arial";
+        ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
         ctx.fillText(`Loading assets: ${loadedAssets}/${totalAssetsToLoad}`, canvas.width / 2, barY + barHeight + 60);
 
-        // Draw loading message
-        ctx.font = "18px Arial";
+        // Draw loading message with changing text
+        const messages = [
+            "Preparing cyber-ninja gear...",
+            "Calibrating alien detection...",
+            "Loading power-ups...",
+            "Initializing shield systems...",
+            "Almost ready for battle..."
+        ];
+        const messageIndex = Math.floor((Date.now() / 2000) % messages.length);
+        
+        ctx.font = "20px Arial";
         ctx.fillStyle = "yellow";
-        ctx.fillText("Please wait while the game loads...", canvas.width / 2, barY + barHeight + 100);
+        ctx.fillText(messages[messageIndex], canvas.width / 2, barY + barHeight + 100);
+
+        // Draw spinning loader icon
+        const loaderX = canvas.width / 2;
+        const loaderY = barY + barHeight + 150;
+        const loaderRadius = 20;
+        const loaderAngle = (Date.now() / 20) % 360;
+        
+        ctx.save();
+        ctx.translate(loaderX, loaderY);
+        ctx.rotate(loaderAngle * Math.PI / 180);
+        
+        for (let i = 0; i < 8; i++) {
+            const angle = (i * 45) * Math.PI / 180;
+            const x = Math.cos(angle) * loaderRadius;
+            const y = Math.sin(angle) * loaderRadius;
+            const alpha = 0.1 + (i / 8) * 0.9;
+            
+            ctx.fillStyle = `rgba(0, 255, 255, ${alpha})`;
+            ctx.beginPath();
+            ctx.arc(x, y, 4, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        ctx.restore();
     }
 
     // Function to update loading progress
@@ -850,6 +1000,11 @@ document.addEventListener("DOMContentLoaded", () => {
     window.addEventListener('keydown', (event) => {
         keys[event.code] = true;
         
+        // Handle Enter key press on start screen
+        if (gameState === "loading" && event.code === "Enter") {
+            startLoadingGameAssets();
+        }
+        
         if (gameState === "gameOver" || gameState === "playing") {
             if (event.code === "KeyR" && gameOver) {
                 setGameState("playing");
@@ -865,6 +1020,21 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     window.addEventListener('keyup', (event) => keys[event.code] = false);
+
+    // Function to start loading game assets
+    function startLoadingGameAssets() {
+        // Start loading game assets
+        gameState = "loadingAssets";
+        loadGameAssets();
+        
+        // Check loading progress periodically
+        const checkLoading = setInterval(() => {
+            if (loadedAssets === totalAssetsToLoad) {
+                clearInterval(checkLoading);
+                initializeGameSystems();
+            }
+        }, 100);
+    }
 
     // Function to handle player movement
     function handleMovement() {
@@ -1218,6 +1388,20 @@ document.addEventListener("DOMContentLoaded", () => {
         let rect = canvas.getBoundingClientRect();
         let mouseX = e.clientX - rect.left;
         let mouseY = e.clientY - rect.top;
+
+        // Handle click on start screen button
+        if (gameState === "loading") {
+            const buttonWidth = 400;
+            const buttonHeight = 80;
+            const buttonX = canvas.width / 2 - buttonWidth / 2;
+            const buttonY = canvas.height / 2;
+            
+            if (mouseX >= buttonX && mouseX <= buttonX + buttonWidth &&
+                mouseY >= buttonY - 20 && mouseY <= buttonY + buttonHeight + 20) {
+                startLoadingGameAssets();
+            }
+            return;
+        }
     
         // Check if Facebook logo is clicked
         if (facebookLogo &&
@@ -1528,6 +1712,8 @@ document.addEventListener("DOMContentLoaded", () => {
     function gameLoop() {
         if (gameState === "loading") {
             drawStartScreen();
+        } else if (gameState === "loadingAssets") {
+            drawLoadingScreen();
         } else if (gameState === "menu") {
             if (hoveredIndex !== -1) {
                 hoverAnimation.opacity = Math.min(hoverAnimation.opacity + 0.05, 1);
@@ -1561,30 +1747,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const rect = canvas.getBoundingClientRect();
         const mouseX = event.clientX - rect.left;
         const mouseY = event.clientY - rect.top;
-
-        // Handle click on start screen
-        if (gameState === "loading") {
-            const buttonWidth = 200;
-            const buttonHeight = 60;
-            const buttonX = canvas.width / 2 - buttonWidth / 2;
-            const buttonY = canvas.height / 2;
-            
-            if (mouseX >= buttonX && mouseX <= buttonX + buttonWidth &&
-                mouseY >= buttonY && mouseY <= buttonY + buttonHeight) {
-                // Start loading game assets
-                gameState = "loadingAssets";
-                loadGameAssets();
-                
-                // Check loading progress periodically
-                const checkLoading = setInterval(() => {
-                    if (loadedAssets === totalAssetsToLoad) {
-                        clearInterval(checkLoading);
-                        initializeGameSystems();
-                    }
-                }, 100);
-            }
-            return;
-        }
 
         // Existing game state click detection
         if (gameState === "menu") {
