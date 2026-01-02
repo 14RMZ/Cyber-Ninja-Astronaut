@@ -155,13 +155,14 @@ document.addEventListener("DOMContentLoaded", () => {
     let logoPadding = 20;
     let privacyPolicyText = "How We Use Your Info & Privacy";
 
-    // Audio variables
+    // Audio variables - SIMPLIFIED APPROACH
     let menuMusic = null;
     let menuImage = null;
     let isMenuMusicLoaded = false;
     let isMenuImageLoaded = false;
     let currentMusic = null;
     let audioContextInitialized = false;
+    let audioEnabled = false;
 
     // Define all classes at the top to avoid reference errors
     class Animation {
@@ -322,92 +323,86 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Simplified audio initialization
+    // SIMPLIFIED AUDIO HANDLING
     function initializeAudio() {
-        // Create a one-time interaction listener
-        function startAudioOnInteraction() {
-            if (audioContextInitialized) return;
+        // Create menu music with proper error handling
+        try {
+            menuMusic = new Audio();
+            menuMusic.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/GameMenuSound.wav";
+            menuMusic.loop = true;
+            menuMusic.volume = 0.3;
+            menuMusic.preload = "auto";
             
-            audioContextInitialized = true;
-            console.log("Audio initialized by user interaction");
+            menuMusic.addEventListener('loadeddata', function() {
+                isMenuMusicLoaded = true;
+                console.log("Menu music loaded");
+            });
             
-            // Remove the listeners once initialized
-            document.removeEventListener('click', startAudioOnInteraction);
-            document.removeEventListener('keydown', startAudioOnInteraction);
-            document.removeEventListener('touchstart', startAudioOnInteraction);
+            menuMusic.addEventListener('error', function(e) {
+                console.log("Menu music loading error, continuing without sound");
+                isMenuMusicLoaded = false;
+            });
             
-            // Load menu music
-            loadMenuMusic();
-            
-            // Try to play menu music if we're already in menu state
-            if (gameState === "menu") {
-                playMenuMusic();
-            }
+            // Load it
+            menuMusic.load();
+        } catch (e) {
+            console.log("Could not create menu music:", e);
         }
-
-        // Add event listeners for user interaction
-        document.addEventListener('click', startAudioOnInteraction);
-        document.addEventListener('keydown', startAudioOnInteraction);
-        document.addEventListener('touchstart', startAudioOnInteraction);
         
-        // Also try to load menu music immediately
-        loadMenuMusic();
-    }
-
-    // Function to load menu music
-    function loadMenuMusic() {
-        if (menuMusic) return; // Already loaded
-        
-        menuMusic = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/GameMenuSound.wav");
-        menuMusic.loop = true;
-        menuMusic.volume = 0.3;
-        menuMusic.preload = "auto";
-        
-        // Set up event listeners
-        menuMusic.addEventListener('canplaythrough', function() {
-            isMenuMusicLoaded = true;
-            console.log("Menu music loaded and ready");
+        // Set up user interaction to enable audio
+        function enableAudio() {
+            if (audioEnabled) return;
             
-            // Try to play if we're in menu state and audio is initialized
-            if (gameState === "menu" && audioContextInitialized) {
+            audioEnabled = true;
+            audioContextInitialized = true;
+            console.log("Audio enabled by user interaction");
+            
+            // Try to play menu music if in menu
+            if (gameState === "menu" && menuMusic && isMenuMusicLoaded) {
                 playMenuMusic();
             }
-        });
+            
+            // Remove listeners
+            document.removeEventListener('click', enableAudio);
+            document.removeEventListener('keydown', enableAudio);
+            document.removeEventListener('touchstart', enableAudio);
+        }
         
-        menuMusic.addEventListener('error', function(e) {
-            console.error("Error loading menu music:", e);
-            isMenuMusicLoaded = false;
-        });
-        
-        // Load the audio
-        menuMusic.load();
+        // Add listeners for user interaction
+        document.addEventListener('click', enableAudio);
+        document.addEventListener('keydown', enableAudio);
+        document.addEventListener('touchstart', enableAudio);
     }
 
-    // Function to safely play any audio
+    // Function to safely play audio
     function playSound(audioElement) {
-        if (!audioElement || !audioContextInitialized) return;
+        if (!audioElement || !audioEnabled) return;
         
         try {
-            // Reset to start and play
-            audioElement.currentTime = 0;
-            const playPromise = audioElement.play();
+            // Create a clone to avoid playback conflicts
+            const soundClone = audioElement.cloneNode();
+            soundClone.volume = audioElement.volume;
+            soundClone.currentTime = 0;
             
+            const playPromise = soundClone.play();
             if (playPromise !== undefined) {
-                playPromise.catch(error => {
-                    console.log("Audio play failed:", error.name);
+                playPromise.catch(e => {
+                    // Silent fail for sound effects
                 });
             }
+            
+            // Clean up after playback
+            soundClone.onended = function() {
+                soundClone.remove();
+            };
         } catch (error) {
-            console.log("Error playing sound:", error);
+            // Silent fail
         }
     }
 
     // Function to play menu music
     function playMenuMusic() {
-        if (!audioContextInitialized) {
-            console.log("Audio not initialized yet - waiting for user interaction");
-            return;
-        }
+        if (!menuMusic || !isMenuMusicLoaded || !audioEnabled) return;
         
         // Stop game music if playing
         if (gameMusic && !gameMusic.paused) {
@@ -415,38 +410,26 @@ document.addEventListener("DOMContentLoaded", () => {
             gameMusic.currentTime = 0;
         }
         
-        // Play menu music if available and loaded
-        if (menuMusic && isMenuMusicLoaded) {
-            currentMusic = menuMusic;
-            
-            // Ensure we're at the beginning
+        // Play menu music
+        try {
             menuMusic.currentTime = 0;
-            
-            // Play with error handling
             const playPromise = menuMusic.play();
             
             if (playPromise !== undefined) {
                 playPromise.then(() => {
-                    console.log("Menu music playing successfully");
-                }).catch(error => {
-                    console.log("Menu music play was prevented:", error.name);
-                    // Try to initialize audio again
-                    audioContextInitialized = false;
-                    initializeAudio();
+                    currentMusic = menuMusic;
+                }).catch(e => {
+                    // Silent fail
                 });
             }
-        } else if (!menuMusic) {
-            // Load menu music if it doesn't exist
-            loadMenuMusic();
+        } catch (error) {
+            // Silent fail
         }
     }
 
     // Function to play game music
     function playGameMusic() {
-        if (!audioContextInitialized) {
-            console.log("Audio not initialized yet - waiting for user interaction");
-            return;
-        }
+        if (!gameMusic || !audioEnabled) return;
         
         // Stop menu music if playing
         if (menuMusic && !menuMusic.paused) {
@@ -454,35 +437,45 @@ document.addEventListener("DOMContentLoaded", () => {
             menuMusic.currentTime = 0;
         }
         
-        // Play game music if available
-        if (gameMusic) {
-            currentMusic = gameMusic;
+        // Play game music
+        try {
             gameMusic.currentTime = 0;
-            
             const playPromise = gameMusic.play();
             
             if (playPromise !== undefined) {
-                playPromise.catch(error => {
-                    console.log("Game music play was prevented:", error.name);
+                playPromise.then(() => {
+                    currentMusic = gameMusic;
+                }).catch(e => {
+                    // Silent fail
                 });
             }
+        } catch (error) {
+            // Silent fail
         }
     }
 
     // Function to stop all music
     function stopAllMusic() {
         if (menuMusic) {
-            menuMusic.pause();
-            menuMusic.currentTime = 0;
+            try {
+                menuMusic.pause();
+                menuMusic.currentTime = 0;
+            } catch (e) {
+                // Silent fail
+            }
         }
         if (gameMusic) {
-            gameMusic.pause();
-            gameMusic.currentTime = 0;
+            try {
+                gameMusic.pause();
+                gameMusic.currentTime = 0;
+            } catch (e) {
+                // Silent fail
+            }
         }
         currentMusic = null;
     }
 
-    // Initialize audio system
+    // Initialize audio
     initializeAudio();
 
     // Function to load initial menu assets
@@ -630,6 +623,13 @@ document.addEventListener("DOMContentLoaded", () => {
         ctx.textAlign = "center";
         ctx.fillText("Game by RMZ", canvas.width / 2, canvas.height - 50);
         ctx.fillText(`Welcome, ${playerName}!`, canvas.width / 2, canvas.height - 25);
+        
+        // Add audio instruction if audio not enabled
+        if (!audioEnabled) {
+            ctx.fillStyle = "orange";
+            ctx.font = "16px Arial";
+            ctx.fillText("Click anywhere to enable sound", canvas.width / 2, canvas.height - 80);
+        }
     }
 
     // Function to draw the loading screen
@@ -855,10 +855,12 @@ document.addEventListener("DOMContentLoaded", () => {
             updateLoadingProgress();
         };
 
-        // Load audio files
-        gameMusic = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/Playingthegamesound.wav");
+        // Load audio files - SIMPLIFIED
+        gameMusic = new Audio();
+        gameMusic.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/Playingthegamesound.wav";
         gameMusic.loop = true;
         gameMusic.volume = 0.3;
+        gameMusic.preload = "auto";
         gameMusic.oncanplaythrough = () => {
             loadedAssets++;
             updateLoadingProgress();
@@ -867,9 +869,12 @@ document.addEventListener("DOMContentLoaded", () => {
             loadedAssets++;
             updateLoadingProgress();
         };
+        gameMusic.load();
 
-        jumpSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/jumping_sound.wav");
+        jumpSound = new Audio();
+        jumpSound.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/jumping_sound.wav";
         jumpSound.volume = 0.3;
+        jumpSound.preload = "auto";
         jumpSound.oncanplaythrough = () => {
             loadedAssets++;
             updateLoadingProgress();
@@ -878,9 +883,12 @@ document.addEventListener("DOMContentLoaded", () => {
             loadedAssets++;
             updateLoadingProgress();
         };
+        jumpSound.load();
 
-        shootSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/Playershooting.mp3");
+        shootSound = new Audio();
+        shootSound.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/Playershooting.mp3";
         shootSound.volume = 0.3;
+        shootSound.preload = "auto";
         shootSound.oncanplaythrough = () => {
             loadedAssets++;
             updateLoadingProgress();
@@ -889,9 +897,12 @@ document.addEventListener("DOMContentLoaded", () => {
             loadedAssets++;
             updateLoadingProgress();
         };
+        shootSound.load();
 
-        fallSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/Playerfallingdown.mp3");
+        fallSound = new Audio();
+        fallSound.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/Playerfallingdown.mp3";
         fallSound.volume = 0.5;
+        fallSound.preload = "auto";
         fallSound.oncanplaythrough = () => {
             loadedAssets++;
             updateLoadingProgress();
@@ -900,9 +911,12 @@ document.addEventListener("DOMContentLoaded", () => {
             loadedAssets++;
             updateLoadingProgress();
         };
+        fallSound.load();
 
-        spikeDeathSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/Playerkilledbyspikes.wav");
+        spikeDeathSound = new Audio();
+        spikeDeathSound.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/Playerkilledbyspikes.wav";
         spikeDeathSound.volume = 0.5;
+        spikeDeathSound.preload = "auto";
         spikeDeathSound.oncanplaythrough = () => {
             loadedAssets++;
             updateLoadingProgress();
@@ -911,9 +925,12 @@ document.addEventListener("DOMContentLoaded", () => {
             loadedAssets++;
             updateLoadingProgress();
         };
+        spikeDeathSound.load();
 
-        playerDeathSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/Playergetsshootbyenemy.mp3");
+        playerDeathSound = new Audio();
+        playerDeathSound.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/Playergetsshootbyenemy.mp3";
         playerDeathSound.volume = 0.3;
+        playerDeathSound.preload = "auto";
         playerDeathSound.oncanplaythrough = () => {
             loadedAssets++;
             updateLoadingProgress();
@@ -922,9 +939,12 @@ document.addEventListener("DOMContentLoaded", () => {
             loadedAssets++;
             updateLoadingProgress();
         };
+        playerDeathSound.load();
 
-        enemyShootSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/Droneshooting.mp3");
+        enemyShootSound = new Audio();
+        enemyShootSound.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/Droneshooting.mp3";
         enemyShootSound.volume = 0.3;
+        enemyShootSound.preload = "auto";
         enemyShootSound.oncanplaythrough = () => {
             loadedAssets++;
             updateLoadingProgress();
@@ -933,9 +953,12 @@ document.addEventListener("DOMContentLoaded", () => {
             loadedAssets++;
             updateLoadingProgress();
         };
+        enemyShootSound.load();
 
-        enemyDeathSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/Enemydying.wav");
+        enemyDeathSound = new Audio();
+        enemyDeathSound.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/Enemydying.wav";
         enemyDeathSound.volume = 0.3;
+        enemyDeathSound.preload = "auto";
         enemyDeathSound.oncanplaythrough = () => {
             loadedAssets++;
             updateLoadingProgress();
@@ -944,9 +967,12 @@ document.addEventListener("DOMContentLoaded", () => {
             loadedAssets++;
             updateLoadingProgress();
         };
+        enemyDeathSound.load();
 
-        powerUpSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/playerpowerup.wav");
+        powerUpSound = new Audio();
+        powerUpSound.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/playerpowerup.wav";
         powerUpSound.volume = 0.3;
+        powerUpSound.preload = "auto";
         powerUpSound.oncanplaythrough = () => {
             loadedAssets++;
             updateLoadingProgress();
@@ -955,9 +981,12 @@ document.addEventListener("DOMContentLoaded", () => {
             loadedAssets++;
             updateLoadingProgress();
         };
+        powerUpSound.load();
 
-        newHighScoreSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/highscore.wav");
+        newHighScoreSound = new Audio();
+        newHighScoreSound.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/highscore.wav";
         newHighScoreSound.volume = 0.3;
+        newHighScoreSound.preload = "auto";
         newHighScoreSound.oncanplaythrough = () => {
             loadedAssets++;
             updateLoadingProgress();
@@ -966,6 +995,7 @@ document.addEventListener("DOMContentLoaded", () => {
             loadedAssets++;
             updateLoadingProgress();
         };
+        newHighScoreSound.load();
     }
 
     // Function to initialize game systems after assets are loaded
@@ -1191,8 +1221,8 @@ document.addEventListener("DOMContentLoaded", () => {
         gameState = "menu";
         player.y = canvas.height - 150;
         
-        // Start menu music if available
-        if (audioContextInitialized) {
+        // Start menu music if audio is enabled
+        if (audioEnabled) {
             playMenuMusic();
         }
     }
@@ -1205,7 +1235,7 @@ document.addEventListener("DOMContentLoaded", () => {
             currentGameOverMessage = getRandomGameOverMessage();
             stopAllMusic();
         } else if (newState === "menu") {
-            if (audioContextInitialized) {
+            if (audioEnabled) {
                 playMenuMusic();
             }
         }
@@ -1422,7 +1452,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         generatePlatforms();
 
-        if (audioContextInitialized) {
+        if (audioEnabled) {
             playGameMusic();
         }
     }
@@ -1569,6 +1599,14 @@ document.addEventListener("DOMContentLoaded", () => {
     
         ctx.shadowBlur = 0;
         ctx.shadowColor = "transparent";
+        
+        // Add audio instruction if audio not enabled
+        if (!audioEnabled) {
+            ctx.fillStyle = "orange";
+            ctx.font = "18px Arial";
+            ctx.textAlign = "center";
+            ctx.fillText("Click anywhere to enable sound", canvas.width / 2, canvas.height - 90);
+        }
     }
 
     // Event listener for mouse movement on the canvas
