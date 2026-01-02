@@ -68,14 +68,6 @@ document.addEventListener("DOMContentLoaded", () => {
     window.addEventListener('resize', resizeCanvas);
     resizeCanvas(); // Initial resize
 
-    // Load only essential menu assets in Stage 1
-    const menuImage = new Image();
-    menuImage.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/GameMenuBackground.webp";
-
-    const menuMusic = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/GameMenuSound.wav");
-    menuMusic.loop = true;
-    menuMusic.volume = 0.5;
-
     // Game state variables
     let gameState = "loading"; // New initial state: "loading", "menu", "playing", "gameOver"
     let settingsState = false;
@@ -162,6 +154,12 @@ document.addEventListener("DOMContentLoaded", () => {
     let logoSize = 40;
     let logoPadding = 20;
     let privacyPolicyText = "How We Use Your Info & Privacy";
+
+    // Audio variables with better error handling
+    let menuMusic = null;
+    let menuImage = null;
+    let isMenuMusicLoaded = false;
+    let isMenuImageLoaded = false;
 
     // Define all classes at the top to avoid reference errors
     class Animation {
@@ -322,6 +320,55 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    // Function to load initial menu assets with better error handling
+    function loadInitialMenuAssets() {
+        // Load menu image
+        menuImage = new Image();
+        menuImage.onload = function() {
+            isMenuImageLoaded = true;
+            console.log("Menu image loaded successfully");
+        };
+        menuImage.onerror = function() {
+            console.error("Failed to load menu image");
+            isMenuImageLoaded = false;
+        };
+        menuImage.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/GameMenuBackground.webp";
+
+        // Load menu music with better error handling
+        menuMusic = new Audio();
+        menuMusic.loop = true;
+        menuMusic.volume = 0.5;
+        
+        // Set up event listeners for the audio
+        menuMusic.addEventListener('canplaythrough', function() {
+            isMenuMusicLoaded = true;
+            console.log("Menu music loaded and ready to play");
+        });
+        
+        menuMusic.addEventListener('error', function(e) {
+            console.error("Error loading menu music:", e);
+            console.error("Audio error details:", menuMusic.error);
+            isMenuMusicLoaded = false;
+            
+            // Try alternative approach - create audio element differently
+            try {
+                menuMusic = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/GameMenuSound.wav");
+                menuMusic.loop = true;
+                menuMusic.volume = 0.5;
+                menuMusic.load();
+            } catch (err) {
+                console.error("Failed to create audio element:", err);
+            }
+        });
+        
+        // Set src after event listeners are attached
+        menuMusic.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/GameMenuSound.wav";
+        menuMusic.load(); // Preload the audio
+    }
+
+    // Call this function immediately to start loading menu assets
+    loadInitialMenuAssets();
+
     // Function to update button animations
     function updateButtonAnimations() {
         // Pulse animation (size)
@@ -351,7 +398,7 @@ document.addEventListener("DOMContentLoaded", () => {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         
         // Draw menu background if loaded
-        if (menuImage.complete && menuImage.naturalWidth !== 0) {
+        if (isMenuImageLoaded && menuImage.complete && menuImage.naturalWidth !== 0) {
             ctx.drawImage(menuImage, 0, 0, canvas.width, canvas.height);
         } else {
             ctx.fillStyle = "black";
@@ -441,8 +488,9 @@ document.addEventListener("DOMContentLoaded", () => {
         ctx.fillStyle = "rgba(255, 255, 255, 0.3)";
         ctx.fillRect(canvas.width / 2 - 100, buttonY + buttonHeight + 70, 200, 10);
         
+        const menuLoadProgress = isMenuImageLoaded ? 1 : 0.5;
         ctx.fillStyle = "cyan";
-        ctx.fillRect(canvas.width / 2 - 100, buttonY + buttonHeight + 70, 200 * (menuImage.complete ? 1 : 0.5), 10);
+        ctx.fillRect(canvas.width / 2 - 100, buttonY + buttonHeight + 70, 200 * menuLoadProgress, 10);
 
         // Draw game info
         ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
@@ -582,12 +630,22 @@ document.addEventListener("DOMContentLoaded", () => {
             loadedAssets++;
             updateLoadingProgress();
         };
+        backgroundImage.onerror = () => {
+            loadedAssets++;
+            updateLoadingProgress();
+            console.error("Failed to load background image");
+        };
 
         playerSpriteSheet = new Image();
         playerSpriteSheet.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/NewPlayermovement.png";
         playerSpriteSheet.onload = () => {
             loadedAssets++;
             updateLoadingProgress();
+        };
+        playerSpriteSheet.onerror = () => {
+            loadedAssets++;
+            updateLoadingProgress();
+            console.error("Failed to load player sprite sheet");
         };
 
         nonShootingEnemySpriteSheet = new Image();
@@ -596,12 +654,22 @@ document.addEventListener("DOMContentLoaded", () => {
             loadedAssets++;
             updateLoadingProgress();
         };
+        nonShootingEnemySpriteSheet.onerror = () => {
+            loadedAssets++;
+            updateLoadingProgress();
+            console.error("Failed to load non-shooting enemy sprite sheet");
+        };
 
         shootingEnemySpriteSheet = new Image();
         shootingEnemySpriteSheet.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/AIDroneEnemyMovement.png";
         shootingEnemySpriteSheet.onload = () => {
             loadedAssets++;
             updateLoadingProgress();
+        };
+        shootingEnemySpriteSheet.onerror = () => {
+            loadedAssets++;
+            updateLoadingProgress();
+            console.error("Failed to load shooting enemy sprite sheet");
         };
 
         platformImage = new Image();
@@ -610,12 +678,22 @@ document.addEventListener("DOMContentLoaded", () => {
             loadedAssets++;
             updateLoadingProgress();
         };
+        platformImage.onerror = () => {
+            loadedAssets++;
+            updateLoadingProgress();
+            console.error("Failed to load platform image");
+        };
 
         movingPlatformImage = new Image();
         movingPlatformImage.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/moving-platform.jpg";
         movingPlatformImage.onload = () => {
             loadedAssets++;
             updateLoadingProgress();
+        };
+        movingPlatformImage.onerror = () => {
+            loadedAssets++;
+            updateLoadingProgress();
+            console.error("Failed to load moving platform image");
         };
 
         spikeImage = new Image();
@@ -624,12 +702,22 @@ document.addEventListener("DOMContentLoaded", () => {
             loadedAssets++;
             updateLoadingProgress();
         };
+        spikeImage.onerror = () => {
+            loadedAssets++;
+            updateLoadingProgress();
+            console.error("Failed to load spike image");
+        };
 
         facebookLogo = new Image();
         facebookLogo.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/facebook.png";
         facebookLogo.onload = () => {
             loadedAssets++;
             updateLoadingProgress();
+        };
+        facebookLogo.onerror = () => {
+            loadedAssets++;
+            updateLoadingProgress();
+            console.error("Failed to load Facebook logo");
         };
 
         instagramLogo = new Image();
@@ -638,78 +726,45 @@ document.addEventListener("DOMContentLoaded", () => {
             loadedAssets++;
             updateLoadingProgress();
         };
+        instagramLogo.onerror = () => {
+            loadedAssets++;
+            updateLoadingProgress();
+            console.error("Failed to load Instagram logo");
+        };
 
-        // Load audio
-        gameMusic = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/Playingthegamesound.wav");
+        // Load audio with better error handling
+        function createAudioElement(url, volume = 0.5) {
+            const audio = new Audio();
+            audio.volume = volume;
+            
+            audio.addEventListener('canplaythrough', () => {
+                loadedAssets++;
+                updateLoadingProgress();
+            });
+            
+            audio.addEventListener('error', (e) => {
+                loadedAssets++;
+                updateLoadingProgress();
+                console.error(`Failed to load audio: ${url}`, e);
+            });
+            
+            audio.src = url;
+            audio.load();
+            return audio;
+        }
+
+        gameMusic = createAudioElement("https://14rmz.github.io/Cyber-Ninja-Astronaut/Playingthegamesound.wav", 0.5);
         gameMusic.loop = true;
-        gameMusic.volume = 0.5;
-        gameMusic.addEventListener("canplaythrough", () => {
-            loadedAssets++;
-            updateLoadingProgress();
-        });
 
-        jumpSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/jumping_sound.wav");
-        jumpSound.volume = 0.5;
-        jumpSound.addEventListener("canplaythrough", () => {
-            loadedAssets++;
-            updateLoadingProgress();
-        });
-
-        shootSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/Playershooting.mp3");
-        shootSound.volume = 0.5;
-        shootSound.addEventListener("canplaythrough", () => {
-            loadedAssets++;
-            updateLoadingProgress();
-        });
-
-        fallSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/Playerfallingdown.mp3");
-        fallSound.volume = 1;
-        fallSound.addEventListener("canplaythrough", () => {
-            loadedAssets++;
-            updateLoadingProgress();
-        });
-
-        spikeDeathSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/Playerkilledbyspikes.wav");
-        spikeDeathSound.volume = 1;
-        spikeDeathSound.addEventListener("canplaythrough", () => {
-            loadedAssets++;
-            updateLoadingProgress();
-        });
-
-        playerDeathSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/Playergetsshootbyenemy.mp3");
-        playerDeathSound.volume = 0.5;
-        playerDeathSound.addEventListener("canplaythrough", () => {
-            loadedAssets++;
-            updateLoadingProgress();
-        });
-
-        enemyShootSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/Droneshooting.mp3");
-        enemyShootSound.volume = 0.5;
-        enemyShootSound.addEventListener("canplaythrough", () => {
-            loadedAssets++;
-            updateLoadingProgress();
-        });
-
-        enemyDeathSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/Enemydying.wav");
-        enemyDeathSound.volume = 0.5;
-        enemyDeathSound.addEventListener("canplaythrough", () => {
-            loadedAssets++;
-            updateLoadingProgress();
-        });
-
-        powerUpSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/playerpowerup.wav");
-        powerUpSound.volume = 0.5;
-        powerUpSound.addEventListener("canplaythrough", () => {
-            loadedAssets++;
-            updateLoadingProgress();
-        });
-
-        newHighScoreSound = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/highscore.wav");
-        newHighScoreSound.volume = 0.5;
-        newHighScoreSound.addEventListener("canplaythrough", () => {
-            loadedAssets++;
-            updateLoadingProgress();
-        });
+        jumpSound = createAudioElement("https://14rmz.github.io/Cyber-Ninja-Astronaut/jumping_sound.wav", 0.5);
+        shootSound = createAudioElement("https://14rmz.github.io/Cyber-Ninja-Astronaut/Playershooting.mp3", 0.5);
+        fallSound = createAudioElement("https://14rmz.github.io/Cyber-Ninja-Astronaut/Playerfallingdown.mp3", 1);
+        spikeDeathSound = createAudioElement("https://14rmz.github.io/Cyber-Ninja-Astronaut/Playerkilledbyspikes.wav", 1);
+        playerDeathSound = createAudioElement("https://14rmz.github.io/Cyber-Ninja-Astronaut/Playergetsshootbyenemy.mp3", 0.5);
+        enemyShootSound = createAudioElement("https://14rmz.github.io/Cyber-Ninja-Astronaut/Droneshooting.mp3", 0.5);
+        enemyDeathSound = createAudioElement("https://14rmz.github.io/Cyber-Ninja-Astronaut/Enemydying.wav", 0.5);
+        powerUpSound = createAudioElement("https://14rmz.github.io/Cyber-Ninja-Astronaut/playerpowerup.wav", 0.5);
+        newHighScoreSound = createAudioElement("https://14rmz.github.io/Cyber-Ninja-Astronaut/highscore.wav", 0.5);
     }
 
     // Function to initialize game systems after assets are loaded
@@ -839,7 +894,10 @@ document.addEventListener("DOMContentLoaded", () => {
             explode() {
                 this.isExploding = true;
                 this.currentAnimation = nonShootingEnemyAnimations.explode;
-                if (enemyDeathSound) enemyDeathSound.play();
+                if (enemyDeathSound && enemyDeathSound.readyState >= 2) {
+                    enemyDeathSound.currentTime = 0;
+                    enemyDeathSound.play().catch(e => console.log("Could not play enemy death sound:", e));
+                }
             }
         }
 
@@ -916,13 +974,19 @@ document.addEventListener("DOMContentLoaded", () => {
                 const bulletX = this.x + this.width / 2;
                 const bulletY = this.y + this.height / 2;
                 enemyBullets.push(new EnemyBullet(bulletX, bulletY, direction));
-                if (enemyShootSound) enemyShootSound.play();
+                if (enemyShootSound && enemyShootSound.readyState >= 2) {
+                    enemyShootSound.currentTime = 0;
+                    enemyShootSound.play().catch(e => console.log("Could not play enemy shoot sound:", e));
+                }
             }
 
             explode() {
                 this.isExploding = true;
                 this.currentAnimation = shootingEnemyAnimations.explode;
-                if (enemyDeathSound) enemyDeathSound.play();
+                if (enemyDeathSound && enemyDeathSound.readyState >= 2) {
+                    enemyDeathSound.currentTime = 0;
+                    enemyDeathSound.play().catch(e => console.log("Could not play enemy death sound:", e));
+                }
             }
         }
 
@@ -947,22 +1011,51 @@ document.addEventListener("DOMContentLoaded", () => {
         gameState = newState;
     }
 
-    // Music control functions
+    // Improved Music control functions with error handling
     function playMenuMusic() {
-        if (gameMusic) gameMusic.pause();
-        if (gameMusic) gameMusic.currentTime = 0;
-        menuMusic.play();
+        if (gameMusic && gameMusic.readyState >= 2) {
+            gameMusic.pause();
+            gameMusic.currentTime = 0;
+        }
+        
+        if (menuMusic && isMenuMusicLoaded && menuMusic.readyState >= 2) {
+            try {
+                menuMusic.currentTime = 0;
+                menuMusic.play().catch(e => {
+                    console.log("Could not play menu music automatically:", e);
+                    // Don't throw error, just log it
+                });
+            } catch (error) {
+                console.log("Error playing menu music:", error);
+            }
+        }
     }
 
     function playGameMusic() {
-        menuMusic.pause();
-        menuMusic.currentTime = 0;
-        if (gameMusic) gameMusic.play();
+        if (menuMusic && menuMusic.readyState >= 2) {
+            menuMusic.pause();
+            menuMusic.currentTime = 0;
+        }
+        
+        if (gameMusic && gameMusic.readyState >= 2) {
+            try {
+                gameMusic.currentTime = 0;
+                gameMusic.play().catch(e => {
+                    console.log("Could not play game music automatically:", e);
+                });
+            } catch (error) {
+                console.log("Error playing game music:", error);
+            }
+        }
     }
 
     function stopAllMusic() {
-        menuMusic.pause();
-        if (gameMusic) gameMusic.pause();
+        if (menuMusic && menuMusic.readyState >= 2) {
+            menuMusic.pause();
+        }
+        if (gameMusic && gameMusic.readyState >= 2) {
+            gameMusic.pause();
+        }
     }
 
     // Function to generate new platforms
@@ -1014,7 +1107,10 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             if ((event.code === "KeyF" || event.code === "KeyJ") && bullets) {
                 bullets.push(new Bullet(player.x + player.width / 2, player.y + player.height / 2, player.direction));
-                if (shootSound) shootSound.play();
+                if (shootSound && shootSound.readyState >= 2) {
+                    shootSound.currentTime = 0;
+                    shootSound.play().catch(e => console.log("Could not play shoot sound:", e));
+                }
             }
         }
     });
@@ -1063,7 +1159,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (platform.hasSpikes && player.x + player.width > platform.spikeX && player.x < platform.spikeX + platform.spikeWidth) {
                     if (!player.isShieldActive) {
                         gameOver = true;
-                        if (spikeDeathSound) spikeDeathSound.play();
+                        if (spikeDeathSound && spikeDeathSound.readyState >= 2) {
+                            spikeDeathSound.currentTime = 0;
+                            spikeDeathSound.play().catch(e => console.log("Could not play spike death sound:", e));
+                        }
                         updateHighScore();
                     } else {
                         player.y = platform.y - player.height;
@@ -1108,13 +1207,19 @@ document.addEventListener("DOMContentLoaded", () => {
             }, 100);
             player.velocityY = -player.jumpHeight;
             player.isJumping = true;
-            if (jumpSound) jumpSound.play();
+            if (jumpSound && jumpSound.readyState >= 2) {
+                jumpSound.currentTime = 0;
+                jumpSound.play().catch(e => console.log("Could not play jump sound:", e));
+            }
         }
 
         if (player.y > canvas.height) {
             gameOver = true;
             setGameState("gameOver");
-            if (fallSound) fallSound.play();
+            if (fallSound && fallSound.readyState >= 2) {
+                fallSound.currentTime = 0;
+                fallSound.play().catch(e => console.log("Could not play fall sound:", e));
+            }
             updateHighScore();
         }
     }
@@ -1124,7 +1229,10 @@ document.addEventListener("DOMContentLoaded", () => {
         if (player.score > highScore) {
             highScore = player.score;
             localStorage.setItem("highScore", highScore);
-            if (newHighScoreSound) newHighScoreSound.play();
+            if (newHighScoreSound && newHighScoreSound.readyState >= 2) {
+                newHighScoreSound.currentTime = 0;
+                newHighScoreSound.play().catch(e => console.log("Could not play high score sound:", e));
+            }
         }
     }
 
@@ -1184,7 +1292,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Function to draw the game over screen
     function drawGameOverScreen() {
-        if (menuImage.complete && menuImage.naturalWidth !== 0) {
+        if (isMenuImageLoaded && menuImage.complete && menuImage.naturalWidth !== 0) {
             ctx.drawImage(menuImage, 0, 0, canvas.width, canvas.height);
         } else {
             ctx.fillStyle = "black";
@@ -1222,7 +1330,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function drawMainMenu() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
     
-        if (menuImage.complete && menuImage.naturalWidth !== 0) {
+        if (isMenuImageLoaded && menuImage.complete && menuImage.naturalWidth !== 0) {
             ctx.drawImage(menuImage, 0, 0, canvas.width, canvas.height);
         } else {
             ctx.fillStyle = "black";
@@ -1437,7 +1545,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Function to draw the settings menu
     function drawSettingsMenu() {
-        if (menuImage.complete && menuImage.naturalWidth !== 0) {
+        if (isMenuImageLoaded && menuImage.complete && menuImage.naturalWidth !== 0) {
             ctx.drawImage(menuImage, 0, 0, canvas.width, canvas.height);
         } else {
             ctx.fillStyle = "black";
@@ -1453,7 +1561,8 @@ document.addEventListener("DOMContentLoaded", () => {
         ctx.fillText("Settings", canvas.width / 2, canvas.height / 2 - 150);
 
         ctx.font = "30px Arial";
-        ctx.fillText("1. Sound Volume: " + Math.round(menuMusic.volume * 100) + "%", canvas.width / 2, canvas.height / 2 - 50);
+        const volume = menuMusic ? Math.round(menuMusic.volume * 100) : 50;
+        ctx.fillText("1. Sound Volume: " + volume + "%", canvas.width / 2, canvas.height / 2 - 50);
         ctx.fillText("2. Back to Main Menu", canvas.width / 2, canvas.height / 2);
 
         ctx.font = "20px Arial";
@@ -1462,7 +1571,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Function to draw the "How to Play" screen
     function drawHowToPlayScreen() {
-        if (menuImage.complete && menuImage.naturalWidth !== 0) {
+        if (isMenuImageLoaded && menuImage.complete && menuImage.naturalWidth !== 0) {
             ctx.drawImage(menuImage, 0, 0, canvas.width, canvas.height);
         } else {
             ctx.fillStyle = "black";
@@ -1542,7 +1651,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 ) {
                     if (!player.isShieldActive) {
                         gameOver = true;
-                        if (playerDeathSound) playerDeathSound.play();
+                        if (playerDeathSound && playerDeathSound.readyState >= 2) {
+                            playerDeathSound.currentTime = 0;
+                            playerDeathSound.play().catch(e => console.log("Could not play player death sound:", e));
+                        }
                         updateHighScore();
                     }
                 }
@@ -1561,7 +1673,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 ) {
                     if (!player.isShieldActive) {
                         gameOver = true;
-                        if (playerDeathSound) playerDeathSound.play();
+                        if (playerDeathSound && playerDeathSound.readyState >= 2) {
+                            playerDeathSound.currentTime = 0;
+                            playerDeathSound.play().catch(e => console.log("Could not play player death sound:", e));
+                        }
                         updateHighScore();
                     }
                 }
@@ -1577,7 +1692,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (powerUp.isCollected()) {
                     activateShield(powerUp.duration);
                     shieldPowerUps.splice(index, 1);
-                    if (powerUpSound) powerUpSound.play();
+                    if (powerUpSound && powerUpSound.readyState >= 2) {
+                        powerUpSound.currentTime = 0;
+                        powerUpSound.play().catch(e => console.log("Could not play power-up sound:", e));
+                    }
                 }
             });
         }
@@ -1730,7 +1848,11 @@ document.addEventListener("DOMContentLoaded", () => {
             } else {
                 drawMainMenu();
             }
-            playMenuMusic();
+            
+            // Only try to play music if it's loaded and ready
+            if (isMenuMusicLoaded && menuMusic && menuMusic.readyState >= 2) {
+                playMenuMusic();
+            }
         } else if (gameState === "playing") {
             update();
             render();
@@ -1793,10 +1915,10 @@ document.addEventListener("DOMContentLoaded", () => {
             if (settingsState) {
                 if (event.code === "ArrowUp") {
                     if (gameMusic) gameMusic.volume = Math.min(1, gameMusic.volume + 0.1);
-                    menuMusic.volume = Math.min(1, menuMusic.volume + 0.1);
+                    if (menuMusic) menuMusic.volume = Math.min(1, menuMusic.volume + 0.1);
                 } else if (event.code === "ArrowDown") {
                     if (gameMusic) gameMusic.volume = Math.max(0, gameMusic.volume - 0.1);
-                    menuMusic.volume = Math.max(0, menuMusic.volume - 0.1);
+                    if (menuMusic) menuMusic.volume = Math.max(0, menuMusic.volume - 0.1);
                 } else if (event.code === "Enter") {
                     settingsState = false;
                 }
