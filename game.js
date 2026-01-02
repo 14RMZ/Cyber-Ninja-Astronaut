@@ -155,7 +155,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let logoPadding = 20;
     let privacyPolicyText = "How We Use Your Info & Privacy";
 
-    // Audio variables - SIMPLIFIED APPROACH
+    // Audio variables - FIXED APPROACH
     let menuMusic = null;
     let menuImage = null;
     let isMenuMusicLoaded = false;
@@ -163,6 +163,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let currentMusic = null;
     let audioContextInitialized = false;
     let audioEnabled = false;
+    let audioInitialized = false;
 
     // Define all classes at the top to avoid reference errors
     class Animation {
@@ -323,8 +324,11 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // SIMPLIFIED AUDIO HANDLING
+    // FIXED AUDIO HANDLING
     function initializeAudio() {
+        if (audioInitialized) return;
+        audioInitialized = true;
+        
         // Create menu music with proper error handling
         try {
             menuMusic = new Audio();
@@ -400,30 +404,30 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Function to play menu music
+    // Function to play menu music - FIXED
     function playMenuMusic() {
         if (!menuMusic || !isMenuMusicLoaded || !audioEnabled) return;
         
-        // Stop game music if playing
-        if (gameMusic && !gameMusic.paused) {
-            gameMusic.pause();
-            gameMusic.currentTime = 0;
-        }
-        
-        // Play menu music
-        try {
-            menuMusic.currentTime = 0;
-            const playPromise = menuMusic.play();
-            
-            if (playPromise !== undefined) {
-                playPromise.then(() => {
-                    currentMusic = menuMusic;
-                }).catch(e => {
-                    // Silent fail
-                });
+        // Only start playing if not already playing
+        if (menuMusic.paused) {
+            try {
+                menuMusic.currentTime = 0;
+                const playPromise = menuMusic.play();
+                
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        currentMusic = menuMusic;
+                        console.log("Menu music started playing");
+                    }).catch(e => {
+                        console.log("Menu music play failed:", e);
+                    });
+                }
+            } catch (error) {
+                console.log("Menu music play error:", error);
             }
-        } catch (error) {
-            // Silent fail
+        } else {
+            // If already playing, ensure it continues
+            currentMusic = menuMusic;
         }
     }
 
@@ -458,8 +462,12 @@ document.addEventListener("DOMContentLoaded", () => {
     function stopAllMusic() {
         if (menuMusic) {
             try {
-                menuMusic.pause();
-                menuMusic.currentTime = 0;
+                // Don't pause menu music - let it continue if we're going back to menu
+                // Only pause if we're going to game over or playing
+                if (gameState !== "menu") {
+                    menuMusic.pause();
+                    menuMusic.currentTime = 0;
+                }
             } catch (e) {
                 // Silent fail
             }
@@ -855,7 +863,7 @@ document.addEventListener("DOMContentLoaded", () => {
             updateLoadingProgress();
         };
 
-        // Load audio files - SIMPLIFIED
+        // Load audio files - FIXED
         gameMusic = new Audio();
         gameMusic.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/Playingthegamesound.wav";
         gameMusic.loop = true;
@@ -1221,13 +1229,13 @@ document.addEventListener("DOMContentLoaded", () => {
         gameState = "menu";
         player.y = canvas.height - 150;
         
-        // Start menu music if audio is enabled
+        // Start menu music if audio is enabled - FIXED
         if (audioEnabled) {
             playMenuMusic();
         }
     }
 
-    // Function to set the game state
+    // Function to set the game state - FIXED
     function setGameState(newState) {
         if (newState === "playing") {
             resetGame();
@@ -1235,7 +1243,8 @@ document.addEventListener("DOMContentLoaded", () => {
             currentGameOverMessage = getRandomGameOverMessage();
             stopAllMusic();
         } else if (newState === "menu") {
-            if (audioEnabled) {
+            // When returning to menu, ensure menu music plays
+            if (audioEnabled && isMenuMusicLoaded) {
                 playMenuMusic();
             }
         }
