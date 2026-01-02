@@ -163,6 +163,165 @@ document.addEventListener("DOMContentLoaded", () => {
     let logoPadding = 20;
     let privacyPolicyText = "How We Use Your Info & Privacy";
 
+    // Define all classes at the top to avoid reference errors
+    class Animation {
+        constructor(frames, frameRate) {
+            this.frames = frames;
+            this.frameRate = frameRate;
+            this.currentFrameIndex = 0;
+            this.frameTimer = 0;
+        }
+
+        update() {
+            this.frameTimer++;
+            if (this.frameTimer >= this.frameRate) {
+                this.frameTimer = 0;
+                this.currentFrameIndex = (this.currentFrameIndex + 1) % this.frames.length;
+            }
+        }
+
+        getCurrentFrame() {
+            return this.frames[this.currentFrameIndex];
+        }
+    }
+
+    class Platform {
+        constructor(x, y, width, height, isMoving = false, hasSpikes = false) {
+            this.x = x;
+            this.y = y;
+            this.width = width;
+            this.height = height;
+            this.isMoving = isMoving;
+            this.originalX = x;
+            this.moveRange = 100;
+            this.direction = 1;
+            this.speed = isMoving ? 2 : 0;
+            this.hasSpikes = hasSpikes;
+
+            if (hasSpikes) {
+                let positionChance = Math.random();
+                if (positionChance < 0.33) {
+                    this.spikeX = this.x;
+                } else if (positionChance < 0.66) {
+                    this.spikeX = this.x + this.width / 2 - 30;
+                } else {
+                    this.spikeX = this.x + this.width - 60;
+                }
+                this.spikeWidth = this.width / 3;
+            }
+        }
+
+        update() {
+            if (this.isMoving) {
+                this.x += this.direction * this.speed;
+                if (this.x > this.originalX + this.moveRange || this.x < this.originalX - this.moveRange) {
+                    this.direction *= -1;
+                }
+                if (this.hasSpikes) {
+                    this.spikeX += this.direction * this.speed;
+                }
+            }
+        }
+
+        draw() {
+            const platformImg = this.isMoving ? movingPlatformImage : platformImage;
+            if (platformImg && platformImg.complete && platformImg.naturalWidth !== 0) {
+                ctx.drawImage(
+                    platformImg,
+                    this.x - camera.x, this.y, this.width, this.height
+                );
+            } else {
+                ctx.fillStyle = this.isMoving ? "purple" : "#654321";
+                ctx.fillRect(this.x - camera.x, this.y, this.width, this.height);
+            }
+
+            if (this.hasSpikes && spikeImage && spikeImage.complete && spikeImage.naturalWidth !== 0) {
+                for (let i = 0; i < this.spikeWidth; i += 20) {
+                    ctx.drawImage(
+                        spikeImage,
+                        this.spikeX + i - camera.x, this.y - 15, 20, 15
+                    );
+                }
+            }
+        }
+    }
+
+    class Bullet {
+        constructor(x, y, direction) {
+            this.x = x;
+            this.y = y;
+            this.width = 10;
+            this.height = 5;
+            this.speed = 8;
+            this.direction = direction;
+        }
+
+        update() {
+            this.x += this.speed * this.direction;
+        }
+
+        draw() {
+            ctx.fillStyle = "yellow";
+            ctx.fillRect(this.x - camera.x, this.y, this.width, this.height);
+        }
+
+        hitEnemy(enemy) {
+            return (
+                this.x + this.width > enemy.x &&
+                this.x < enemy.x + enemy.width &&
+                this.y + this.height > enemy.y &&
+                this.y < enemy.y + enemy.height
+            );
+        }
+    }
+
+    class EnemyBullet {
+        constructor(x, y, direction) {
+            this.x = x;
+            this.y = y;
+            this.width = 10;
+            this.height = 5;
+            this.speed = 8;
+            this.direction = direction;
+        }
+
+        update() {
+            this.x += this.speed * this.direction;
+        }
+
+        draw() {
+            ctx.fillStyle = "red";
+            ctx.fillRect(this.x - camera.x, this.y, this.width, this.height);
+        }
+    }
+
+    class ShieldPowerUp {
+        constructor(x, y) {
+            this.x = x;
+            this.y = y;
+            this.width = 20;
+            this.height = 20;
+            this.duration = 5;
+            this.isActive = false;
+        }
+
+        draw() {
+            ctx.fillStyle = "cyan";
+            ctx.beginPath();
+            ctx.arc(this.x - camera.x, this.y, this.width / 2, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        isCollected() {
+            return (
+                player.x + player.width > this.x &&
+                player.x < this.x + this.width &&
+                player.y + player.height > this.y &&
+                player.y < this.y + this.height
+            );
+        }
+    }
+
     // Function to update button animations
     function updateButtonAnimations() {
         // Pulse animation (size)
@@ -555,28 +714,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Function to initialize game systems after assets are loaded
     function initializeGameSystems() {
-        // Initialize animations
-        class Animation {
-            constructor(frames, frameRate) {
-                this.frames = frames;
-                this.frameRate = frameRate;
-                this.currentFrameIndex = 0;
-                this.frameTimer = 0;
-            }
-
-            update() {
-                this.frameTimer++;
-                if (this.frameTimer >= this.frameRate) {
-                    this.frameTimer = 0;
-                    this.currentFrameIndex = (this.currentFrameIndex + 1) % this.frames.length;
-                }
-            }
-
-            getCurrentFrame() {
-                return this.frames[this.currentFrameIndex];
-            }
-        }
-
+        // Initialize animations instances
         playerAnimations = {
             idle: new Animation([{ x: 0, y: 0, width: 32, height: 48 }], 1),
             walk: new Animation([{ x: 32, y: 0, width: 32, height: 48 }, { x: 64, y: 0, width: 32, height: 48 }], 10),
@@ -635,76 +773,14 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         };
 
-        // Initialize game arrays
+        // Initialize game arrays with the Platform class (now defined at top)
         platforms = [new Platform(50, canvas.height - 100, 200, 20)];
         enemies = [];
         bullets = [];
         enemyBullets = [];
         shieldPowerUps = [];
 
-        // Initialize Platform class
-        class Platform {
-            constructor(x, y, width, height, isMoving = false, hasSpikes = false) {
-                this.x = x;
-                this.y = y;
-                this.width = width;
-                this.height = height;
-                this.isMoving = isMoving;
-                this.originalX = x;
-                this.moveRange = 100;
-                this.direction = 1;
-                this.speed = isMoving ? 2 : 0;
-                this.hasSpikes = hasSpikes;
-
-                if (hasSpikes) {
-                    let positionChance = Math.random();
-                    if (positionChance < 0.33) {
-                        this.spikeX = this.x;
-                    } else if (positionChance < 0.66) {
-                        this.spikeX = this.x + this.width / 2 - 30;
-                    } else {
-                        this.spikeX = this.x + this.width - 60;
-                    }
-                    this.spikeWidth = this.width / 3;
-                }
-            }
-
-            update() {
-                if (this.isMoving) {
-                    this.x += this.direction * this.speed;
-                    if (this.x > this.originalX + this.moveRange || this.x < this.originalX - this.moveRange) {
-                        this.direction *= -1;
-                    }
-                    if (this.hasSpikes) {
-                        this.spikeX += this.direction * this.speed;
-                    }
-                }
-            }
-
-            draw() {
-                const platformImg = this.isMoving ? movingPlatformImage : platformImage;
-                if (platformImg.complete && platformImg.naturalWidth !== 0) {
-                    ctx.drawImage(
-                        platformImg,
-                        this.x - camera.x, this.y, this.width, this.height
-                    );
-                } else {
-                    ctx.fillStyle = this.isMoving ? "purple" : "#654321";
-                    ctx.fillRect(this.x - camera.x, this.y, this.width, this.height);
-                }
-
-                if (this.hasSpikes && spikeImage.complete && spikeImage.naturalWidth !== 0) {
-                    for (let i = 0; i < this.spikeWidth; i += 20) {
-                        ctx.drawImage(
-                            spikeImage,
-                            this.spikeX + i - camera.x, this.y - 15, 20, 15
-                        );
-                    }
-                }
-            }
-        }
-
-        // Initialize NonShootingEnemy class
+        // Define enemy classes that depend on loaded assets
         class NonShootingEnemy {
             constructor(platform) {
                 this.platform = platform;
@@ -763,11 +839,10 @@ document.addEventListener("DOMContentLoaded", () => {
             explode() {
                 this.isExploding = true;
                 this.currentAnimation = nonShootingEnemyAnimations.explode;
-                enemyDeathSound.play();
+                if (enemyDeathSound) enemyDeathSound.play();
             }
         }
 
-        // Initialize ShootingEnemy class
         class ShootingEnemy {
             constructor(platform) {
                 this.platform = platform;
@@ -841,94 +916,19 @@ document.addEventListener("DOMContentLoaded", () => {
                 const bulletX = this.x + this.width / 2;
                 const bulletY = this.y + this.height / 2;
                 enemyBullets.push(new EnemyBullet(bulletX, bulletY, direction));
-                enemyShootSound.play();
+                if (enemyShootSound) enemyShootSound.play();
             }
 
             explode() {
                 this.isExploding = true;
                 this.currentAnimation = shootingEnemyAnimations.explode;
-                enemyDeathSound.play();
+                if (enemyDeathSound) enemyDeathSound.play();
             }
         }
 
-        // Initialize Bullet class
-        class Bullet {
-            constructor(x, y, direction) {
-                this.x = x;
-                this.y = y;
-                this.width = 10;
-                this.height = 5;
-                this.speed = 8;
-                this.direction = direction;
-            }
-
-            update() {
-                this.x += this.speed * this.direction;
-            }
-
-            draw() {
-                ctx.fillStyle = "yellow";
-                ctx.fillRect(this.x - camera.x, this.y, this.width, this.height);
-            }
-
-            hitEnemy(enemy) {
-                return (
-                    this.x + this.width > enemy.x &&
-                    this.x < enemy.x + enemy.width &&
-                    this.y + this.height > enemy.y &&
-                    this.y < enemy.y + enemy.height
-                );
-            }
-        }
-
-        // Initialize EnemyBullet class
-        class EnemyBullet {
-            constructor(x, y, direction) {
-                this.x = x;
-                this.y = y;
-                this.width = 10;
-                this.height = 5;
-                this.speed = 8;
-                this.direction = direction;
-            }
-
-            update() {
-                this.x += this.speed * this.direction;
-            }
-
-            draw() {
-                ctx.fillStyle = "red";
-                ctx.fillRect(this.x - camera.x, this.y, this.width, this.height);
-            }
-        }
-
-        // Initialize ShieldPowerUp class
-        class ShieldPowerUp {
-            constructor(x, y) {
-                this.x = x;
-                this.y = y;
-                this.width = 20;
-                this.height = 20;
-                this.duration = 5;
-                this.isActive = false;
-            }
-
-            draw() {
-                ctx.fillStyle = "cyan";
-                ctx.beginPath();
-                ctx.arc(this.x - camera.x, this.y, this.width / 2, 0, Math.PI * 2);
-                ctx.fill();
-            }
-
-            isCollected() {
-                return (
-                    player.x + player.width > this.x &&
-                    player.x < this.x + this.width &&
-                    player.y + player.height > this.y &&
-                    player.y < this.y + this.height
-                );
-            }
-        }
+        // Store enemy classes globally so they can be used elsewhere
+        window.NonShootingEnemy = NonShootingEnemy;
+        window.ShootingEnemy = ShootingEnemy;
 
         // Mark assets as loaded
         assetsLoaded = true;
@@ -983,11 +983,11 @@ document.addEventListener("DOMContentLoaded", () => {
             platforms.push(platform);
 
             if (hasNonShootingEnemy) {
-                enemies.push(new NonShootingEnemy(platform));
+                enemies.push(new window.NonShootingEnemy(platform));
             }
 
             if (hasShootingEnemy) {
-                enemies.push(new ShootingEnemy(platform));
+                enemies.push(new window.ShootingEnemy(platform));
             }
 
             if (hasShieldPowerUp) {
@@ -1515,9 +1515,9 @@ document.addEventListener("DOMContentLoaded", () => {
                         enemy.explode();
     
                         // Update score based on enemy type
-                        if (enemy instanceof ShootingEnemy) {
+                        if (enemy instanceof window.ShootingEnemy) {
                             player.score += 5;
-                        } else if (enemy instanceof NonShootingEnemy) {
+                        } else if (enemy instanceof window.NonShootingEnemy) {
                             player.score += 3;
                         }
                     }
