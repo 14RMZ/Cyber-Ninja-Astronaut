@@ -155,11 +155,13 @@ document.addEventListener("DOMContentLoaded", () => {
     let logoPadding = 20;
     let privacyPolicyText = "How We Use Your Info & Privacy";
 
-    // Audio variables with better error handling
+    // Audio variables with better management
     let menuMusic = null;
     let menuImage = null;
     let isMenuMusicLoaded = false;
     let isMenuImageLoaded = false;
+    let currentMusic = null; // Track which music is currently playing
+    let isAudioContextAllowed = false; // Track if user has interacted with audio
 
     // Define all classes at the top to avoid reference errors
     class Animation {
@@ -320,6 +322,30 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    // Function to safely play audio with user interaction requirement
+    function safePlayAudio(audioElement) {
+        if (!audioElement) return;
+        
+        // Check if audio is loaded
+        if (audioElement.readyState < 2) {
+            console.log("Audio not loaded yet");
+            return;
+        }
+        
+        // Reset audio to start
+        audioElement.currentTime = 0;
+        
+        // Try to play with error handling
+        const playPromise = audioElement.play();
+        
+        if (playPromise !== undefined) {
+            playPromise.catch(error => {
+                console.log("Audio playback failed:", error);
+                // Don't show error to user, just log it
+            });
+        }
+    }
+
     // Function to load initial menu assets with better error handling
     function loadInitialMenuAssets() {
         // Load menu image
@@ -337,7 +363,7 @@ document.addEventListener("DOMContentLoaded", () => {
         // Load menu music with better error handling
         menuMusic = new Audio();
         menuMusic.loop = true;
-        menuMusic.volume = 0.5;
+        menuMusic.volume = 0.3; // Lower volume to prevent distortion
         
         // Set up event listeners for the audio
         menuMusic.addEventListener('canplaythrough', function() {
@@ -352,9 +378,10 @@ document.addEventListener("DOMContentLoaded", () => {
             
             // Try alternative approach - create audio element differently
             try {
-                menuMusic = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/GameMenuSound.wav");
+                menuMusic = new Audio();
                 menuMusic.loop = true;
-                menuMusic.volume = 0.5;
+                menuMusic.volume = 0.3;
+                menuMusic.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/GameMenuSound.wav";
                 menuMusic.load();
             } catch (err) {
                 console.error("Failed to create audio element:", err);
@@ -733,9 +760,10 @@ document.addEventListener("DOMContentLoaded", () => {
         };
 
         // Load audio with better error handling
-        function createAudioElement(url, volume = 0.5) {
+        function createAudioElement(url, volume = 0.3, loop = false) {
             const audio = new Audio();
             audio.volume = volume;
+            audio.loop = loop;
             
             audio.addEventListener('canplaythrough', () => {
                 loadedAssets++;
@@ -749,22 +777,21 @@ document.addEventListener("DOMContentLoaded", () => {
             });
             
             audio.src = url;
-            audio.load();
+            audio.preload = "auto";
             return audio;
         }
 
-        gameMusic = createAudioElement("https://14rmz.github.io/Cyber-Ninja-Astronaut/Playingthegamesound.wav", 0.5);
-        gameMusic.loop = true;
+        gameMusic = createAudioElement("https://14rmz.github.io/Cyber-Ninja-Astronaut/Playingthegamesound.wav", 0.3, true);
 
-        jumpSound = createAudioElement("https://14rmz.github.io/Cyber-Ninja-Astronaut/jumping_sound.wav", 0.5);
-        shootSound = createAudioElement("https://14rmz.github.io/Cyber-Ninja-Astronaut/Playershooting.mp3", 0.5);
-        fallSound = createAudioElement("https://14rmz.github.io/Cyber-Ninja-Astronaut/Playerfallingdown.mp3", 1);
-        spikeDeathSound = createAudioElement("https://14rmz.github.io/Cyber-Ninja-Astronaut/Playerkilledbyspikes.wav", 1);
-        playerDeathSound = createAudioElement("https://14rmz.github.io/Cyber-Ninja-Astronaut/Playergetsshootbyenemy.mp3", 0.5);
-        enemyShootSound = createAudioElement("https://14rmz.github.io/Cyber-Ninja-Astronaut/Droneshooting.mp3", 0.5);
-        enemyDeathSound = createAudioElement("https://14rmz.github.io/Cyber-Ninja-Astronaut/Enemydying.wav", 0.5);
-        powerUpSound = createAudioElement("https://14rmz.github.io/Cyber-Ninja-Astronaut/playerpowerup.wav", 0.5);
-        newHighScoreSound = createAudioElement("https://14rmz.github.io/Cyber-Ninja-Astronaut/highscore.wav", 0.5);
+        jumpSound = createAudioElement("https://14rmz.github.io/Cyber-Ninja-Astronaut/jumping_sound.wav", 0.3);
+        shootSound = createAudioElement("https://14rmz.github.io/Cyber-Ninja-Astronaut/Playershooting.mp3", 0.3);
+        fallSound = createAudioElement("https://14rmz.github.io/Cyber-Ninja-Astronaut/Playerfallingdown.mp3", 0.5);
+        spikeDeathSound = createAudioElement("https://14rmz.github.io/Cyber-Ninja-Astronaut/Playerkilledbyspikes.wav", 0.5);
+        playerDeathSound = createAudioElement("https://14rmz.github.io/Cyber-Ninja-Astronaut/Playergetsshootbyenemy.mp3", 0.3);
+        enemyShootSound = createAudioElement("https://14rmz.github.io/Cyber-Ninja-Astronaut/Droneshooting.mp3", 0.3);
+        enemyDeathSound = createAudioElement("https://14rmz.github.io/Cyber-Ninja-Astronaut/Enemydying.wav", 0.3);
+        powerUpSound = createAudioElement("https://14rmz.github.io/Cyber-Ninja-Astronaut/playerpowerup.wav", 0.3);
+        newHighScoreSound = createAudioElement("https://14rmz.github.io/Cyber-Ninja-Astronaut/highscore.wav", 0.3);
     }
 
     // Function to initialize game systems after assets are loaded
@@ -894,9 +921,9 @@ document.addEventListener("DOMContentLoaded", () => {
             explode() {
                 this.isExploding = true;
                 this.currentAnimation = nonShootingEnemyAnimations.explode;
-                if (enemyDeathSound && enemyDeathSound.readyState >= 2) {
+                if (enemyDeathSound) {
                     enemyDeathSound.currentTime = 0;
-                    enemyDeathSound.play().catch(e => console.log("Could not play enemy death sound:", e));
+                    safePlayAudio(enemyDeathSound);
                 }
             }
         }
@@ -974,18 +1001,18 @@ document.addEventListener("DOMContentLoaded", () => {
                 const bulletX = this.x + this.width / 2;
                 const bulletY = this.y + this.height / 2;
                 enemyBullets.push(new EnemyBullet(bulletX, bulletY, direction));
-                if (enemyShootSound && enemyShootSound.readyState >= 2) {
+                if (enemyShootSound) {
                     enemyShootSound.currentTime = 0;
-                    enemyShootSound.play().catch(e => console.log("Could not play enemy shoot sound:", e));
+                    safePlayAudio(enemyShootSound);
                 }
             }
 
             explode() {
                 this.isExploding = true;
                 this.currentAnimation = shootingEnemyAnimations.explode;
-                if (enemyDeathSound && enemyDeathSound.readyState >= 2) {
+                if (enemyDeathSound) {
                     enemyDeathSound.currentTime = 0;
-                    enemyDeathSound.play().catch(e => console.log("Could not play enemy death sound:", e));
+                    safePlayAudio(enemyDeathSound);
                 }
             }
         }
@@ -998,6 +1025,8 @@ document.addEventListener("DOMContentLoaded", () => {
         assetsLoaded = true;
         gameState = "menu";
         player.y = canvas.height - 150;
+        
+        // Start menu music
         playMenuMusic();
     }
 
@@ -1007,55 +1036,58 @@ document.addEventListener("DOMContentLoaded", () => {
             resetGame();
         } else if (newState === "gameOver") {
             currentGameOverMessage = getRandomGameOverMessage();
+            stopAllMusic();
         }
         gameState = newState;
     }
 
-    // Improved Music control functions with error handling
+    // Improved Music control functions with proper audio management
     function playMenuMusic() {
+        // Stop any currently playing music
+        if (currentMusic && currentMusic !== menuMusic) {
+            currentMusic.pause();
+            currentMusic.currentTime = 0;
+        }
+        
+        // Stop game music if it's playing
         if (gameMusic && gameMusic.readyState >= 2) {
             gameMusic.pause();
             gameMusic.currentTime = 0;
         }
         
+        // Play menu music if available
         if (menuMusic && isMenuMusicLoaded && menuMusic.readyState >= 2) {
-            try {
-                menuMusic.currentTime = 0;
-                menuMusic.play().catch(e => {
-                    console.log("Could not play menu music automatically:", e);
-                    // Don't throw error, just log it
-                });
-            } catch (error) {
-                console.log("Error playing menu music:", error);
-            }
+            currentMusic = menuMusic;
+            menuMusic.currentTime = 0;
+            safePlayAudio(menuMusic);
         }
     }
 
     function playGameMusic() {
+        // Stop menu music if it's playing
         if (menuMusic && menuMusic.readyState >= 2) {
             menuMusic.pause();
             menuMusic.currentTime = 0;
         }
         
+        // Play game music if available
         if (gameMusic && gameMusic.readyState >= 2) {
-            try {
-                gameMusic.currentTime = 0;
-                gameMusic.play().catch(e => {
-                    console.log("Could not play game music automatically:", e);
-                });
-            } catch (error) {
-                console.log("Error playing game music:", error);
-            }
+            currentMusic = gameMusic;
+            gameMusic.currentTime = 0;
+            safePlayAudio(gameMusic);
         }
     }
 
     function stopAllMusic() {
         if (menuMusic && menuMusic.readyState >= 2) {
             menuMusic.pause();
+            menuMusic.currentTime = 0;
         }
         if (gameMusic && gameMusic.readyState >= 2) {
             gameMusic.pause();
+            gameMusic.currentTime = 0;
         }
+        currentMusic = null;
     }
 
     // Function to generate new platforms
@@ -1107,9 +1139,9 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             if ((event.code === "KeyF" || event.code === "KeyJ") && bullets) {
                 bullets.push(new Bullet(player.x + player.width / 2, player.y + player.height / 2, player.direction));
-                if (shootSound && shootSound.readyState >= 2) {
+                if (shootSound) {
                     shootSound.currentTime = 0;
-                    shootSound.play().catch(e => console.log("Could not play shoot sound:", e));
+                    safePlayAudio(shootSound);
                 }
             }
         }
@@ -1159,9 +1191,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (platform.hasSpikes && player.x + player.width > platform.spikeX && player.x < platform.spikeX + platform.spikeWidth) {
                     if (!player.isShieldActive) {
                         gameOver = true;
-                        if (spikeDeathSound && spikeDeathSound.readyState >= 2) {
+                        if (spikeDeathSound) {
                             spikeDeathSound.currentTime = 0;
-                            spikeDeathSound.play().catch(e => console.log("Could not play spike death sound:", e));
+                            safePlayAudio(spikeDeathSound);
                         }
                         updateHighScore();
                     } else {
@@ -1207,18 +1239,18 @@ document.addEventListener("DOMContentLoaded", () => {
             }, 100);
             player.velocityY = -player.jumpHeight;
             player.isJumping = true;
-            if (jumpSound && jumpSound.readyState >= 2) {
+            if (jumpSound) {
                 jumpSound.currentTime = 0;
-                jumpSound.play().catch(e => console.log("Could not play jump sound:", e));
+                safePlayAudio(jumpSound);
             }
         }
 
         if (player.y > canvas.height) {
             gameOver = true;
             setGameState("gameOver");
-            if (fallSound && fallSound.readyState >= 2) {
+            if (fallSound) {
                 fallSound.currentTime = 0;
-                fallSound.play().catch(e => console.log("Could not play fall sound:", e));
+                safePlayAudio(fallSound);
             }
             updateHighScore();
         }
@@ -1229,9 +1261,9 @@ document.addEventListener("DOMContentLoaded", () => {
         if (player.score > highScore) {
             highScore = player.score;
             localStorage.setItem("highScore", highScore);
-            if (newHighScoreSound && newHighScoreSound.readyState >= 2) {
+            if (newHighScoreSound) {
                 newHighScoreSound.currentTime = 0;
-                newHighScoreSound.play().catch(e => console.log("Could not play high score sound:", e));
+                safePlayAudio(newHighScoreSound);
             }
         }
     }
@@ -1283,7 +1315,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         generatePlatforms();
 
-        if (playerDeathSound) playerDeathSound.volume = 0.5;
+        if (playerDeathSound) playerDeathSound.volume = 0.3;
         if (spikeDeathSound) spikeDeathSound.volume = 0.5;
         if (fallSound) fallSound.volume = 0.5;
 
@@ -1561,7 +1593,7 @@ document.addEventListener("DOMContentLoaded", () => {
         ctx.fillText("Settings", canvas.width / 2, canvas.height / 2 - 150);
 
         ctx.font = "30px Arial";
-        const volume = menuMusic ? Math.round(menuMusic.volume * 100) : 50;
+        const volume = menuMusic ? Math.round(menuMusic.volume * 100) : 30;
         ctx.fillText("1. Sound Volume: " + volume + "%", canvas.width / 2, canvas.height / 2 - 50);
         ctx.fillText("2. Back to Main Menu", canvas.width / 2, canvas.height / 2);
 
@@ -1651,9 +1683,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 ) {
                     if (!player.isShieldActive) {
                         gameOver = true;
-                        if (playerDeathSound && playerDeathSound.readyState >= 2) {
+                        if (playerDeathSound) {
                             playerDeathSound.currentTime = 0;
-                            playerDeathSound.play().catch(e => console.log("Could not play player death sound:", e));
+                            safePlayAudio(playerDeathSound);
                         }
                         updateHighScore();
                     }
@@ -1673,9 +1705,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 ) {
                     if (!player.isShieldActive) {
                         gameOver = true;
-                        if (playerDeathSound && playerDeathSound.readyState >= 2) {
+                        if (playerDeathSound) {
                             playerDeathSound.currentTime = 0;
-                            playerDeathSound.play().catch(e => console.log("Could not play player death sound:", e));
+                            safePlayAudio(playerDeathSound);
                         }
                         updateHighScore();
                     }
@@ -1692,9 +1724,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (powerUp.isCollected()) {
                     activateShield(powerUp.duration);
                     shieldPowerUps.splice(index, 1);
-                    if (powerUpSound && powerUpSound.readyState >= 2) {
+                    if (powerUpSound) {
                         powerUpSound.currentTime = 0;
-                        powerUpSound.play().catch(e => console.log("Could not play power-up sound:", e));
+                        safePlayAudio(powerUpSound);
                     }
                 }
             });
@@ -1849,14 +1881,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 drawMainMenu();
             }
             
-            // Only try to play music if it's loaded and ready
-            if (isMenuMusicLoaded && menuMusic && menuMusic.readyState >= 2) {
-                playMenuMusic();
-            }
+            // Don't call playMenuMusic() here - it's called when needed
         } else if (gameState === "playing") {
             update();
             render();
-            playGameMusic();
         } else if (gameState === "gameOver") {
             drawGameOverScreen();
         }
