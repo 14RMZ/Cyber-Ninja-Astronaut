@@ -155,16 +155,13 @@ document.addEventListener("DOMContentLoaded", () => {
     let logoPadding = 20;
     let privacyPolicyText = "How We Use Your Info & Privacy";
 
-    // Audio variables - FIXED APPROACH
+    // Audio variables - FIXED VERSION
     let menuMusic = null;
     let menuImage = null;
     let isMenuMusicLoaded = false;
     let isMenuImageLoaded = false;
-    let currentMusic = null;
-    let audioContextInitialized = false;
     let audioEnabled = false;
     let audioInitialized = false;
-    let menuMusicPlaying = false;
 
     // Define all classes at the top to avoid reference errors
     class Animation {
@@ -328,7 +325,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // FIXED AUDIO HANDLING
     function initializeAudio() {
         if (audioInitialized) return;
-        audioInitialized = true;
         
         // Create menu music with proper error handling
         try {
@@ -340,11 +336,11 @@ document.addEventListener("DOMContentLoaded", () => {
             
             menuMusic.addEventListener('canplaythrough', function() {
                 isMenuMusicLoaded = true;
-                console.log("Menu music loaded and ready");
+                console.log("Menu music loaded and ready to play");
             });
             
             menuMusic.addEventListener('error', function(e) {
-                console.log("Menu music loading error, continuing without sound");
+                console.log("Menu music loading error:", e);
                 isMenuMusicLoaded = false;
             });
             
@@ -359,20 +355,8 @@ document.addEventListener("DOMContentLoaded", () => {
             if (audioEnabled) return;
             
             audioEnabled = true;
+            audioInitialized = true;
             console.log("Audio enabled by user interaction");
-            
-            // Create a silent audio context to unlock audio on mobile
-            try {
-                const AudioContext = window.AudioContext || window.webkitAudioContext;
-                if (AudioContext) {
-                    const audioContext = new AudioContext();
-                    if (audioContext.state === 'suspended') {
-                        audioContext.resume();
-                    }
-                }
-            } catch (e) {
-                console.log("Audio context creation failed:", e);
-            }
             
             // Try to play menu music if in menu
             if (gameState === "menu" || gameState === "loading") {
@@ -386,9 +370,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         
         // Add listeners for user interaction
-        document.addEventListener('click', enableAudio, { once: true });
-        document.addEventListener('keydown', enableAudio, { once: true });
-        document.addEventListener('touchstart', enableAudio, { once: true });
+        document.addEventListener('click', enableAudio);
+        document.addEventListener('keydown', enableAudio);
+        document.addEventListener('touchstart', enableAudio);
     }
 
     // Function to safely play audio
@@ -417,9 +401,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // FIXED: Function to play menu music
+    // Function to play menu music - FIXED VERSION
     function playMenuMusic() {
-        if (!menuMusic || !isMenuMusicLoaded || !audioEnabled || menuMusicPlaying) return;
+        if (!menuMusic || !audioEnabled) return;
         
         // Stop game music if playing
         if (gameMusic && !gameMusic.paused) {
@@ -427,43 +411,32 @@ document.addEventListener("DOMContentLoaded", () => {
             gameMusic.currentTime = 0;
         }
         
-        // Play menu music
+        // Play menu music with better error handling
         try {
+            // Reset and play
             menuMusic.currentTime = 0;
             const playPromise = menuMusic.play();
             
             if (playPromise !== undefined) {
                 playPromise.then(() => {
-                    currentMusic = menuMusic;
-                    menuMusicPlaying = true;
                     console.log("Menu music started playing");
                 }).catch(e => {
                     console.log("Menu music play failed:", e);
-                    menuMusicPlaying = false;
-                    // Try again after a delay
+                    // Try again in a moment
                     setTimeout(() => {
-                        if (!menuMusicPlaying && gameState === "menu") {
-                            playMenuMusic();
+                        try {
+                            menuMusic.currentTime = 0;
+                            menuMusic.play().catch(e2 => {
+                                // Silent fail
+                            });
+                        } catch (e2) {
+                            // Silent fail
                         }
                     }, 1000);
                 });
             }
         } catch (error) {
-            console.log("Menu music error:", error);
-            menuMusicPlaying = false;
-        }
-    }
-
-    // Function to stop menu music
-    function stopMenuMusic() {
-        if (menuMusic) {
-            try {
-                menuMusic.pause();
-                menuMusic.currentTime = 0;
-                menuMusicPlaying = false;
-            } catch (e) {
-                // Silent fail
-            }
+            console.log("Menu music play error:", error);
         }
     }
 
@@ -472,7 +445,10 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!gameMusic || !audioEnabled) return;
         
         // Stop menu music if playing
-        stopMenuMusic();
+        if (menuMusic && !menuMusic.paused) {
+            menuMusic.pause();
+            menuMusic.currentTime = 0;
+        }
         
         // Play game music
         try {
@@ -481,19 +457,26 @@ document.addEventListener("DOMContentLoaded", () => {
             
             if (playPromise !== undefined) {
                 playPromise.then(() => {
-                    currentMusic = gameMusic;
+                    console.log("Game music started playing");
                 }).catch(e => {
-                    // Silent fail
+                    console.log("Game music play failed:", e);
                 });
             }
         } catch (error) {
-            // Silent fail
+            console.log("Game music play error:", error);
         }
     }
 
     // Function to stop all music
     function stopAllMusic() {
-        stopMenuMusic();
+        if (menuMusic) {
+            try {
+                menuMusic.pause();
+                menuMusic.currentTime = 0;
+            } catch (e) {
+                // Silent fail
+            }
+        }
         if (gameMusic) {
             try {
                 gameMusic.pause();
@@ -502,7 +485,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 // Silent fail
             }
         }
-        currentMusic = null;
     }
 
     // Initialize audio
@@ -514,9 +496,11 @@ document.addEventListener("DOMContentLoaded", () => {
         menuImage = new Image();
         menuImage.onload = function() {
             isMenuImageLoaded = true;
+            console.log("Menu image loaded");
         };
         menuImage.onerror = function() {
             isMenuImageLoaded = false;
+            console.log("Menu image failed to load");
         };
         menuImage.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/GameMenuBackground.webp";
     }
@@ -885,7 +869,7 @@ document.addEventListener("DOMContentLoaded", () => {
             updateLoadingProgress();
         };
 
-        // Load audio files - SIMPLIFIED
+        // Load audio files - FIXED VERSION
         gameMusic = new Audio();
         gameMusic.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/Playingthegamesound.wav";
         gameMusic.loop = true;
@@ -1259,17 +1243,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Function to set the game state
     function setGameState(newState) {
+        const previousState = gameState;
+        gameState = newState;
+        
         if (newState === "playing") {
             resetGame();
         } else if (newState === "gameOver") {
             currentGameOverMessage = getRandomGameOverMessage();
             stopAllMusic();
         } else if (newState === "menu") {
-            if (audioEnabled && !menuMusicPlaying) {
-                playMenuMusic();
+            if (previousState === "gameOver" || previousState === "playing") {
+                if (audioEnabled) {
+                    playMenuMusic();
+                }
             }
         }
-        gameState = newState;
     }
 
     // Function to generate new platforms
