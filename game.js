@@ -155,7 +155,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let logoPadding = 20;
     let privacyPolicyText = "How We Use Your Info & Privacy";
 
-    // Audio variables - FIXED
+    // Audio variables - FIXED APPROACH
     let menuMusic = null;
     let menuImage = null;
     let isMenuMusicLoaded = false;
@@ -164,7 +164,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let audioContextInitialized = false;
     let audioEnabled = false;
     let audioInitialized = false;
-    let menuMusicStarted = false; // Track if menu music has been started
+    let menuMusicPlaying = false;
 
     // Define all classes at the top to avoid reference errors
     class Animation {
@@ -330,8 +330,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if (audioInitialized) return;
         audioInitialized = true;
         
-        console.log("Initializing audio...");
-        
         // Create menu music with proper error handling
         try {
             menuMusic = new Audio();
@@ -340,33 +338,14 @@ document.addEventListener("DOMContentLoaded", () => {
             menuMusic.volume = 0.3;
             menuMusic.preload = "auto";
             
-            // Store original play function
-            const originalPlay = menuMusic.play;
-            
-            menuMusic.play = function() {
-                console.log("Menu music play called");
-                return originalPlay.apply(this).catch(error => {
-                    console.log("Menu music play was prevented:", error);
-                    // Don't throw error, just log it
-                });
-            };
-            
-            menuMusic.addEventListener('loadeddata', function() {
+            menuMusic.addEventListener('canplaythrough', function() {
                 isMenuMusicLoaded = true;
-                console.log("Menu music loaded");
+                console.log("Menu music loaded and ready");
             });
             
             menuMusic.addEventListener('error', function(e) {
-                console.log("Menu music loading error:", e);
+                console.log("Menu music loading error, continuing without sound");
                 isMenuMusicLoaded = false;
-            });
-            
-            menuMusic.addEventListener('ended', function() {
-                console.log("Menu music ended - restarting");
-                if (gameState === "menu" && audioEnabled) {
-                    menuMusic.currentTime = 0;
-                    menuMusic.play().catch(e => console.log("Could not restart menu music:", e));
-                }
             });
             
             // Load it
@@ -379,24 +358,37 @@ document.addEventListener("DOMContentLoaded", () => {
         function enableAudio() {
             if (audioEnabled) return;
             
-            console.log("Enabling audio via user interaction");
             audioEnabled = true;
+            console.log("Audio enabled by user interaction");
+            
+            // Create a silent audio context to unlock audio on mobile
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (AudioContext) {
+                    const audioContext = new AudioContext();
+                    if (audioContext.state === 'suspended') {
+                        audioContext.resume();
+                    }
+                }
+            } catch (e) {
+                console.log("Audio context creation failed:", e);
+            }
             
             // Try to play menu music if in menu
-            if (gameState === "menu" && menuMusic && isMenuMusicLoaded && !menuMusicStarted) {
+            if (gameState === "menu" || gameState === "loading") {
                 playMenuMusic();
             }
             
-            // Remove listeners after first interaction
+            // Remove listeners
             document.removeEventListener('click', enableAudio);
             document.removeEventListener('keydown', enableAudio);
             document.removeEventListener('touchstart', enableAudio);
         }
         
         // Add listeners for user interaction
-        document.addEventListener('click', enableAudio);
-        document.addEventListener('keydown', enableAudio);
-        document.addEventListener('touchstart', enableAudio);
+        document.addEventListener('click', enableAudio, { once: true });
+        document.addEventListener('keydown', enableAudio, { once: true });
+        document.addEventListener('touchstart', enableAudio, { once: true });
     }
 
     // Function to safely play audio
@@ -425,13 +417,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Function to play menu music - COMPLETELY FIXED
+    // FIXED: Function to play menu music
     function playMenuMusic() {
-        if (!menuMusic || !isMenuMusicLoaded || !audioEnabled || menuMusicStarted) {
-            return;
-        }
-        
-        console.log("Starting menu music...");
+        if (!menuMusic || !isMenuMusicLoaded || !audioEnabled || menuMusicPlaying) return;
         
         // Stop game music if playing
         if (gameMusic && !gameMusic.paused) {
@@ -439,7 +427,7 @@ document.addEventListener("DOMContentLoaded", () => {
             gameMusic.currentTime = 0;
         }
         
-        // Play menu music with proper error handling
+        // Play menu music
         try {
             menuMusic.currentTime = 0;
             const playPromise = menuMusic.play();
@@ -447,30 +435,35 @@ document.addEventListener("DOMContentLoaded", () => {
             if (playPromise !== undefined) {
                 playPromise.then(() => {
                     currentMusic = menuMusic;
-                    menuMusicStarted = true;
-                    console.log("Menu music started successfully");
+                    menuMusicPlaying = true;
+                    console.log("Menu music started playing");
                 }).catch(e => {
-                    console.log("Menu music play promise rejected:", e);
-                    menuMusicStarted = false;
+                    console.log("Menu music play failed:", e);
+                    menuMusicPlaying = false;
+                    // Try again after a delay
+                    setTimeout(() => {
+                        if (!menuMusicPlaying && gameState === "menu") {
+                            playMenuMusic();
+                        }
+                    }, 1000);
                 });
             }
         } catch (error) {
-            console.log("Menu music play error:", error);
-            menuMusicStarted = false;
+            console.log("Menu music error:", error);
+            menuMusicPlaying = false;
         }
     }
 
     // Function to stop menu music
     function stopMenuMusic() {
-        if (!menuMusic) return;
-        
-        console.log("Stopping menu music");
-        try {
-            menuMusic.pause();
-            menuMusic.currentTime = 0;
-            menuMusicStarted = false;
-        } catch (e) {
-            console.log("Error stopping menu music:", e);
+        if (menuMusic) {
+            try {
+                menuMusic.pause();
+                menuMusic.currentTime = 0;
+                menuMusicPlaying = false;
+            } catch (e) {
+                // Silent fail
+            }
         }
     }
 
@@ -478,9 +471,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function playGameMusic() {
         if (!gameMusic || !audioEnabled) return;
         
-        console.log("Starting game music...");
-        
-        // Stop menu music
+        // Stop menu music if playing
         stopMenuMusic();
         
         // Play game music
@@ -492,28 +483,25 @@ document.addEventListener("DOMContentLoaded", () => {
                 playPromise.then(() => {
                     currentMusic = gameMusic;
                 }).catch(e => {
-                    console.log("Game music play failed:", e);
+                    // Silent fail
                 });
             }
         } catch (error) {
-            console.log("Game music play error:", error);
+            // Silent fail
         }
     }
 
     // Function to stop all music
     function stopAllMusic() {
-        console.log("Stopping all music");
         stopMenuMusic();
-        
         if (gameMusic) {
             try {
                 gameMusic.pause();
                 gameMusic.currentTime = 0;
             } catch (e) {
-                console.log("Error stopping game music:", e);
+                // Silent fail
             }
         }
-        
         currentMusic = null;
     }
 
@@ -897,7 +885,7 @@ document.addEventListener("DOMContentLoaded", () => {
             updateLoadingProgress();
         };
 
-        // Load audio files - FIXED
+        // Load audio files - SIMPLIFIED
         gameMusic = new Audio();
         gameMusic.src = "https://14rmz.github.io/Cyber-Ninja-Astronaut/Playingthegamesound.wav";
         gameMusic.loop = true;
@@ -1277,9 +1265,7 @@ document.addEventListener("DOMContentLoaded", () => {
             currentGameOverMessage = getRandomGameOverMessage();
             stopAllMusic();
         } else if (newState === "menu") {
-            // Reset menu music flag when returning to menu
-            menuMusicStarted = false;
-            if (audioEnabled && isMenuMusicLoaded) {
+            if (audioEnabled && !menuMusicPlaying) {
                 playMenuMusic();
             }
         }
