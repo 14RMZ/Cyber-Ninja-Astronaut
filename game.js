@@ -1097,14 +1097,33 @@ document.addEventListener("DOMContentLoaded", () => {
         playMenuMusic();
     }
 
-    // Function to set the game state
+    // Function to set the game state - FIXED: Added proper music handling
     function setGameState(newState) {
-        if (newState === "playing") {
+        // Handle music transition BEFORE changing state
+        if (newState === "menu") {
+            // Coming back to menu - stop game music, play menu music
+            if (gameMusic && !gameMusic.paused) {
+                gameMusic.pause();
+                gameMusic.currentTime = 0;
+            }
+            playMenuMusic();
+        } else if (newState === "playing") {
+            // Starting game - stop menu music, play game music
             resetGame();
         } else if (newState === "gameOver") {
             currentGameOverMessage = getRandomGameOverMessage();
-            stopAllMusic();
+            // Stop all music for game over
+            if (gameMusic && !gameMusic.paused) {
+                gameMusic.pause();
+                gameMusic.currentTime = 0;
+            }
+            if (menuMusic && !menuMusic.paused) {
+                menuMusic.pause();
+                menuMusic.currentTime = 0;
+            }
         }
+        
+        // Set the new state
         gameState = newState;
     }
 
@@ -1206,6 +1225,15 @@ document.addEventListener("DOMContentLoaded", () => {
             if ((event.code === "KeyF" || event.code === "KeyJ") && bullets) {
                 bullets.push(new Bullet(player.x + player.width / 2, player.y + player.height / 2, player.direction));
                 playSound(shootSound);
+            }
+        }
+        
+        // FIX: Added Enter key support for menu navigation
+        if (gameState === "menu" && event.code === "Enter") {
+            if (settingsState) {
+                settingsState = false;
+            } else if (howToPlayState) {
+                howToPlayState = false;
             }
         }
     });
@@ -1619,6 +1647,31 @@ document.addEventListener("DOMContentLoaded", () => {
             mouseY <= privacyPolicyY
         ) {
             window.open("https://www.yourwebsite.com/privacy-policy", "_blank");
+        }
+        
+        // FIX: Added click handler for menu items to properly handle menu navigation
+        if (gameState === "menu" && !settingsState && !howToPlayState) {
+            for (let i = 0; i < menuPositions.length; i++) {
+                const pos = menuPositions[i];
+                if (mouseX >= pos.x && mouseX <= pos.x + pos.width &&
+                    mouseY >= pos.y && mouseY <= pos.y + pos.height) {
+                    switch (i) {
+                        case 0: // Start Game
+                            setGameState("playing");
+                            break;
+                        case 1: // Settings
+                            settingsState = true;
+                            break;
+                        case 2: // How to Play
+                            howToPlayState = true;
+                            break;
+                        case 3: // Highest Score
+                            alert(`Your Highest Score is: ${highScore}`);
+                            break;
+                    }
+                    break;
+                }
+            }
         }
     });
 
