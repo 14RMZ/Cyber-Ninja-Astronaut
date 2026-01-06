@@ -162,23 +162,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let isMenuImageLoaded = false;
     let currentMusic = null; // Track which music is currently playing
     let audioContextInitialized = false; // Track if audio context is initialized
-    
-    // FIX: Create menu music immediately but don't play it until user interaction
-    menuMusic = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/GameMenuSound.wav");
-    menuMusic.loop = true;
-    menuMusic.volume = 0.3;
-    menuMusic.preload = "auto";
-    menuMusic.muted = true; // Start muted to allow autoplay
-    
-    menuMusic.addEventListener('canplaythrough', function() {
-        isMenuMusicLoaded = true;
-        console.log("Menu music loaded and ready");
-    });
-    
-    menuMusic.addEventListener('error', function(e) {
-        console.error("Error loading menu music:", e);
-        isMenuMusicLoaded = false;
-    });
+    let hasUserInteracted = false; // Track if user has interacted for audio
 
     // Define all classes at the top to avoid reference errors
     class Animation {
@@ -343,14 +327,16 @@ document.addEventListener("DOMContentLoaded", () => {
     function initializeAudio() {
         // Create a simple function that will be called on user interaction
         function startAudioOnInteraction() {
-            if (!audioContextInitialized) {
-                audioContextInitialized = true;
-                console.log("Audio initialized by user interaction");
+            if (!hasUserInteracted) {
+                hasUserInteracted = true;
+                console.log("User interacted, audio can now play");
                 
-                // FIX: Unmute menu music when user interacts
-                if (menuMusic) {
-                    menuMusic.muted = false;
-                    console.log("Menu music unmuted");
+                // Create menu music on first interaction
+                if (!menuMusic) {
+                    createMenuMusic();
+                } else {
+                    // Try to play if already created
+                    tryPlayMenuMusic();
                 }
             }
         }
@@ -362,6 +348,57 @@ document.addEventListener("DOMContentLoaded", () => {
         
         // Also trigger on welcome modal close
         startGameButton.addEventListener('click', startAudioOnInteraction);
+    }
+
+    // Function to create menu music
+    function createMenuMusic() {
+        menuMusic = new Audio("https://14rmz.github.io/Cyber-Ninja-Astronaut/GameMenuSound.wav");
+        menuMusic.loop = true;
+        menuMusic.volume = 0.3;
+        menuMusic.preload = "auto";
+        
+        menuMusic.addEventListener('canplaythrough', function() {
+            isMenuMusicLoaded = true;
+            console.log("Menu music loaded and ready");
+            // Try to play if user has already interacted
+            if (hasUserInteracted) {
+                tryPlayMenuMusic();
+            }
+        });
+        
+        menuMusic.addEventListener('error', function(e) {
+            console.error("Error loading menu music:", e);
+            isMenuMusicLoaded = false;
+        });
+        
+        // Load the audio
+        menuMusic.load();
+    }
+
+    // Function to try playing menu music
+    function tryPlayMenuMusic() {
+        if (menuMusic && isMenuMusicLoaded && hasUserInteracted) {
+            try {
+                menuMusic.currentTime = 0;
+                const playPromise = menuMusic.play();
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        console.log("Menu music started playing");
+                        currentMusic = menuMusic;
+                    }).catch(error => {
+                        console.log("Menu music play was prevented:", error.name);
+                        // Retry after a short delay
+                        setTimeout(() => {
+                            if (gameState === "menu") {
+                                tryPlayMenuMusic();
+                            }
+                        }, 1000);
+                    });
+                }
+            } catch (error) {
+                console.log("Error playing menu music:", error);
+            }
+        }
     }
 
     // Initialize audio system
@@ -1138,13 +1175,11 @@ document.addEventListener("DOMContentLoaded", () => {
         // Play menu music if available
         if (menuMusic && isMenuMusicLoaded) {
             currentMusic = menuMusic;
-            // FIX: Try to play menu music when entering menu state
-            if (!menuMusic.paused && menuMusic.currentTime > 0) {
-                // Music is already playing
-            } else {
-                menuMusic.currentTime = 0;
-                playSound(menuMusic);
-            }
+            // Try to play menu music
+            tryPlayMenuMusic();
+        } else if (!menuMusic && hasUserInteracted) {
+            // Create menu music if not created yet
+            createMenuMusic();
         }
     }
 
