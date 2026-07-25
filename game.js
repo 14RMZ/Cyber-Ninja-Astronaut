@@ -335,8 +335,11 @@ menuImage.src = "Images/GameMenuBackground.webp";
 menuImage.onerror = () => console.error("Failed to load menu image.");
 
 // Load sounds relative to root
-const backgroundSound = new Audio("Sounds/Playingthegamesound.wav");
+const backgroundSound = new Audio();
+backgroundSound.src = "Sounds/Playingthegamesound.wav";
 backgroundSound.loop = true;
+backgroundSound.preload = "auto";
+backgroundSound.load();
 
 const jumpSound = new Audio("Sounds/jumping_sound.wav");
 const shootSound = new Audio("Sounds/Playershooting.mp3");
@@ -347,14 +350,34 @@ const enemyShootSound = new Audio("Sounds/Droneshooting.mp3");
 const enemyDeathSound = new Audio("Sounds/Enemydying.wav");
 const powerUpSound = new Audio("Sounds/playerpowerup.wav");
 const newHighScoreSound = new Audio("Sounds/highscore.wav");
-const menuSound = new Audio("Sounds/GameMenuSound.wav");
+
+const menuSound = new Audio();
+menuSound.src = "Sounds/GameMenuSound.wav";
 menuSound.loop = true;
+menuSound.preload = "auto";
+menuSound.load();
+
+// Helper: safely play a sound — waits for it if not ready
+function safePlay(audio) {
+    if (!audio || !audio.src) return;
+    audio.currentTime = 0;
+    const doPlay = () => audio.play().catch(() => {});
+    if (audio.readyState >= 2) {
+        doPlay();
+    } else {
+        audio.addEventListener("canplay", function onReady() {
+            audio.removeEventListener("canplay", onReady);
+            doPlay();
+        });
+    }
+}
 
 const allSounds = [
     backgroundSound, jumpSound, shootSound, fallSound,
     spikeDeathSound, playerDeathSound, enemyShootSound,
     enemyDeathSound, powerUpSound, newHighScoreSound, menuSound
 ];
+
 
 // Global Volume control
 function setVolume(volume) {
@@ -2315,7 +2338,7 @@ function resetGame() {
     if (rocketEl) rocketEl.style.display = "none";
 
     backgroundSound.currentTime = 0;
-    backgroundSound.play().catch(e => console.log("Background music blocked by autoplay"));
+    safePlay(backgroundSound);
 }
 
 function drawPlayer() {
@@ -2566,15 +2589,7 @@ function setGameState(state) {
         backgroundSound.pause();
         backgroundSound.currentTime = 0;
         if (menuSound.paused) {
-            menuSound.currentTime = 0;
-            if (menuSound.readyState >= 2) {
-                menuSound.play().catch(() => console.log("Menu sound blocked by autoplay"));
-            } else {
-                menuSound.addEventListener("canplay", function playMenu() {
-                    menuSound.play().catch(() => {});
-                    menuSound.removeEventListener("canplay", playMenu);
-                });
-            }
+            safePlay(menuSound);
         }
     } else if (state === "settings") {
         document.getElementById("settingsMenu").classList.add("active");
@@ -2587,14 +2602,7 @@ function setGameState(state) {
         document.getElementById("hud").style.display = "block";
         menuSound.pause();
         menuSound.currentTime = 0;
-        if (backgroundSound.readyState >= 2) {
-            backgroundSound.play().catch(() => console.log("Background sound blocked by autoplay"));
-        } else {
-            backgroundSound.addEventListener("canplay", function playBg() {
-                backgroundSound.play().catch(() => {});
-                backgroundSound.removeEventListener("canplay", playBg);
-            });
-        }
+        safePlay(backgroundSound);
     } else if (state === "gameOver") {
         document.getElementById("gameOverMenu").classList.add("active");
         document.getElementById("finalScore").innerText = player.score;
