@@ -1890,14 +1890,15 @@ window.addEventListener('keydown', (event) => {
                     }
                 }
 
-                // Katana hit on Boss
-                if (currentBoss && !currentBoss.isDefeated) {
-                    if (attackBox.x < currentBoss.x + currentBoss.width &&
-                        attackBox.x + attackBox.width > currentBoss.x &&
-                        attackBox.y < currentBoss.y + currentBoss.height &&
-                        attackBox.y + attackBox.height > currentBoss.y
+                // Katana hit on Boss (using currentBosses array)
+                for (const boss of currentBosses) {
+                    if (!boss.isDefeated &&
+                        attackBox.x < boss.x + boss.width &&
+                        attackBox.x + attackBox.width > boss.x &&
+                        attackBox.y < boss.y + boss.height &&
+                        attackBox.y + attackBox.height > boss.y
                     ) {
-                        currentBoss.takeDamage(20); // Katana deals massive -20 damage to Boss!
+                        boss.takeDamage(20); // Katana deals massive -20 damage to Boss!
                     }
                 }
             }
@@ -2294,9 +2295,10 @@ function resetGame() {
     } else {
         // Spawn stable Boss Battle Arena
         platforms.push(new Platform(50, canvas.height - 100, canvas.width * 2, 20));
-        currentBoss = new BossEnemy();
+        const spawnedBoss = new BossEnemy();
+        currentBosses = [spawnedBoss];
         document.getElementById("bossHpContainer").style.display = "block";
-        currentBoss.updateHpBar();
+        spawnedBoss.updateHpBar();
     }
 
     // Set spawn platform as lastPlatform so score starts cleanly at 0!
@@ -2562,8 +2564,17 @@ function setGameState(state) {
         }
         
         backgroundSound.pause();
+        backgroundSound.currentTime = 0;
         if (menuSound.paused) {
-            menuSound.play().catch(() => console.log("Menu sound blocked by autoplay"));
+            menuSound.currentTime = 0;
+            if (menuSound.readyState >= 2) {
+                menuSound.play().catch(() => console.log("Menu sound blocked by autoplay"));
+            } else {
+                menuSound.addEventListener("canplay", function playMenu() {
+                    menuSound.play().catch(() => {});
+                    menuSound.removeEventListener("canplay", playMenu);
+                });
+            }
         }
     } else if (state === "settings") {
         document.getElementById("settingsMenu").classList.add("active");
@@ -2575,7 +2586,15 @@ function setGameState(state) {
         hasPlayedOnce = true; // Mark that the player has played at least once
         document.getElementById("hud").style.display = "block";
         menuSound.pause();
-        backgroundSound.play().catch(() => console.log("Background sound blocked by autoplay"));
+        menuSound.currentTime = 0;
+        if (backgroundSound.readyState >= 2) {
+            backgroundSound.play().catch(() => console.log("Background sound blocked by autoplay"));
+        } else {
+            backgroundSound.addEventListener("canplay", function playBg() {
+                backgroundSound.play().catch(() => {});
+                backgroundSound.removeEventListener("canplay", playBg);
+            });
+        }
     } else if (state === "gameOver") {
         document.getElementById("gameOverMenu").classList.add("active");
         document.getElementById("finalScore").innerText = player.score;
