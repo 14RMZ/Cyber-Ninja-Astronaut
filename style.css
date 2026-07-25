@@ -1,0 +1,820 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap');
+
+:root {
+    --primary: #00f0ff;
+    --secondary: #ff0055;
+    --accent: #ffdd00;
+    --bg-dark: rgba(8, 9, 18, 0.72);
+    --border-glow: 0 0 10px rgba(0, 240, 255, 0.5), 0 0 20px rgba(0, 240, 255, 0.2);
+    --border-glow-magenta: 0 0 10px rgba(255, 0, 85, 0.5), 0 0 20px rgba(255, 0, 85, 0.2);
+}
+
+body {
+    margin: 0;
+    overflow: hidden;
+    background-color: #030307;
+    font-family: 'Share Tech Mono', monospace;
+    color: #ffffff;
+    user-select: none;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#game-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #030307;
+}
+
+#gameCanvas {
+    display: block;
+    box-shadow: 0 0 30px rgba(0, 240, 255, 0.15);
+}
+
+/* ============================================================
+   OVERLAY SCREENS
+   ============================================================ */
+.overlay-screen {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    opacity: 0;
+    visibility: hidden;
+}
+
+.overlay-screen.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Background image for ALL overlay screens – light overlay so image shows through */
+#mainMenu,
+#settingsMenu,
+#howToPlayMenu,
+#gameOverMenu {
+    background-image:
+        linear-gradient(rgba(3, 3, 7, 0.42), rgba(3, 3, 7, 0.42)),
+        url('Images/GameMenuBackground.webp');
+    background-size: cover;
+    background-position: center;
+}
+
+/* ============================================================
+   GLASSMORPHIC PANEL
+   ============================================================ */
+.menu-panel {
+    background: var(--bg-dark);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(0, 240, 255, 0.35);
+    box-shadow: var(--border-glow), inset 0 0 15px rgba(0, 240, 255, 0.08);
+    border-radius: 12px;
+    padding: 36px 56px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 560px;
+    width: 80%;
+    text-align: center;
+    animation: panel-glow 4s infinite alternate;
+}
+
+@keyframes panel-glow {
+    0%   { box-shadow: var(--border-glow), inset 0 0 15px rgba(0, 240, 255, 0.08); border-color: rgba(0,240,255,0.3); }
+    100% { box-shadow: 0 0 18px rgba(0,240,255,0.7), 0 0 35px rgba(0,240,255,0.3), inset 0 0 25px rgba(0,240,255,0.15); border-color: rgba(0,240,255,0.65); }
+}
+
+/* ============================================================
+   TITLES
+   ============================================================ */
+.game-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 3.2rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    margin: 0 0 8px 0;
+    color: #fff;
+    text-shadow: 0 0 10px var(--primary), 0 0 22px var(--primary), 0 0 40px rgba(0,240,255,0.5);
+    animation: title-flicker 3s infinite;
+}
+
+@keyframes title-flicker {
+    0%,19%,21%,23%,25%,54%,56%,100% { text-shadow: 0 0 10px var(--primary), 0 0 22px var(--primary), 0 0 40px rgba(0,240,255,0.5); }
+    20%,24%,55% { text-shadow: none; color: rgba(255,255,255,0.5); }
+}
+
+.subtitle {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--secondary);
+    text-shadow: 0 0 8px rgba(255,0,85,0.6);
+    margin-bottom: 28px;
+    letter-spacing: 7px;
+    text-transform: uppercase;
+}
+
+/* ============================================================
+   NAME ENTRY SCREEN
+   ============================================================ */
+#nameEntryScreen {
+    background-image:
+        linear-gradient(rgba(3, 3, 7, 0.55), rgba(3, 3, 7, 0.55)),
+        url('Images/GameMenuBackground.webp');
+    background-size: cover;
+    background-position: center;
+}
+
+.name-entry-panel {
+    max-width: 480px !important;
+}
+
+.name-entry-icon {
+    font-size: 3rem;
+    margin-bottom: 8px;
+    filter: drop-shadow(0 0 12px rgba(0,240,255,0.6));
+}
+
+.name-entry-sub {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.95rem;
+    color: rgba(255,255,255,0.75);
+    margin-bottom: 22px;
+    line-height: 1.5;
+    text-align: center;
+}
+
+.name-input {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #fff;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(0,240,255,0.5);
+    border-radius: 6px;
+    padding: 12px 20px;
+    width: 100%;
+    text-align: center;
+    letter-spacing: 3px;
+    outline: none;
+    box-shadow: 0 0 10px rgba(0,240,255,0.2), inset 0 0 10px rgba(0,0,0,0.3);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    caret-color: #00f0ff;
+}
+
+.name-input::placeholder {
+    color: rgba(255,255,255,0.3);
+    letter-spacing: 1px;
+    font-size: 0.9rem;
+}
+
+.name-input:focus {
+    border-color: #00f0ff;
+    box-shadow: 0 0 16px rgba(0,240,255,0.45), inset 0 0 10px rgba(0,0,0,0.3);
+}
+
+.name-error {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--secondary);
+    text-shadow: 0 0 6px rgba(255,0,85,0.5);
+    margin-top: 8px;
+    animation: pulse 0.8s infinite alternate;
+}
+
+.intro-briefing-text {
+    text-align: center;
+    font-size: 0.92rem;
+    line-height: 1.5;
+    color: #d0e0f0;
+    margin: 12px 0 16px 0;
+}
+
+.intro-controls-grid {
+    display: grid;
+    grid-template-columns: auto 24px 1fr;
+    gap: 12px 14px;
+    align-items: center;
+    text-align: left;
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px dashed rgba(0, 240, 255, 0.3);
+    padding: 16px 20px;
+    border-radius: 8px;
+    margin-top: 14px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.intro-grid-keys {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.intro-grid-arrow {
+    color: rgba(0, 240, 255, 0.7);
+    font-size: 1rem;
+    text-align: center;
+}
+
+.intro-grid-desc {
+    font-size: 0.92rem;
+    color: #e0edf8;
+    line-height: 1.35;
+}
+
+/* ACHIEVEMENT TOAST NOTIFICATION */
+.achievement-toast {
+    position: absolute;
+    top: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(8, 10, 24, 0.92);
+    border: 1px solid var(--accent);
+    box-shadow: 0 0 15px rgba(255, 221, 0, 0.4), inset 0 0 10px rgba(255, 221, 0, 0.1);
+    border-radius: 8px;
+    padding: 10px 22px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    z-index: 100;
+    pointer-events: none;
+    animation: toast-slide-down 0.4s ease-out;
+}
+
+@keyframes toast-slide-down {
+    0% { transform: translate(-50%, -40px); opacity: 0; }
+    100% { transform: translate(-50%, 0); opacity: 1; }
+}
+
+.toast-icon {
+    font-size: 1.6rem;
+    filter: drop-shadow(0 0 6px var(--accent));
+}
+
+.toast-text {
+    text-align: left;
+}
+
+.toast-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 900;
+    color: var(--accent);
+    letter-spacing: 2px;
+}
+
+.toast-desc {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.95rem;
+    color: #ffffff;
+}
+
+/* BOSS HP BAR OVERLAY */
+.boss-hp-container {
+    width: 60%;
+    margin: 0 auto 12px auto;
+    text-align: center;
+}
+
+.boss-hp-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 900;
+    color: #ff0055;
+    letter-spacing: 3px;
+    text-shadow: 0 0 10px rgba(255, 0, 85, 0.7);
+    margin-bottom: 4px;
+}
+
+.boss-hp-bar-outer {
+    width: 100%;
+    height: 14px;
+    background: rgba(10, 10, 20, 0.8);
+    border: 1px solid #ff0055;
+    box-shadow: 0 0 10px rgba(255, 0, 85, 0.4);
+    border-radius: 6px;
+    overflow: hidden;
+    padding: 2px;
+}
+
+.boss-hp-bar-inner {
+    height: 100%;
+    background: linear-gradient(90deg, #ff0055, #ffdd00);
+    border-radius: 4px;
+    transition: width 0.2s ease-out;
+    box-shadow: 0 0 10px #ff0055;
+}
+
+/* BOSS INTRO & VICTORY BANNERS (NORMAL BALANCED OVERLAYS) */
+.boss-intro-banner {
+    position: fixed;
+    top: 25%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: min(90%, 650px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    pointer-events: none;
+    z-index: 999;
+    background: rgba(12, 2, 18, 0.85);
+    border: 2px solid #ff0055;
+    border-radius: 14px;
+    padding: 20px 36px;
+    box-shadow: 0 0 35px rgba(255, 0, 85, 0.45), inset 0 0 15px rgba(255, 0, 85, 0.2);
+    backdrop-filter: blur(8px);
+    animation: bannerPulse 0.4s infinite alternate ease-in-out;
+}
+
+.boss-warning-sub {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #ff0055;
+    letter-spacing: 4px;
+    text-shadow: 0 0 10px #ff0055;
+    margin-bottom: 4px;
+}
+
+.boss-title-name {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: #ffffff;
+    letter-spacing: 4px;
+    text-shadow: 0 0 20px #ff0055, 0 0 10px #ffdd00;
+    margin: 6px 0;
+}
+
+.boss-sub-text {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.95rem;
+    color: #ffdd00;
+    letter-spacing: 2px;
+    text-shadow: 0 0 8px #ffdd00;
+}
+
+@keyframes bannerPulse {
+    from { opacity: 0.95; transform: translate(-50%, -50%) scale(0.98); }
+    to { opacity: 1.0; transform: translate(-50%, -50%) scale(1.02); }
+}
+
+.boss-victory-banner {
+    position: fixed;
+    top: 25%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: min(90%, 650px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    pointer-events: none;
+    z-index: 999;
+    background: rgba(0, 22, 38, 0.85);
+    border: 2px solid #00f0ff;
+    border-radius: 14px;
+    padding: 20px 36px;
+    box-shadow: 0 0 35px rgba(0, 240, 255, 0.45), inset 0 0 15px rgba(0, 240, 255, 0.2);
+    backdrop-filter: blur(8px);
+    animation: victoryPulse 0.5s infinite alternate ease-in-out;
+}
+
+.victory-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: #00f0ff;
+    letter-spacing: 4px;
+    text-shadow: 0 0 20px #00f0ff, 0 0 10px #ffffff;
+}
+
+.victory-sub {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 1.0rem;
+    color: #ffdd00;
+    letter-spacing: 2px;
+    margin-top: 6px;
+    text-shadow: 0 0 8px #ffdd00;
+}
+
+@keyframes victoryPulse {
+    from { opacity: 0.95; transform: translate(-50%, -50%) scale(0.98); }
+    to { opacity: 1.0; transform: translate(-50%, -50%) scale(1.02); }
+}
+
+.highlight-name {
+    color: var(--primary);
+    text-shadow: 0 0 10px rgba(0, 240, 255, 0.6);
+}
+
+.welcome-badge {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: var(--primary);
+    text-shadow: 0 0 8px rgba(0, 240, 255, 0.5);
+    margin-bottom: 10px;
+    background: rgba(0, 240, 255, 0.08);
+    border: 1px solid rgba(0, 240, 255, 0.3);
+    padding: 4px 16px;
+    border-radius: 12px;
+}
+
+.player-name-tag {
+    color: #ffffff;
+    text-shadow: 0 0 8px #ffffff;
+}
+
+.game-over-player-greeting {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 1.15rem;
+    color: var(--primary);
+    text-shadow: 0 0 8px rgba(0, 240, 255, 0.5);
+    margin-bottom: 14px;
+}
+
+/* ============================================================
+   CYBER BUTTONS
+   ============================================================ */
+.cyber-btn {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #fff;
+    background: transparent;
+    border: 1px solid var(--primary);
+    padding: 12px 36px;
+    margin: 7px 0;
+    width: 240px;
+    border-radius: 4px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 5px rgba(0,240,255,0.2);
+}
+
+.cyber-btn::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0,240,255,0.2), transparent);
+    transition: all 0.5s ease;
+}
+
+.cyber-btn:hover {
+    background: rgba(0,240,255,0.1);
+    box-shadow: var(--border-glow);
+    text-shadow: 0 0 8px #fff;
+    border-color: #fff;
+    transform: scale(1.05);
+}
+
+.cyber-btn:hover::before { left: 100%; }
+.cyber-btn:active { transform: scale(0.98); }
+
+.cyber-btn.danger {
+    border-color: var(--secondary);
+    box-shadow: 0 0 5px rgba(255,0,85,0.2);
+}
+.cyber-btn.danger:hover {
+    background: rgba(255,0,85,0.1);
+    box-shadow: var(--border-glow-magenta);
+    border-color: #fff;
+}
+
+/* ============================================================
+   HIGH SCORE BOARD (main menu)
+   ============================================================ */
+.highscore-board {
+    margin-top: 18px;
+    font-size: 1.1rem;
+    color: var(--accent);
+    text-shadow: 0 0 8px rgba(255,221,0,0.4);
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding-top: 14px;
+    width: 100%;
+}
+
+/* ============================================================
+   MAIN MENU BOTTOM BAR
+   ============================================================ */
+.menu-bottom-bar {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 14px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    background: linear-gradient(transparent, rgba(3,3,7,0.75));
+    pointer-events: none;
+}
+
+.menu-bottom-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    pointer-events: all;
+}
+
+.social-link {
+    display: inline-flex;
+    align-items: center;
+    opacity: 0.9;
+    transition: opacity 0.2s, transform 0.2s;
+}
+.social-link:hover { opacity: 1; transform: scale(1.18); }
+
+.social-icon {
+    width: 34px;
+    height: 34px;
+    object-fit: contain;
+    filter: drop-shadow(0 0 5px rgba(0,240,255,0.5)) brightness(1.15);
+}
+
+.privacy-link {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.88rem;
+    color: rgba(255, 255, 255, 0.85);
+    text-decoration: none;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid rgba(0, 240, 255, 0.4);
+    padding-bottom: 1px;
+    text-shadow: 0 0 6px rgba(0,240,255,0.3);
+    transition: color 0.2s, border-color 0.2s, text-shadow 0.2s;
+    pointer-events: all;
+}
+.privacy-link:hover {
+    color: #00f0ff;
+    border-color: #00f0ff;
+    text-shadow: 0 0 10px rgba(0,240,255,0.7);
+}
+
+.menu-bottom-right {
+    text-align: right;
+    pointer-events: none;
+}
+
+.menu-credits-default {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.75);
+    letter-spacing: 2px;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.8), 0 0 8px rgba(0,240,255,0.2);
+}
+
+.thankyou-msg {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.92rem;
+    line-height: 1.7;
+    color: rgba(255, 255, 255, 0.92);
+    text-align: right;
+    text-shadow: 0 1px 6px rgba(0,0,0,0.9), 0 0 10px rgba(0,240,255,0.25);
+    background: rgba(3,3,7,0.5);
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid rgba(0,240,255,0.15);
+    backdrop-filter: blur(4px);
+}
+
+.thankyou-msg .credits-name {
+    color: #00f0ff;
+    font-style: italic;
+    text-shadow: 0 0 8px rgba(0,240,255,0.6);
+}
+
+/* ============================================================
+   SETTINGS
+   ============================================================ */
+.settings-group {
+    width: 100%;
+    margin: 18px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.settings-label {
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+}
+.volume-slider-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+    justify-content: center;
+}
+.volume-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 60%;
+    height: 8px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 4px;
+    outline: none;
+    border: 1px solid rgba(0,240,255,0.2);
+}
+.volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: var(--primary);
+    box-shadow: 0 0 8px var(--primary);
+    cursor: pointer;
+    transition: transform 0.1s;
+}
+.volume-slider::-webkit-slider-thumb:hover { transform: scale(1.2); }
+.volume-value {
+    font-size: 1.2rem;
+    color: var(--primary);
+    width: 44px;
+    text-align: left;
+}
+
+/* ============================================================
+   HOW TO PLAY – Clean 3-column grid
+   ============================================================ */
+.htp-panel {
+    max-width: 680px !important;
+    width: 86% !important;
+}
+
+.htp-grid {
+    display: grid;
+    grid-template-columns: auto 24px 1fr;
+    gap: 14px 8px;
+    width: 100%;
+    align-items: center;
+    text-align: left;
+    margin-top: 4px;
+}
+
+/* Keys cell */
+.htp-keys {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+/* Arrow separator */
+.htp-arrow {
+    color: rgba(255,255,255,0.35);
+    font-size: 1rem;
+    text-align: center;
+}
+
+/* Description */
+.htp-desc {
+    font-size: 0.95rem;
+    color: #dde6f0;
+    line-height: 1.4;
+}
+
+/* "or" text between keys */
+.htp-or {
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.45);
+    padding: 0 1px;
+}
+
+/* Label cells (HAZARDS / SHIELDS / SCORE) */
+.htp-label {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    justify-content: flex-end;
+}
+.htp-hazard { color: var(--secondary); text-shadow: 0 0 6px rgba(255,0,85,0.5); }
+.htp-shield { color: var(--primary);   text-shadow: 0 0 6px rgba(0,240,255,0.5); }
+.htp-score  { color: var(--accent);    text-shadow: 0 0 6px rgba(255,221,0,0.5); }
+
+/* Keyboard badges */
+kbd {
+    background: #141624;
+    border: 1px solid rgba(0,240,255,0.4);
+    box-shadow: 0 2px 0 rgba(0,240,255,0.2), inset 0 1px 0 rgba(255,255,255,0.1);
+    border-radius: 4px;
+    padding: 3px 8px;
+    font-size: 0.82rem;
+    font-family: 'Share Tech Mono', monospace;
+    color: var(--primary);
+    text-shadow: 0 0 5px rgba(0,240,255,0.5);
+    display: inline-block;
+    min-width: 14px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+/* ============================================================
+   HUD
+   ============================================================ */
+#hud {
+    position: absolute;
+    top: 20px; left: 0;
+    width: 100%;
+    padding: 0 30px;
+    box-sizing: border-box;
+    display: none;
+    z-index: 5;
+    pointer-events: none;
+}
+.hud-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+}
+.hud-panel {
+    background: rgba(10,11,20,0.6);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(0,240,255,0.2);
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.1rem;
+    letter-spacing: 1px;
+    box-shadow: 0 0 10px rgba(0,240,255,0.1);
+}
+.hud-left { display: flex; flex-direction: column; gap: 8px; }
+
+#hud-shield {
+    display: none;
+    font-size: 0.9rem;
+    color: var(--primary);
+    text-shadow: 0 0 8px rgba(0,240,255,0.5);
+    animation: pulse 1s infinite alternate;
+}
+@keyframes pulse {
+    0% { opacity: 0.6; }
+    100% { opacity: 1; }
+}
+.hud-right { text-align: right; }
+
+/* ============================================================
+   GAME OVER SCREEN
+   ============================================================ */
+.game-over-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 3.8rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 6px;
+    color: #ff0055;
+    text-shadow: 0 0 10px var(--secondary), 0 0 22px var(--secondary), 0 0 40px rgba(255,0,85,0.5);
+    margin-bottom: 20px;
+}
+.game-over-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 1.35rem;
+    margin-bottom: 28px;
+}
+.game-over-stat {
+    display: flex;
+    justify-content: space-between;
+    width: 250px;
+    border-bottom: 1px dashed rgba(255,255,255,0.2);
+    padding-bottom: 5px;
+}
+.game-over-stat .val   { color: var(--primary); font-weight: bold; }
+.game-over-stat.high .val { color: var(--accent); }
+
+.game-over-note {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 1.05rem;
+    color: var(--primary);
+    text-shadow: 0 0 8px rgba(0, 240, 255, 0.5);
+    margin: 18px auto 6px auto;
+    text-align: center;
+    max-width: 380px;
+    line-height: 1.45;
+}

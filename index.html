@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyber Ninja Astronaut</title>
+    <link rel="icon" type="image/jpeg" href="Images/Cyber Ninja Astronaut Blogger Icon.jpg">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="game-container">
+        <!-- The Game Canvas -->
+        <canvas id="gameCanvas" width="800" height="400"></canvas>
+
+        <!-- FIRST TIME: PLAYER NAME & INTRO OVERLAY -->
+        <div id="nameEntryScreen" class="overlay-screen active">
+            <!-- Step 1: Input Name -->
+            <div class="menu-panel name-entry-panel" id="nameInputStep">
+                <h1 class="game-title" style="font-size:2.4rem;">Cyber Ninja</h1>
+                <div class="subtitle">Astronaut</div>
+                <p class="name-entry-sub">Before you dive into deep space — what is your Ninja name?</p>
+                <input
+                    type="text"
+                    id="playerNameInput"
+                    class="name-input"
+                    placeholder="Enter your name..."
+                    maxlength="20"
+                    autocomplete="off"
+                    onkeydown="if(event.key==='Enter') submitPlayerName()"
+                >
+                <div id="name-error" class="name-error" style="display:none;">Please enter a name to continue!</div>
+                <button class="cyber-btn" style="margin-top:20px;" onclick="submitPlayerName()">Next &rarr;</button>
+            </div>
+
+            <!-- Step 2: Briefing / How to Play Intro -->
+            <div class="menu-panel name-entry-panel" id="introBriefingStep" style="display:none;">
+                <h2 class="game-title" style="font-size:1.9rem; margin-bottom:14px;">Welcome, <span id="introPlayerName" class="highlight-name">Player</span>!</h2>
+                <div class="intro-briefing-text">
+                    <p style="margin-bottom:16px; font-size:0.95rem; line-height:1.5;"><strong>YOUR MISSION:</strong> Leap across neon space platforms, dodge deadly spikes, collect Extra Lives, and destroy hostile combat drones!</p>
+                    
+                    <div class="intro-controls-grid">
+                        <div class="intro-grid-keys"><kbd>A</kbd> <kbd>D</kbd> <span class="htp-or">or</span> <kbd>&larr;</kbd> <kbd>&rarr;</kbd></div>
+                        <div class="intro-grid-arrow">&rarr;</div>
+                        <div class="intro-grid-desc">Move Left &amp; Right</div>
+
+                        <div class="intro-grid-keys"><kbd>W</kbd> <span class="htp-or">or</span> <kbd>Space</kbd> <span class="htp-or">or</span> <kbd>&uarr;</kbd></div>
+                        <div class="intro-grid-arrow">&rarr;</div>
+                        <div class="intro-grid-desc">Jump &amp; Double Flip</div>
+
+                        <div class="intro-grid-keys"><kbd>F</kbd> <span class="htp-or">or</span> <kbd>J</kbd></div>
+                        <div class="intro-grid-arrow">&rarr;</div>
+                        <div class="intro-grid-desc">Shoot Energy Bullets</div>
+
+                        <div class="intro-grid-keys"><kbd>E</kbd></div>
+                        <div class="intro-grid-arrow">&rarr;</div>
+                        <div class="intro-grid-desc">Katana Slash</div>
+
+                        <div class="intro-grid-keys"><kbd>Shift</kbd></div>
+                        <div class="intro-grid-arrow">&rarr;</div>
+                        <div class="intro-grid-desc">Cyber-Dash Boost</div>
+                    </div>
+                </div>
+                <button class="cyber-btn" style="margin-top:22px;" onclick="finishIntroAndStartMenu()">Start Game &rarr;</button>
+            </div>
+        </div>
+
+        <!-- HUD (Heads Up Display) & ACHIEVEMENT TOAST -->
+        <div id="achievementToast" class="achievement-toast" style="display:none;">
+            <div class="toast-icon">🏆</div>
+            <div class="toast-text">
+                <div class="toast-title">ACHIEVEMENT UNLOCKED!</div>
+                <div id="toastDesc" class="toast-desc">First Blood</div>
+            </div>
+        </div>
+
+        <div id="hud">
+            <!-- BOSS HEALTH BAR -->
+            <div id="bossHpContainer" class="boss-hp-container" style="display:none;">
+                <div id="bossHpTitle" class="boss-hp-title">⚡ DREADNOUGHT MECH BOSS ⚡</div>
+                <div class="boss-hp-bar-outer">
+                    <div id="bossHpBarInner" class="boss-hp-bar-inner" style="width: 100%;"></div>
+                </div>
+            </div>
+
+            <!-- BOSS INTRO & VICTORY BANNERS -->
+            <div id="bossIntroBanner" class="boss-intro-banner" style="display:none;">
+                <div class="boss-warning-sub">⚠️ WARNING ⚠️</div>
+                <div id="bossIntroBannerName" class="boss-title-name">DREADNOUGHT OMEGA</div>
+                <div id="bossIntroBannerSub" class="boss-sub-text">COLOSSUS MECH HAS ENTERED THE SECTOR</div>
+            </div>
+
+            <div id="bossVictoryBanner" class="boss-victory-banner" style="display:none;">
+                <div id="victoryTitle" class="victory-title">⚡ DREADNOUGHT SLAIN! ⚡</div>
+                <div id="victorySub" class="victory-sub">+100 POINTS • MISSION RESUMED</div>
+            </div>
+
+            <div class="hud-container">
+                <div class="hud-left">
+                    <div class="hud-panel" id="hud-score">SCORE: 0</div>
+                    <div class="hud-panel" id="hud-lives" style="color:#ff0055; border-color:#ff0055;">❤️ LIVES: 1</div>
+                    <div class="hud-panel" id="hud-shield" style="display:none;">🛡️ SHIELD ACTIVE (100%)</div>
+                    <div class="hud-panel" id="hud-rocket" style="color:#ff5500; border-color:#ff5500; display:none;">🚀 ROCKET BOOST (100%)</div>
+                    <div class="hud-panel" id="hud-dash" style="color:var(--primary); font-size:0.85rem; display:none;">DASH READY [SHIFT]</div>
+                    <div class="hud-panel" id="hud-dev-mode" style="color:#ffdd00; border-color:#ffdd00; font-size:0.8rem; display:none;">🛠️ GOD MODE [G]</div>
+                </div>
+                <div class="hud-right">
+                    <div class="hud-panel" id="hud-highscore" onclick="onHighScoreClick()" style="cursor:pointer;">BEST: 0</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MAIN MENU OVERLAY -->
+        <div id="mainMenu" class="overlay-screen">
+            <div class="menu-panel">
+                <div class="welcome-badge" id="menuWelcomeBadge">WELCOME BACK, <span class="player-name-tag">SOLDIER</span>!</div>
+                <h1 class="game-title">Cyber Ninja</h1>
+                <div class="subtitle">Astronaut</div>
+                <button class="cyber-btn" onclick="startGame()">Start Game</button>
+                <button class="cyber-btn" onclick="showSettings()">Settings</button>
+                <button class="cyber-btn" onclick="showHowToPlay()">How to Play</button>
+                <div class="highscore-board" id="menu-highscore" onclick="onHighScoreClick()" style="cursor:pointer;">HIGH SCORE: 0</div>
+            </div>
+
+            <!-- Bottom bar: social + privacy left | thank you right -->
+            <div class="menu-bottom-bar">
+                <div class="menu-bottom-left">
+                    <a href="https://www.facebook.com/cyberninjaastronaut" target="_blank" class="social-link">
+                        <img src="Images/facebook.png" alt="Facebook" class="social-icon">
+                    </a>
+                    <a href="https://www.instagram.com/cyberninjaastronaut/" target="_blank" class="social-link">
+                        <img src="Images/instagram.png" alt="Instagram" class="social-icon">
+                    </a>
+                    <a href="privacy.html" class="privacy-link">How We Use Your Info &amp; Privacy</a>
+                </div>
+                <div class="menu-bottom-right">
+                    <div id="thankyou-msg" class="thankyou-msg" style="display:none;">
+                        Hope you had fun, <span id="thankyou-player-name" class="credits-name">Player</span>!<br>
+                        Thank you for playing my Game!<br>
+                        <span class="credits-name">Created by RMZ</span>
+                    </div>
+                    <div id="credits-label" class="menu-credits-default">Created by RMZ</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SETTINGS MENU OVERLAY -->
+        <div id="settingsMenu" class="overlay-screen">
+            <div class="menu-panel">
+                <h2 class="game-title" style="font-size: 2.2rem;">Settings</h2>
+                <div class="settings-group">
+                    <div class="settings-label">Sound Volume</div>
+                    <div class="volume-slider-container">
+                        <input type="range" class="volume-slider" id="volumeSlider" min="0" max="1" step="0.1" value="0.5" oninput="onVolumeSliderChange(this.value)">
+                        <div class="volume-value" id="volumeValue">50%</div>
+                    </div>
+                </div>
+                <button class="cyber-btn" onclick="showMainMenu()">Back to Menu</button>
+            </div>
+        </div>
+
+        <!-- HOW TO PLAY SCREEN OVERLAY -->
+        <div id="howToPlayMenu" class="overlay-screen">
+            <div class="menu-panel htp-panel">
+                <h2 class="game-title" style="font-size: 2.2rem; margin-bottom: 24px;">How to Play</h2>
+                <div class="htp-grid">
+
+                    <div class="htp-keys">
+                        <kbd>A</kbd><kbd>D</kbd>
+                        <span class="htp-or">or</span>
+                        <kbd>&#8592;</kbd><kbd>&#8594;</kbd>
+                    </div>
+                    <div class="htp-arrow">&#8594;</div>
+                    <div class="htp-desc">Move Left &amp; Right</div>
+
+                    <div class="htp-keys">
+                        <kbd>W</kbd>
+                        <span class="htp-or">or</span>
+                        <kbd>Space</kbd>
+                        <span class="htp-or">or</span>
+                        <kbd>&#8593;</kbd>
+                    </div>
+                    <div class="htp-arrow">&#8594;</div>
+                    <div class="htp-desc">Jump &amp; Double Jump</div>
+
+                    <div class="htp-keys">
+                        <kbd>F</kbd>
+                        <span class="htp-or">or</span>
+                        <kbd>J</kbd>
+                    </div>
+                    <div class="htp-arrow">&#8594;</div>
+                    <div class="htp-desc">Shoot Energy Bullets</div>
+
+                    <div class="htp-keys">
+                        <kbd>E</kbd>
+                    </div>
+                    <div class="htp-arrow">&#8594;</div>
+                    <div class="htp-desc">Katana Melee Slash</div>
+
+                    <div class="htp-keys">
+                        <kbd>Shift</kbd>
+                    </div>
+                    <div class="htp-arrow">&#8594;</div>
+                    <div class="htp-desc">Cyber-Dash Speed Boost</div>
+
+                    <div class="htp-keys htp-label htp-hazard">HAZARDS</div>
+                    <div class="htp-arrow">&#8594;</div>
+                    <div class="htp-desc">Avoid spiked platforms, robotic soldiers, and drone bullets!</div>
+
+                    <div class="htp-keys htp-label htp-shield">SHIELDS</div>
+                    <div class="htp-arrow">&#8594;</div>
+                    <div class="htp-desc">Collect cyan power-ups for invincibility!</div>
+
+                    <div class="htp-keys htp-label htp-lives" style="color:#ff0055; border-color:#ff0055;">LIVES</div>
+                    <div class="htp-arrow">&#8594;</div>
+                    <div class="htp-desc">Collect floating ❤️ Heart Pick-ups on platforms for extra lives!</div>
+
+                </div>
+                <button class="cyber-btn" style="margin-top: 28px;" onclick="showMainMenu()">Back to Menu</button>
+            </div>
+        </div>
+
+        <!-- GAME OVER SCREEN OVERLAY -->
+        <div id="gameOverMenu" class="overlay-screen">
+            <div class="menu-panel">
+                <h2 class="game-over-title">Game Over</h2>
+                <div class="game-over-stats">
+                    <div class="game-over-stat">
+                        <span>Your Score:</span>
+                        <span id="finalScore" class="val">0</span>
+                    </div>
+                    <div class="game-over-stat high">
+                        <span id="gameOverHighScoreLabel">Best Score:</span>
+                        <span id="gameOverHighScore" class="val">0</span>
+                    </div>
+                </div>
+                <button class="cyber-btn" onclick="restartGame()">Play Again</button>
+                <button class="cyber-btn danger" onclick="showMainMenu()">Main Menu</button>
+                <div id="gameOverNote" class="game-over-note">Great Effort, Ninja!</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
