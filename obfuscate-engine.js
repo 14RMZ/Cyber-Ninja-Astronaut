@@ -75,7 +75,7 @@ let minified = result.join('');
 minified = minified.split('\n').map(line => line.trim()).filter(Boolean).join('\n');
 
 // 2. Wrap in Obfuscation Header & Hex String Encode
-const header = `/* CYBER-NINJA ASTRONAUT - OBFUSCATED PRODUCTION BUILD (C) RMZ */\n`;
+const header = `/* CYBER-NINJA ASTRONAUT - OBFUSCATED PRODUCTION BUILD (C) RMZ Games */\n`;
 const wrapped = header + `(function(_0x88a, _0x99b){\n` + minified + `\n})();`;
 
 fs.writeFileSync(distPath, wrapped, 'utf8');

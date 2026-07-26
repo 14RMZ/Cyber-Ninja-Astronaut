@@ -26,7 +26,7 @@
                     <p style="margin-top:20px; font-weight:bold; color:#00f0ff;">
                         Please play the official version on Itch.io or CrazyGames!
                     </p>
-                    <div style="margin-top:30px; font-size:0.85rem; color:#888;">Created by RMZ • Anti-Theft Guard Active</div>
+                    <div style="margin-top:30px; font-size:0.85rem; color:#888;">Created by RMZ Games • Anti-Theft Guard Active</div>
                 </div>
             `;
         });
