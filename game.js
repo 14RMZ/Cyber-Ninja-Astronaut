@@ -295,6 +295,19 @@ function trackAssetLoad(name) {
     }
 }
 
+function showNameEntryScreen() {
+    const nameScreen = document.getElementById("nameEntryScreen");
+    const inputStep = document.getElementById("nameInputStep");
+    const introStep = document.getElementById("introBriefingStep");
+
+    if (nameScreen) {
+        nameScreen.classList.add("active");
+        nameScreen.style.display = "flex";
+    }
+    if (inputStep) inputStep.style.display = "block";
+    if (introStep) introStep.style.display = "none";
+}
+
 function finishLoadingScreen() {
     if (loadingScreenFinished) return;
     loadingScreenFinished = true;
@@ -323,6 +336,16 @@ function finishLoadingScreen() {
         }
     }, 450);
 }
+
+// Global Audio Unlocker on any user interaction (clicks, keys, touches)
+function tryUnlockAudio() {
+    if (gameState === "menu" && menuSound.paused) {
+        safePlay(menuSound);
+    }
+}
+["click", "keydown", "touchstart", "pointerdown"].forEach(evt => {
+    window.addEventListener(evt, tryUnlockAudio, { passive: true });
+});
 
 // Fallback safety: hide loading screen after max 2.2 seconds no matter what
 setTimeout(() => {
