@@ -329,7 +329,7 @@ function finishLoadingScreen() {
             setTimeout(() => { loadingScreen.style.display = "none"; }, 350);
         }
 
-        const storedName = localStorage.getItem("ninjaPlayerName");
+        const storedName = localStorage.getItem("playerName");
         if (storedName) {
             playerName = storedName;
             if (typeof window.showMainMenu === "function") {
