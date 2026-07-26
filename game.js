@@ -1914,15 +1914,14 @@ let dashCooldown = 0;
 // Achievement System
 const unlockedAchievements = {};
 function unlockAchievement(id, title) {
-    if (!unlockedAchievements[id]) {
+    if (!unlockedAchievements[id] || id.startsWith("dev")) {
         unlockedAchievements[id] = true;
         const toast = document.getElementById("achievementToast");
         const desc = document.getElementById("toastDesc");
         if (toast && desc) {
             desc.innerText = title;
             toast.style.display = "flex";
-            powerUpSound.currentTime = 0;
-            powerUpSound.play().catch(() => {});
+            safePlay(powerUpSound);
             setTimeout(() => {
                 toast.style.display = "none";
             }, 3200);
