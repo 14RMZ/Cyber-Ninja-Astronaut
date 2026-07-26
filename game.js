@@ -295,7 +295,7 @@ function trackAssetLoad(name) {
     }
 }
 
-function showNameEntryScreen() {
+window.showNameEntryScreen = function() {
     const nameScreen = document.getElementById("nameEntryScreen");
     const inputStep = document.getElementById("nameInputStep");
     const introStep = document.getElementById("introBriefingStep");
@@ -306,7 +306,7 @@ function showNameEntryScreen() {
     }
     if (inputStep) inputStep.style.display = "block";
     if (introStep) introStep.style.display = "none";
-}
+};
 
 function finishLoadingScreen() {
     if (loadingScreenFinished) return;
@@ -315,27 +315,40 @@ function finishLoadingScreen() {
     const fillEl = document.getElementById("loadingBarFill");
     const percentEl = document.getElementById("loadingPercentText");
     const statusEl = document.getElementById("loadingStatusText");
-    const loadingScreen = document.getElementById("loadingScreen");
+    const btnEl = document.getElementById("enterGameBtn");
 
     if (fillEl) fillEl.style.width = "100%";
     if (percentEl) percentEl.innerText = "100%";
     if (statusEl) statusEl.innerText = "CYBER CORE READY!";
-
-    setTimeout(() => {
-        if (loadingScreen) {
-            loadingScreen.classList.remove("active");
-            setTimeout(() => { loadingScreen.style.display = "none"; }, 300);
-        }
-        // Proceed to saved state
-        const storedName = localStorage.getItem("ninjaPlayerName");
-        if (storedName) {
-            playerName = storedName;
-            showMainMenu();
-        } else {
-            showNameEntryScreen();
-        }
-    }, 450);
+    if (btnEl) btnEl.style.display = "inline-block";
 }
+
+window.enterGameFromLoading = function() {
+    const loadingScreen = document.getElementById("loadingScreen");
+    
+    // Unlock Audio instantly on this user click
+    safePlay(menuSound);
+
+    if (loadingScreen) {
+        loadingScreen.classList.remove("active");
+        setTimeout(() => { loadingScreen.style.display = "none"; }, 300);
+    }
+
+    // Proceed to saved state
+    const storedName = localStorage.getItem("ninjaPlayerName");
+    if (storedName) {
+        playerName = storedName;
+        if (typeof window.showMainMenu === "function") {
+            window.showMainMenu();
+        } else {
+            setGameState("menu");
+        }
+    } else {
+        if (typeof window.showNameEntryScreen === "function") {
+            window.showNameEntryScreen();
+        }
+    }
+};
 
 // Global Audio Unlocker on any user interaction (clicks, keys, touches)
 function tryUnlockAudio() {
@@ -347,10 +360,10 @@ function tryUnlockAudio() {
     window.addEventListener(evt, tryUnlockAudio, { passive: true });
 });
 
-// Fallback safety: hide loading screen after max 2.2 seconds no matter what
+// Fallback safety: show enter button after max 1.8 seconds
 setTimeout(() => {
     finishLoadingScreen();
-}, 2200);
+}, 1800);
 
 function loadImg(src, name) {
     const img = new Image();
