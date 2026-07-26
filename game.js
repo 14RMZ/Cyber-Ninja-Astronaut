@@ -271,68 +271,111 @@ function triggerScreenShake(duration, intensity) {
 }
 
 // Load images relative to root
-const backgroundImage = new Image();
-backgroundImage.src = "Images/GameBackground.jpg";
-backgroundImage.onerror = () => console.error("Failed to load background image.");
+// ============================================================
+// ⌛ ASSET PRELOADER & LOADING SCREEN SYSTEM
+// ============================================================
+let totalAssetsToLoad = 16;
+let loadedAssetsCount = 0;
+let loadingScreenFinished = false;
 
-const playerSpriteSheet = new Image();
-playerSpriteSheet.src = "Images/NewPlayermovement.png";
-playerSpriteSheet.onerror = () => console.error("Failed to load player sprite sheet.");
+function trackAssetLoad(name) {
+    loadedAssetsCount++;
+    const percent = Math.min(100, Math.floor((loadedAssetsCount / totalAssetsToLoad) * 100));
 
-// --- Robot Enemy: individual directional frames (transparent background) ---
-function loadImg(src) {
+    const fillEl = document.getElementById("loadingBarFill");
+    const percentEl = document.getElementById("loadingPercentText");
+    const statusEl = document.getElementById("loadingStatusText");
+
+    if (fillEl) fillEl.style.width = percent + "%";
+    if (percentEl) percentEl.innerText = percent + "%";
+    if (statusEl && name) statusEl.innerText = "LOADING: " + name.toUpperCase();
+
+    if (loadedAssetsCount >= totalAssetsToLoad) {
+        finishLoadingScreen();
+    }
+}
+
+function finishLoadingScreen() {
+    if (loadingScreenFinished) return;
+    loadingScreenFinished = true;
+
+    const fillEl = document.getElementById("loadingBarFill");
+    const percentEl = document.getElementById("loadingPercentText");
+    const statusEl = document.getElementById("loadingStatusText");
+    const loadingScreen = document.getElementById("loadingScreen");
+
+    if (fillEl) fillEl.style.width = "100%";
+    if (percentEl) percentEl.innerText = "100%";
+    if (statusEl) statusEl.innerText = "CYBER CORE READY!";
+
+    setTimeout(() => {
+        if (loadingScreen) {
+            loadingScreen.classList.remove("active");
+            setTimeout(() => { loadingScreen.style.display = "none"; }, 300);
+        }
+        // Proceed to saved state
+        const storedName = localStorage.getItem("ninjaPlayerName");
+        if (storedName) {
+            playerName = storedName;
+            showMainMenu();
+        } else {
+            showNameEntryScreen();
+        }
+    }, 450);
+}
+
+// Fallback safety: hide loading screen after max 2.2 seconds no matter what
+setTimeout(() => {
+    finishLoadingScreen();
+}, 2200);
+
+function loadImg(src, name) {
     const img = new Image();
+    img.onload = () => trackAssetLoad(name || "Image");
+    img.onerror = () => {
+        console.error("Failed to load: " + src);
+        trackAssetLoad(name || "Image");
+    };
     img.src = src;
-    img.onerror = () => console.error("Failed to load: " + src);
     return img;
 }
 
+const backgroundImage = loadImg("Images/GameBackground.jpg", "Background");
+const playerSpriteSheet = loadImg("Images/NewPlayermovement.png", "Player Sprite");
+
 // Walking RIGHT (left-to-right) — 3 frames
 const robotFramesLTR = [
-    loadImg("Images/robot_ltr1.png"),
-    loadImg("Images/robot_ltr2.png"),
-    loadImg("Images/robot_ltr3.png"),
+    loadImg("Images/robot_ltr1.png", "Robot LTR 1"),
+    loadImg("Images/robot_ltr2.png", "Robot LTR 2"),
+    loadImg("Images/robot_ltr3.png", "Robot LTR 3"),
 ];
 
 // Walking LEFT (right-to-left) — 4 frames
 const robotFramesRTL = [
-    loadImg("Images/robot_rtl1.png"),
-    loadImg("Images/robot_rtl2.png"),
-    loadImg("Images/robot_rtl3.png"),
-    loadImg("Images/robot_rtl4.png"),
+    loadImg("Images/robot_rtl1.png", "Robot RTL 1"),
+    loadImg("Images/robot_rtl2.png", "Robot RTL 2"),
+    loadImg("Images/robot_rtl3.png", "Robot RTL 3"),
+    loadImg("Images/robot_rtl4.png", "Robot RTL 4"),
 ];
 
 // Death explosion image
-const robotDestroyImg = loadImg("Images/robot_destroy.png");
+const robotDestroyImg = loadImg("Images/robot_destroy.png", "Robot Destroy");
 
 // Sentry Orb Drone image
-const sentryDroneImg = loadImg("Images/sentry_drone.png");
+const sentryDroneImg = loadImg("Images/sentry_drone.png", "Sentry Drone");
 
 // Jetpack image
-const jetpackImg = loadImg("Images/jetpack.png");
+const jetpackImg = loadImg("Images/jetpack.png", "Jetpack");
 
 // Boss at Score 500 image
-const boss500Img = loadImg("Images/boss_500.png");
+const boss500Img = loadImg("Images/boss_500.png", "Boss Sprite");
 
-const shootingEnemySpriteSheet = new Image();
-shootingEnemySpriteSheet.src = "Images/AIDroneEnemyMovement.png";
-shootingEnemySpriteSheet.onerror = () => console.error("Failed to load shooting enemy sprite sheet.");
+const shootingEnemySpriteSheet = loadImg("Images/AIDroneEnemyMovement.png", "AI Drone Sheet");
+const platformImage = loadImg("Images/platform.jpg", "Platform");
+const movingPlatformImage = loadImg("Images/moving-platform.jpg", "Moving Platform");
+const spikeImage = loadImg("Images/testingspike.png", "Spike Hazard");
+const menuImage = loadImg("Images/GameMenuBackground.webp", "Menu Background");
 
-const platformImage = new Image();
-platformImage.src = "Images/platform.jpg";
-platformImage.onerror = () => console.error("Failed to load platform image.");
-
-const movingPlatformImage = new Image();
-movingPlatformImage.src = "Images/moving-platform.jpg";
-movingPlatformImage.onerror = () => console.error("Failed to load moving platform image.");
-
-const spikeImage = new Image();
-spikeImage.src = "Images/testingspike.png";
-spikeImage.onerror = () => console.error("Failed to load spike image.");
-
-const menuImage = new Image();
-menuImage.src = "Images/GameMenuBackground.webp";
-menuImage.onerror = () => console.error("Failed to load menu image.");
 
 // Load sounds relative to root
 const backgroundSound = new Audio();

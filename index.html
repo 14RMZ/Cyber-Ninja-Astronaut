@@ -12,8 +12,23 @@
         <!-- The Game Canvas -->
         <canvas id="gameCanvas" width="800" height="400"></canvas>
 
+        <!-- CYBER LOADING SCREEN -->
+        <div id="loadingScreen" class="overlay-screen active">
+            <div class="menu-panel loading-panel">
+                <div class="cyber-logo-icon">🥷</div>
+                <h1 class="game-title" style="font-size:2.2rem; margin-bottom:4px;">Cyber Ninja</h1>
+                <div class="subtitle" style="margin-bottom:14px;">Astronaut</div>
+                
+                <div class="loading-bar-container">
+                    <div id="loadingBarFill" class="loading-bar-fill"></div>
+                </div>
+                <div id="loadingPercentText" class="loading-percent-text">0%</div>
+                <div id="loadingStatusText" class="loading-status-text">INITIALIZING CYBER CORE...</div>
+            </div>
+        </div>
+
         <!-- FIRST TIME: PLAYER NAME & INTRO OVERLAY -->
-        <div id="nameEntryScreen" class="overlay-screen active">
+        <div id="nameEntryScreen" class="overlay-screen">
             <!-- Step 1: Input Name -->
             <div class="menu-panel name-entry-panel" id="nameInputStep">
                 <h1 class="game-title" style="font-size:2.4rem;">Cyber Ninja</h1>
