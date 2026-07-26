@@ -272,11 +272,12 @@ function triggerScreenShake(duration, intensity) {
 
 // Load images relative to root
 // ============================================================
-// ⌛ ASSET PRELOADER & LOADING SCREEN SYSTEM
+// ⌛ ASSET PRELOADER & AUTOMATIC LOADING SCREEN
 // ============================================================
-let totalAssetsToLoad = 16;
+let totalAssetsToLoad = 17; // 16 Images + 1 Window Load
 let loadedAssetsCount = 0;
 let loadingScreenFinished = false;
+let windowLoaded = false;
 
 function trackAssetLoad(name) {
     loadedAssetsCount++;
@@ -290,7 +291,7 @@ function trackAssetLoad(name) {
     if (percentEl) percentEl.innerText = percent + "%";
     if (statusEl && name) statusEl.innerText = "LOADING: " + name.toUpperCase();
 
-    if (loadedAssetsCount >= totalAssetsToLoad) {
+    if (loadedAssetsCount >= totalAssetsToLoad && windowLoaded) {
         finishLoadingScreen();
     }
 }
@@ -315,40 +316,50 @@ function finishLoadingScreen() {
     const fillEl = document.getElementById("loadingBarFill");
     const percentEl = document.getElementById("loadingPercentText");
     const statusEl = document.getElementById("loadingStatusText");
-    const btnEl = document.getElementById("enterGameBtn");
+    const loadingScreen = document.getElementById("loadingScreen");
 
     if (fillEl) fillEl.style.width = "100%";
     if (percentEl) percentEl.innerText = "100%";
     if (statusEl) statusEl.innerText = "CYBER CORE READY!";
-    if (btnEl) btnEl.style.display = "inline-block";
+
+    // Automatically transition smoothly to Name Entry or Main Menu
+    setTimeout(() => {
+        if (loadingScreen) {
+            loadingScreen.classList.remove("active");
+            setTimeout(() => { loadingScreen.style.display = "none"; }, 350);
+        }
+
+        const storedName = localStorage.getItem("ninjaPlayerName");
+        if (storedName) {
+            playerName = storedName;
+            if (typeof window.showMainMenu === "function") {
+                window.showMainMenu();
+            } else {
+                setGameState("menu");
+            }
+        } else {
+            if (typeof window.showNameEntryScreen === "function") {
+                window.showNameEntryScreen();
+            }
+        }
+    }, 400);
 }
 
-window.enterGameFromLoading = function() {
-    const loadingScreen = document.getElementById("loadingScreen");
-    
-    // Unlock Audio instantly on this user click
-    safePlay(menuSound);
+// Window load listener to guarantee full page load
+window.addEventListener("load", () => {
+    windowLoaded = true;
+    trackAssetLoad("Page Ready");
+    // Fallback trigger if window loaded
+    setTimeout(() => {
+        finishLoadingScreen();
+    }, 500);
+});
 
-    if (loadingScreen) {
-        loadingScreen.classList.remove("active");
-        setTimeout(() => { loadingScreen.style.display = "none"; }, 300);
-    }
-
-    // Proceed to saved state
-    const storedName = localStorage.getItem("ninjaPlayerName");
-    if (storedName) {
-        playerName = storedName;
-        if (typeof window.showMainMenu === "function") {
-            window.showMainMenu();
-        } else {
-            setGameState("menu");
-        }
-    } else {
-        if (typeof window.showNameEntryScreen === "function") {
-            window.showNameEntryScreen();
-        }
-    }
-};
+// Safety fallback (max 2 seconds)
+setTimeout(() => {
+    windowLoaded = true;
+    finishLoadingScreen();
+}, 2000);
 
 // Global Audio Unlocker on any user interaction (clicks, keys, touches)
 function tryUnlockAudio() {

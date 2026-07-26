@@ -24,7 +24,6 @@
                 </div>
                 <div id="loadingPercentText" class="loading-percent-text">0%</div>
                 <div id="loadingStatusText" class="loading-status-text">INITIALIZING CYBER CORE...</div>
-                <button id="enterGameBtn" class="cyber-btn" style="display:none; margin-top:16px; font-size:1.05rem;" onclick="enterGameFromLoading()">⚡ ENTER CYBER CORE ⚡</button>
             </div>
         </div>
 
@@ -63,30 +62,26 @@
                         <div class="intro-grid-arrow">&rarr;</div>
                         <div class="intro-grid-desc">Jump &amp; Double Flip</div>
 
-                        <div class="intro-grid-keys"><kbd>F</kbd> <span class="htp-or">or</span> <kbd>J</kbd></div>
+                        <div class="intro-grid-keys"><kbd>Shift</kbd> <span class="htp-or">or</span> <kbd>J</kbd> <span class="htp-or">or</span> <kbd>X</kbd></div>
                         <div class="intro-grid-arrow">&rarr;</div>
-                        <div class="intro-grid-desc">Shoot Energy Bullets</div>
+                        <div class="intro-grid-desc">Cyber Katana Slash</div>
 
-                        <div class="intro-grid-keys"><kbd>E</kbd></div>
+                        <div class="intro-grid-keys"><kbd>Enter</kbd> <span class="htp-or">or</span> <kbd>C</kbd> <span class="htp-or">or</span> <kbd>F</kbd></div>
                         <div class="intro-grid-arrow">&rarr;</div>
-                        <div class="intro-grid-desc">Katana Slash</div>
-
-                        <div class="intro-grid-keys"><kbd>Shift</kbd></div>
-                        <div class="intro-grid-arrow">&rarr;</div>
-                        <div class="intro-grid-desc">Cyber-Dash Boost</div>
+                        <div class="intro-grid-desc">Cyber Laser Blaster</div>
                     </div>
                 </div>
-                <button class="cyber-btn" style="margin-top:22px;" onclick="finishIntroAndStartMenu()">Start Game &rarr;</button>
+                <button class="cyber-btn" style="margin-top:20px;" onclick="finishIntroAndStartMenu()">Got It — Let's Play! &rarr;</button>
             </div>
         </div>
 
+        <!-- BOSS VICTORY GLITCH BANNER OVERLAY -->
+        <div id="bossVictoryBanner" class="boss-victory-banner" style="display:none;">
+            <div class="victory-title">⚡ BOSS DESTROYED! ⚡</div>
+            <div id="victorySub" class="victory-sub">+100 POINTS • MISSION RESUMED</div>
+        </div>
+
         <!-- HUD (Heads Up Display) & ACHIEVEMENT TOAST -->
-        <div id="achievementToast" class="achievement-toast" style="display:none;">
-            <div class="toast-icon">🏆</div>
-            <div class="toast-text">
-                <div class="toast-title">ACHIEVEMENT UNLOCKED!</div>
-                <div id="toastDesc" class="toast-desc">First Blood</div>
-            </div>
         </div>
 
         <div id="hud">
